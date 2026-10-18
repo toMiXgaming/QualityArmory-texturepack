@@ -18,11 +18,17 @@ out float vertexDistance;
 out vec4 vertexColor;
 out vec2 texCoord0;
 flat out int axonMap;
+flat out int axonTile;
+flat out vec2 axonCursor;
 
 // AxonMap: ekran mapy na cały ekran. Musi się zgadzać z pluginem (OverlayLayout).
 #define AXON_COLS 4
 #define AXON_ROWS 3
 #define AXON_HEIGHT 0.9
+// Kursor: o ile stopni trzeba obrócić głowę, żeby przejechać całą szerokość / wysokość mapy.
+// Plugin ustawia graczowi yaw 0 i pitch 0 przy otwarciu mapy (OverlayLayout.CURSOR_*).
+#define AXON_YAW_RANGE 90.0
+#define AXON_PITCH_RANGE 67.5
 
 // Znacznik: w pierwszym wierszu mapy piksele 0-7 to na przemian biały (A) i czarny (B),
 // w pikselach 8-23 liczba białych pikseli to numer kafelka, a w ostatnim wierszu
@@ -62,10 +68,18 @@ void main() {
     vertexColor = Color * texelFetch(Sampler2, UV2 / 16, 0);
     texCoord0 = UV0;
     axonMap = 0;
+    axonTile = 0;
+    axonCursor = vec2(-1.0);
 
     int tile = axonTileIndex();
     if (tile >= 0) {
         axonMap = 1;
+        axonTile = tile;
+        // Kierunek kamery z ModelViewMat (świat -> widok): przód = -trzeci wiersz macierzy.
+        vec3 forward = -vec3(ModelViewMat[0][2], ModelViewMat[1][2], ModelViewMat[2][2]);
+        float yaw = degrees(atan(-forward.x, forward.z));
+        float pitch = degrees(asin(clamp(-forward.y, -1.0, 1.0)));
+        axonCursor = clamp(vec2(0.5 + yaw / AXON_YAW_RANGE, 0.5 + pitch / AXON_PITCH_RANGE), 0.0, 1.0);
         // ProjMat[1][1] / ProjMat[0][0] = szerokość / wysokość ekranu.
         float screenAspect = ProjMat[1][1] / ProjMat[0][0];
         float h = 2.0 * AXON_HEIGHT;
