@@ -3,7 +3,7 @@
 #moj_import <minecraft:fog.glsl>
 
 // Musi się zgadzać z rendertype_text.vsh.
-#define AXON_COLS 4
+#define AXON_COLS 5
 #define AXON_ROWS 3
 
 uniform sampler2D Sampler0;
@@ -19,10 +19,16 @@ in vec2 texCoord0;
 flat in int axonMap;
 flat in int axonTile;
 flat in vec2 axonCursor;
+flat in int axonPanel;
 
 out vec4 fragColor;
 
 void main() {
+    if (axonPanel == 1) {
+        // Panel na hotbarze: ciemne tło w kolorze paska mapy z jaśniejszą górną krawędzią.
+        fragColor = texCoord0.y < 0.03 ? vec4(0.35, 0.35, 0.35, 1.0) : vec4(0.08, 0.08, 0.08, 1.0);
+        return;
+    }
     if (axonMap == 1) {
         // Mapa AxonMap: bez światła i mgły; piksele znacznika zastępujemy sąsiednim wierszem.
         ivec2 pixel = clamp(ivec2(texCoord0 * 128.0), ivec2(0), ivec2(127));
