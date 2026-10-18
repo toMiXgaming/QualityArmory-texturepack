@@ -71,6 +71,11 @@ def main():
     shaders = os.path.join(HERE, 'shadery')   # AxonMap: full screen map shader (rendertype_text)
     for fn in sorted(os.listdir(shaders)):
         repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
+    axon = os.path.join(HERE, 'axonmap')   # AxonMap: font for the panel over the hotbar
+    for root, _, files in os.walk(axon):
+        for fn in sorted(files):
+            path = os.path.join(root, fn)
+            repl['assets/axonmap/' + os.path.relpath(path, axon).replace(os.sep, '/')] = open(path, 'rb').read()
     mc = os.path.join(HERE, 'pack.mcmeta')   # owner-edited description, carried over
     if os.path.exists(mc):
         repl['pack.mcmeta'] = open(mc, 'rb').read()

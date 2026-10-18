@@ -17,7 +17,7 @@ Zmienione pliki względem oryginału:
 
 ## Mapa AxonMap (shader)
 
-Paczka zawiera też shader `assets/minecraft/shaders/core/rendertype_text.{vsh,fsh}` z pluginu [AxonMap](https://github.com/toMiXgaming/AXONMAP). Rysuje on mapę świata na cały ekran po wpisaniu `/mapa`. Shader rozpoznaje tylko mapy pluginu (po znaczniku w pierwszym wierszu), więc zwykłe napisy, tabliczki i mapy działają jak wcześniej. Źródło shadera jest w `zrodla/shadery/` i `build_pack.py` dodaje je do zipa.
+Paczka zawiera też shader `assets/minecraft/shaders/core/rendertype_text.{vsh,fsh}` z pluginu [AxonMap](https://github.com/toMiXgaming/AXONMAP). Rysuje on mapę świata na cały ekran po wpisaniu `/mapa`. Shader rozpoznaje tylko mapy pluginu (po znaczniku w pierwszym wierszu), więc zwykłe napisy, tabliczki i mapy działają jak wcześniej. Do tego czcionka `assets/axonmap/font/panel.json`, z której plugin robi panel zasłaniający hotbar przy otwartej mapie. Źródła są w `zrodla/shadery/` i `zrodla/axonmap/`, a `build_pack.py` dodaje je do zipa.
 
 ## Wgranie na serwer
 
