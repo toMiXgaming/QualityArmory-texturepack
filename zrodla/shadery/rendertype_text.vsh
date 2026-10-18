@@ -24,20 +24,22 @@ flat out int axonMap;
 #define AXON_ROWS 3
 #define AXON_HEIGHT 0.9
 
-// Znacznik w pierwszym wierszu mapy: piksele 0-7 to na przemian kolor A i B,
-// a w pikselach 8-23 liczba pikseli koloru A (od lewej) to numer kafelka.
+// Znacznik: w pierwszym wierszu mapy piksele 0-7 to na przemian biały (A) i czarny (B),
+// w pikselach 8-23 liczba białych pikseli to numer kafelka, a w ostatnim wierszu
+// piksele 0-7 to znowu na przemian A i B. Zwykłe mapy prawie nigdy tak nie wyglądają.
 int axonTileIndex() {
     if (textureSize(Sampler0, 0) != ivec2(128, 128)) {
         return -1;
     }
     vec3 a = texelFetch(Sampler0, ivec2(0, 0), 0).rgb;
     vec3 b = texelFetch(Sampler0, ivec2(1, 0), 0).rgb;
-    if (a == b) {
+    if (min(a.r, min(a.g, a.b)) < 0.95 || max(b.r, max(b.g, b.b)) > 0.15) {
         return -1;
     }
-    for (int x = 2; x < 8; x++) {
+    for (int x = 0; x < 8; x++) {
         vec3 expected = (x % 2 == 0) ? a : b;
-        if (texelFetch(Sampler0, ivec2(x, 0), 0).rgb != expected) {
+        if (texelFetch(Sampler0, ivec2(x, 0), 0).rgb != expected
+                || texelFetch(Sampler0, ivec2(x, 127), 0).rgb != expected) {
             return -1;
         }
     }
