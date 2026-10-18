@@ -68,6 +68,9 @@ def main():
     if not any(s.get('source') == 'axon' for s in atlas['sources']):
         atlas['sources'].append({'type': 'directory', 'source': 'axon', 'prefix': 'axon/'})
     repl[ATLAS] = json.dumps(atlas, indent=4).encode()
+    shaders = os.path.join(HERE, 'shadery')   # AxonMap: full screen map shader (rendertype_text)
+    for fn in sorted(os.listdir(shaders)):
+        repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
     mc = os.path.join(HERE, 'pack.mcmeta')   # owner-edited description, carried over
     if os.path.exists(mc):
         repl['pack.mcmeta'] = open(mc, 'rb').read()
