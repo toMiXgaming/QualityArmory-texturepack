@@ -145,6 +145,31 @@ class Gun:
         e2 = self.b(name + '_b', (u[0] + 0.03, u[1] - 0.03), (vc - r, vc + r), r * k, mat, rot, dw, **p)
         return e1, e2
 
+    def tube(self, name, u, vc, r, ri, mat, dw=0.0, k=0.68):
+        """Hollow round-ish tube (scope body) with a see-through bore of half-size ri.
+        Same cross-shaped outline as cyl(), split into non-overlapping walls."""
+        a = max(r * k, ri + 0.04)
+        self.b(name + '_t', u, (vc + ri, vc + r), (dw - a, dw + a), mat)
+        self.b(name + '_bt', u, (vc - r, vc - ri), (dw - a, dw + a), mat)
+        self.b(name + '_r', u, (vc - ri, vc + ri), (dw + ri, dw + r), mat)
+        self.b(name + '_l', u, (vc - ri, vc + ri), (dw - r, dw - ri), mat)
+        if a < r - 0.02:
+            for sv in (-1, 1):
+                for sw in (-1, 1):
+                    vv = sorted((vc + sv * ri, vc + sv * a))
+                    ww = sorted((dw + sw * a, dw + sw * r))
+                    self.b('%s_c%d%d' % (name, sv + 1, sw + 1), u, vv, ww, mat)
+
+    def stair(self, name, u, top, bot, n, w, mat):
+        """Gently sloped part (e.g. a stock with less drop than 22.5deg) as n boxes whose top and
+        bottom follow straight lines top=(v at u0, v at u1), bot=(...).  Steps are a fraction of a pixel."""
+        d = (u[1] - u[0]) / n
+        for i in range(n):
+            f0, f1 = i / n, (i + 1) / n
+            vt = top[0] + (top[1] - top[0]) * (f0 + f1) / 2
+            vb = bot[0] + (bot[1] - bot[0]) * (f0 + f1) / 2
+            self.b('%s_%d' % (name, i), (u[0] + i * d, u[0] + (i + 1) * d), (vb, vt), w, mat)
+
     def slope(self, name, pivot, theta, t, u_end, top_v, w, mat):
         """Sloped underside (stock): a 22.5deg slab plus hidden stair fillers above it.
         Returns the v of the slab's lowest back point (toe)."""
@@ -172,22 +197,27 @@ class Gun:
     def dec(self, fn):
         self.decals.append(fn)
 
-    # gun space -> QA model frame
-    def to_mc(self, P):
+    # gun space -> QA model frame.  qa['ax'] is the MC axis the barrel lies along ('x' default:
+    # muzzle at X=Xm, lateral centre Z=Zc; 'z': muzzle at Z=Zm, lateral centre X=Xc).
+    # s = +1 when the stock is toward + along that axis.
+    def frame(self):
         q = self.qa
-        P = np.atleast_2d(P)
-        X = q['Xm'] + q['s'] * q['k'] * P[:, 2]
-        Y = q['Yb'] + q['k'] * P[:, 1]
-        Z = q['Zc'] - q['s'] * q['kw'] * P[:, 0]
-        return np.stack([X, Y, Z], 1)
+        s, k, kw = q['s'], q['k'], q['kw']
+        if q.get('ax', 'x') == 'x':
+            O = np.array([q['Xm'], q['Yb'], q['Zc']], float)
+            M = np.array([[0, 0, s * k], [0, k, 0], [-s * kw, 0, 0]], float)   # rows X,Y,Z; cols w,v,u
+        else:
+            O = np.array([q['Xc'], q['Yb'], q['Zm']], float)
+            M = np.array([[s * kw, 0, 0], [0, k, 0], [0, 0, s * k]], float)
+        return O, M
+
+    def to_mc(self, P):
+        O, M = self.frame()
+        return O + np.atleast_2d(P) @ M.T
 
     def from_mc(self, P):
-        q = self.qa
-        P = np.atleast_2d(P)
-        u = (P[:, 0] - q['Xm']) / (q['s'] * q['k'])
-        v = (P[:, 1] - q['Yb']) / q['k']
-        w = (q['Zc'] - P[:, 2]) / (q['s'] * q['kw'])
-        return np.stack([w, v, u], 1)
+        O, M = self.frame()
+        return (np.atleast_2d(P) - O) @ np.linalg.inv(M).T
 
     def mc_box(self, e):
         c = self.to_mc(np.array([e.lo, e.hi]))
@@ -195,8 +225,28 @@ class Gun:
 
     def gun_dir(self, n_mc):
         """MC-frame direction -> gun-space direction (w, v, u)."""
-        s = self.qa['s']
-        return np.array([-s * n_mc[2], n_mc[1], s * n_mc[0]], float)
+        _, M = self.frame()
+        d = np.linalg.inv(M) @ np.asarray(n_mc, float)
+        return np.sign(d) * (np.abs(d) > 1e-9)
+
+    def mc_rot(self, theta):
+        """Element rotation about gun +w -> (MC axis, angle)."""
+        q = self.qa
+        if q.get('ax', 'x') == 'x':
+            return 'z', -q['s'] * theta
+        return 'x', q['s'] * theta
+
+    def ads_yaw(self):
+        q = self.qa
+        if q.get('ax', 'x') == 'x':
+            return 90 if q['s'] == 1 else -90
+        return 0 if q['s'] == 1 else 180
+
+    def right_mc(self):
+        """MC-frame unit vector pointing to the gun's right side."""
+        _, M = self.frame()
+        r = M[:, 0]
+        return r / np.linalg.norm(r)
 
 
 SIDE_OF = {(0, 1): 'T', (0, -1): 'B', (1, 1): 'K', (1, -1): 'F', (2, 1): 'R', (2, -1): 'L'}
@@ -228,6 +278,10 @@ MATS = {
     'spacer':   dict(kind='flat', base=(214, 210, 200), wear=(230, 228, 220), edge=0.0),
     'shell':    dict(kind='shell', base=(156, 30, 26), wear=(200, 70, 60), edge=0.3),
     'band':     dict(kind='poly', base=(30, 30, 31), wear=(55, 55, 57), var=0.05, edge=0.3),
+    'green':    dict(kind='poly', base=(72, 104, 56), wear=(118, 150, 96), var=0.07, edge=0.5),
+    'wood_sks': dict(kind='wood', light=(168, 92, 48), dark=(92, 40, 18), wear=(200, 132, 84), edge=0.45),
+    'glass':    dict(kind='flat', base=(22, 30, 40), wear=(60, 80, 100), edge=0.0),
+    'reticle':  dict(kind='flat', base=(8, 8, 8), wear=(8, 8, 8), edge=0.0),
 }
 
 
@@ -1227,6 +1281,379 @@ SKINS.update(_gun_skins('m4a1s', 111, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka'
 SKINS.update(_gun_skins('remmington', 121, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 SKINS.update(_gun_skins('makarov', 131, 0.35, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 
+def build_awp():
+    L = 56.0
+    k = 23.0 / L
+    g = Gun('awp', dict(ax='z', s=1, k=k, kw=k * 1.25, Zm=-6.0, Yb=9.375, Xc=7.5))
+    B, C, T = g.b, g.cyl, g.tube
+    # --- muzzle brake + heavy barrel
+    C('brake', (0.0, 2.6), 0.0, 0.74, 'black')
+    C('barrel', (2.6, 24.0), 0.0, 0.5, 'black')
+    C('barrel_rear', (24.0, 30.6), 0.0, 0.58, 'black')
+    # --- green forend (free-float tube, sides rise around the barrel)
+    B('forend', (13.4, 30.6), (-2.5, -0.3), 1.05, 'green')
+    B('forend_nose', (12.9, 13.4), (-2.25, -0.55), 0.9, 'green')
+    B('forend_lip_l', (13.8, 30.6), (-0.3, 0.3), (-1.05, -0.62), 'green')
+    B('forend_lip_r', (13.8, 30.6), (-0.3, 0.3), (0.62, 1.05), 'green')
+    # --- Harris bipod folded forward under the barrel
+    B('bipod_mount', (14.0, 15.4), (-3.0, -2.5), 0.62, 'black')
+    B('bipod_leg_l', (6.8, 14.4), (-3.0, -2.62), (-0.66, -0.24), 'black')
+    B('bipod_leg_r', (6.8, 14.4), (-3.0, -2.62), (0.24, 0.66), 'black')
+    B('bipod_foot_l', (6.2, 6.8), (-3.1, -2.52), (-0.7, -0.2), 'rubber')
+    B('bipod_foot_r', (6.2, 6.8), (-3.1, -2.52), (0.2, 0.7), 'rubber')
+    # --- receiver, rail, bolt
+    C('receiver', (30.6, 41.2), 0.1, 0.95, 'black')
+    B('rail', (28.8, 40.2), (1.0, 1.42), 0.44, 'rail')
+    B('bolt_shroud', (41.2, 42.4), (-0.45, 0.7), 0.56, 'black')
+    B('bolt_root', (39.4, 40.4), (0.1, 0.6), (0.95, 1.55), 'parts')
+    B('bolt_arm', (39.6, 40.2), (-0.55, 0.3), (1.45, 1.95), 'parts')
+    B('bolt_knob', (39.3, 40.5), (-1.15, -0.35), (1.7, 2.5), 'black')
+    # --- action bed, magazine, trigger guard (green stock)
+    B('bed', (30.6, 41.6), (-2.5, -0.85), 1.05, 'green')
+    B('mag', (33.2, 36.2), (-3.85, -2.5), 0.72, 'magsteel')
+    B('mag_release', (36.2, 36.75), (-3.0, -2.5), 0.36, 'parts')
+    B('tg_front', (37.5, 37.9), (-3.75, -2.5), 0.34, 'green')
+    B('tg_bottom', (37.5, 41.6), (-4.05, -3.75), 0.38, 'green')
+    B('trigger', (39.0, 39.3), (-3.4, -2.5), 0.12, 'parts', rot=(-22.5, (39.1, -2.5)))
+    # --- thumbhole stock
+    B('grip', (41.6, 44.3), (-6.5, -0.85), 0.82, 'green')
+    B('stock_top', (41.6, 47.6), (-0.85, 1.05), 0.95, 'green')
+    B('stock_bottom', (44.3, 47.6), (-6.5, -5.1), 0.82, 'green')
+    B('butt', (47.6, 55.4), (-6.5, 1.05), 0.95, 'green')
+    B('cheek', (46.4, 54.6), (1.05, 1.95), 0.88, 'green')
+    B('cheek_ramp', (45.4, 46.4), (1.05, 1.55), 0.88, 'green')
+    B('buttpad', (55.4, 56.0), (-6.6, 2.0), 0.98, 'rubber')
+    B('sling_stud', (52.6, 53.4), (-6.95, -6.5), 0.22, 'parts')
+    # --- scope (hollow tube so it can be looked through, reticle at the front of the main tube)
+    sv = 3.3
+    T('obj', (22.6, 26.6), sv, 1.32, 1.1, 'black')
+    T('obj_cone', (26.6, 27.8), sv, 1.02, 0.62, 'black')
+    T('scope', (27.8, 36.4), sv, 0.74, 0.62, 'black')
+    T('power', (36.4, 37.4), sv, 0.88, 0.62, 'black')
+    T('ocular', (37.4, 41.6), sv, 1.02, 0.78, 'black')
+    T('eyecup', (41.6, 42.4), sv, 0.98, 0.8, 'rubber')
+    B('ret_v', (27.9, 28.0), (sv - 0.62, sv + 0.62), 0.03, 'reticle')
+    B('ret_h_l', (27.9, 28.0), (sv - 0.03, sv + 0.03), (-0.62, -0.03), 'reticle')
+    B('ret_h_r', (27.9, 28.0), (sv - 0.03, sv + 0.03), (0.03, 0.62), 'reticle')
+    B('turret_el', (31.4, 32.8), (sv + 0.74, sv + 1.5), 0.6, 'black')
+    B('turret_el_cap', (31.55, 32.65), (sv + 1.5, sv + 1.62), 0.5, 'parts')
+    B('turret_wi', (31.4, 32.8), (sv - 0.6, sv + 0.6), (0.74, 1.5), 'black')
+    B('turret_px', (31.6, 32.6), (sv - 0.5, sv + 0.5), (-1.25, -0.74), 'black')
+    T('saddle', (31.0, 33.2), sv, 0.86, 0.74, 'black')
+    for nm, u0 in (('ring_f', 29.2), ('ring_r', 34.8)):
+        T(nm, (u0, u0 + 1.0), sv, 0.9, 0.74, 'black')
+        B(nm + '_base', (u0, u0 + 1.0), (1.42, sv - 0.9), 0.55, 'black')
+        B(nm + '_nut', (u0 + 0.2, u0 + 0.8), (1.6, 2.1), (0.55, 0.85), 'parts')
+
+    D = g.dec
+    D(oval('F', 0, 0, 0.3, 0.3, els=['brake_a', 'brake_b'], col=(6, 6, 7)))
+    D(stripes('RL', 'a', 0.6, 0.28, a=(0.4, 2.3), b=(-0.35, 0.35), els=['brake_a'], mul=0.25))
+    D(stripes('T', 'a', 0.6, 0.2, a=(0.4, 2.3), els=['brake_*'], mul=0.4))
+    D(stripes('TBRL', 'a', 99, 0.12, a=(23.9, 24.1), els=['barrel_rear_*'], mul=0.6))
+    # forend: vents + stipple panel
+    for a0 in (16.0, 19.0, 22.0, 25.0):
+        D(recess('RL', (a0, a0 + 1.8), (-1.6, -0.9), els=['forend'], col=(30, 44, 26)))
+    D(stripes('B', 'a', 0.8, 0.3, a=(16.0, 29.0), els=['forend'], mul=0.82))
+    D(stripes('RL', 'a', 0.35, 0.12, els=['bipod_leg_*'], mul=0.7))
+    D(stripes('TRL', 'a', 0.5, 0.25, els=['rail'], mul=0.45, offset=0.1))
+    D(text('L', 'AXON', 32.0, 0.6, els=['receiver_a'], col=(170, 172, 176)))
+    def bolt_inner(ctx, m, A, Bv):
+        ctx.col[m & (Bv < 0.4)] = np.array([118, 120, 124], float)
+    D(recess('R', (34.4, 37.6), (-0.2, 0.75), els=['receiver_a'], inner=bolt_inner))
+    D(stripes('RLK', 'b', 0.25, 0.1, els=['bolt_knob'], mul=0.7))
+    D(stripes('RL', 'b', 0.55, 0.2, els=['mag'], mul=1.25, add=6))
+    D(hatch('RL', els=['grip'], period=0.36, mul=0.8, b=(-6.0, -2.8)))
+    D(stripes('F', 'b', 0.5, 0.18, els=['grip'], mul=0.75))
+    D(recess('RL', (49.0, 53.0), (-2.4, -1.0), els=['butt'], col=(36, 52, 30)))
+    D(rivet('RL', 48.4, 0.3, 0.18, els=['butt']))
+    D(stripes('RLKB', 'a', 0.3, 0.12, els=['buttpad'], mul=0.55))
+    D(stripes('K', 'b', 0.35, 0.12, els=['buttpad'], mul=0.55))
+    # scope: knurled turrets, power ring, lens glints at the eyepiece rim
+    D(stripes('RLFK', 'b', 0.18, 0.08, els=['turret_el'], mul=0.6))
+    D(stripes('TBFK', 'b', 0.18, 0.08, els=['turret_wi', 'turret_px'], mul=0.6))
+    D(stripes('TBRL', 'a', 0.25, 0.1, els=['power_*'], mul=0.6))
+    D(stripes('TBRL', 'a', 0.3, 0.12, els=['eyecup_*'], mul=0.6))
+    D(text('L', 'AXON', 35.6, sv + 0.3, els=['scope_l'], col=(190, 190, 190)))
+
+    g.sight = dict(rear=(42.4, sv), front=(22.6, sv))
+    # scope ADS: eye behind the eyecup, scope bore on the crosshair, gun length squashed (like QA)
+    # so the view through the tube stays wide
+    g.ads = dict(cam=(52.0, sv), front=(22.6, sv), roll=0.0, scale=(2.2, 2.2, 0.3))
+    g.grip = (43.0, -4.0)
+    return g
+
+
+def build_m16():
+    L = 47.6
+    k = 18.6875 / L
+    g = Gun('m16', dict(s=1, k=k, kw=k * 1.25, Xm=-3.4375, Yb=9.8125, Zc=2.28))
+    B, C = g.b, g.cyl
+    # --- A2 birdcage flash hider + barrel
+    C('fh', (0.0, 2.6), 0.0, 0.54, 'black')
+    C('barrel', (2.6, 10.0), 0.0, 0.38, 'black')
+    # --- A2 front sight base (triangle)
+    B('fsb_collar', (7.3, 9.0), (-0.72, 0.68), 0.62, 'black')
+    B('fsb_tower_lo', (7.5, 8.9), (0.68, 1.4), 0.46, 'black')
+    B('fsb_tower_hi', (7.75, 8.75), (1.4, 2.3), 0.42, 'black')
+    B('fsb_ear_l', (7.8, 8.7), (2.3, 3.55), (-0.48, -0.2), 'black')
+    B('fsb_ear_r', (7.8, 8.7), (2.3, 3.55), (0.2, 0.48), 'black')
+    B('fsb_post', (8.1, 8.4), (2.3, 3.1), 0.11, 'parts')
+    B('bayonet_lug', (7.4, 8.8), (-1.3, -0.72), 0.3, 'black')
+    B('swivel_f', (7.7, 8.5), (-2.15, -1.3), 0.07, 'parts')
+    # --- round A2 handguards (ribbed)
+    C('hg_cap', (9.8, 10.4), 0.2, 1.18, 'black')
+    C('hg', (10.4, 23.4), 0.2, 1.34, 'polymer')
+    C('delta', (23.4, 24.2), 0.2, 1.46, 'black')
+    # --- upper receiver + carry handle with A2 rear sight
+    B('upper', (24.2, 33.8), (-0.65, 1.3), 1.02, 'black')
+    B('upper_nose', (23.9, 24.2), (-0.55, 1.05), 0.82, 'black')
+    B('ch_front', (24.8, 26.0), (1.3, 2.75), 0.62, 'black')
+    B('ch_top', (24.8, 32.4), (2.25, 2.75), 0.62, 'black')
+    B('ch_rear', (30.8, 32.4), (1.3, 2.25), 0.62, 'black')
+    B('rs_body', (31.0, 32.4), (2.75, 2.82), 0.62, 'black')
+    B('rs_l', (31.55, 31.85), (2.82, 3.62), (-0.56, -0.36), 'black')
+    B('rs_r', (31.55, 31.85), (2.82, 3.62), (0.36, 0.56), 'black')
+    B('rs_ap_top', (31.55, 31.85), (3.46, 3.62), (-0.36, 0.36), 'black')
+    B('rs_drum', (31.1, 31.9), (2.35, 2.75), (0.62, 1.0), 'parts')
+    B('rs_elev', (31.1, 31.9), (2.0, 2.4), (-0.95, -0.62), 'parts')
+    B('ch_handle', (33.0, 34.4), (1.0, 1.5), 0.48, 'black')
+    B('ch_latch', (33.95, 34.45), (1.02, 1.45), (-0.92, 0.48), 'black')
+    B('fa_housing', (29.8, 31.9), (0.2, 1.05), (1.02, 1.48), 'black')
+    B('fa_button', (29.4, 30.2), (0.3, 0.95), (1.18, 1.7), 'parts')
+    B('port_cover', (25.0, 28.4), (-0.15, 0.95), (1.02, 1.1), 'black')
+    B('deflector', (28.5, 29.8), (0.3, 1.2), (1.02, 1.42), 'black')
+    # --- lower receiver
+    B('lower', (24.6, 34.4), (-2.4, -0.65), 0.98, 'black')
+    B('magwell', (24.6, 28.2), (-3.55, -2.4), 1.04, 'black')
+    B('magwell_lip', (24.45, 28.35), (-3.82, -3.45), 1.1, 'black')
+    B('pivot_lug', (24.2, 24.6), (-1.55, -0.65), 0.8, 'black')
+    B('tg_front', (28.2, 28.55), (-3.4, -2.4), 0.34, 'black')
+    B('tg_bottom', (28.2, 31.6), (-3.42, -3.12), 0.38, 'black')
+    B('trigger', (29.5, 29.85), (-3.05, -2.4), 0.12, 'parts', rot=(-22.5, (29.6, -2.4)))
+    B('selector', (31.9, 33.2), (-1.45, -1.12), (-1.13, -0.98), 'parts')
+    B('bolt_catch', (27.4, 29.1), (-0.95, -0.42), (-1.13, -0.98), 'black')
+    B('mag_release', (28.2, 28.85), (-1.45, -0.88), (0.98, 1.18), 'parts')
+    # --- 30-rd magazine
+    msteps = [(-3.55, -4.9, 0.0), (-4.9, -6.15, 0.12), (-6.15, -7.3, 0.38), (-7.3, -8.35, 0.75)]
+    for i, (v0, v1, sh) in enumerate(msteps):
+        B('mag_%d' % i, (24.8 - sh, 27.95 - sh), (v1, v0), 0.58, 'black')
+    B('mag_floor', (23.8, 27.45), (-8.85, -8.35), 0.66, 'polymer')
+    # --- A2 grip
+    B('grip', (31.6, 33.85), (-7.1, -2.4), 0.6, 'polymer', rot=(-22.5, (31.6, -2.4)))
+    B('grip_nub', (31.3, 31.65), (-4.85, -4.1), 0.56, 'polymer', rot=(-22.5, (31.6, -2.4)))
+    B('grip_tang', (33.1, 34.4), (-2.65, -2.4), 0.6, 'black')
+    # --- A2 fixed stock
+    B('stock_front', (34.4, 35.6), (-1.6, 1.2), 0.86, 'polymer')
+    B('stock_comb', (35.6, 46.9), (-0.9, 1.2), 0.9, 'polymer')
+    toe = g.slope('stock', (35.2, -1.6), 22.5, 1.2, 46.9, -0.9, 0.9, 'polymer')
+    B('buttplate', (46.9, 47.6), (toe - 0.08, 1.24), 0.94, 'black')
+    sv = -1.6 - 1.2 * 0.924 - (44.0 - 35.2 + 0.46) * 0.414
+    B('swivel_r', (43.6, 44.6), (sv - 0.8, sv + 0.3), 0.08, 'parts')
+
+    D = g.dec
+    # flash hider slots
+    D(oval('F', 0, 0, 0.26, 0.26, els=['fh_a', 'fh_b'], col=(6, 6, 7)))
+    D(stripes('TRL', 'b', 99, 1, a=(0.3, 1.9), b=(-0.16, 0.16), els=['fh_a', 'fh_b'], mul=0.18))
+    D(stripes('T', 'a', 99, 1, a=(0.3, 1.9), b=(-0.12, 0.12), els=['fh_b'], mul=0.18))
+    D(stripes('RL', 'b', 0.3, 0.1, els=['fsb_post'], mul=0.7))
+    D(oval('RL', 8.25, 1.9, 0.18, 0.18, els=['fsb_tower_hi']))
+    # handguard ribs + vents
+    D(stripes('TBRL', 'a', 0.62, 0.24, a=(10.6, 23.2), els=['hg_*'], mul=0.62))
+    for a0 in np.arange(11.0, 22.6, 1.24):
+        D(oval('B', a0, 0.0, 0.22, 0.14, els=['hg_a', 'hg_b']))
+    D(stripes('TBRL', 'a', 0.22, 0.11, els=['delta_*'], mul=0.75))
+    # carry handle slot, rear sight aperture, drum marks
+    D(recess('T', (25.2, 30.4), (-0.12, 0.12), els=['ch_top'], col=(18, 18, 20), lip=False))
+    D(stripes('RL', 'a', 0.2, 0.08, els=['rs_drum', 'rs_elev'], mul=0.55))
+    D(stripes('R', 'b', 99, 0.15, b=(-0.15, 0.0), els=['port_cover'], mul=0.5))
+    D(rivet('R', 25.25, 0.4, 0.13, els=['port_cover']))
+    D(stripes('R', 'a', 0.25, 0.1, els=['fa_button'], mul=0.6))
+    D(stripes('TRL', 'a', 0.2, 0.08, els=['ch_latch'], mul=0.6))
+    for (a, b) in ((24.9, -1.2), (33.7, -1.25), (30.0, -1.45), (31.1, -0.95)):
+        D(rivet('RL', a, b, 0.17, els=['lower', 'pivot_lug']))
+    D(paint('L', (33.3, 33.55), (-0.95, -0.75), (230, 230, 230), els=['lower']))
+    D(paint('L', (33.35, 33.6), (-1.85, -1.65), (220, 40, 30), els=['lower']))
+    D(text('L', 'AXON', 25.4, -1.0, els=['magwell', 'lower'], col=(165, 165, 168)))
+    D(stripes('R', 'a', 0.18, 0.08, els=['mag_release'], mul=0.6))
+    D(stripes('RL', 'b', 0.55, 0.18, b=(-8.3, -4.9), els=['mag_*'], mul=1.25, add=5))
+    D(hatch('RL', els=['grip'], period=0.36, mul=0.75, b=(-6.7, -2.8)))
+    D(stripes('F', 'b', 0.5, 0.18, els=['grip', 'grip_nub'], mul=0.7))
+    # stock: trap door in buttplate, screws, parting line
+    D(recess('K', (-0.5, 0.5), (-3.0, -0.7), els=['buttplate'], col=(28, 28, 30), lip=False))
+    D(stripes('K', 'b', 0.3, 0.1, b=(-4.6, -3.2), els=['buttplate'], mul=0.6))
+    D(rivet('RL', 36.2, 0.2, 0.17, els=['stock_comb', 'stock_front']))
+    D(stripes('RL', 'b', 99, 0.08, b=(0.85, 0.93), els=['stock_comb'], mul=0.7))
+
+    g.sight = dict(rear=(31.7, 3.1), front=(8.25, 3.1))
+    g.ads = dict(cam=(36.0, 3.1), front=(8.25, 3.1), roll=2.5, sxyz=(1.0, 1.3, 0.72))
+    g.grip = (32.6, -4.2)
+    return g
+
+
+def build_sks():
+    L = 48.5
+    k = 22.06 / L
+    g = Gun('sks', dict(ax='z', s=1, k=k, kw=k * 1.25, Zm=-3.0, Yb=6.45, Xc=8.0))
+    B, C = g.b, g.cyl
+    sl = 2.05           # sight line height
+    # --- barrel + front sight + folded bayonet
+    C('barrel', (0.0, 21.0), 0.0, 0.4, 'blued')
+    B('fs_base', (0.9, 2.6), (-0.6, 0.62), 0.5, 'blued')
+    B('fs_tower', (1.15, 2.35), (0.62, 1.05), 0.36, 'blued')
+    B('fs_ear_l', (1.2, 2.3), (1.05, 2.25), (-0.42, -0.24), 'blued')
+    B('fs_ear_r', (1.2, 2.3), (1.05, 2.25), (0.24, 0.42), 'blued')
+    B('fs_post', (1.55, 1.85), (1.05, sl), 0.1, 'parts')
+    B('fs_hood', (1.2, 2.3), (2.25, 2.4), 0.42, 'blued')
+    B('bay_hinge', (2.6, 3.6), (-1.05, -0.4), 0.38, 'blued')
+    B('bay_blade', (3.6, 13.4), (-1.0, -0.55), 0.12, 'steel')
+    B('bay_guard', (12.6, 13.0), (-1.2, -0.4), 0.32, 'blued')
+    B('rod', (3.6, 12.6), (-0.48, -0.3), (0.25, 0.43), 'parts')
+    # --- gas block + cylinder + upper handguard
+    B('gas_block', (8.0, 9.2), (-0.5, 1.45), 0.5, 'blued')
+    C('gas_tube', (9.2, 13.6), 0.98, 0.42, 'blued')
+    B('hg_upper', (13.6, 20.6), (0.5, 1.5), 0.62, 'wood_sks')
+    B('hg_upper_top', (13.8, 20.4), (1.5, 1.68), 0.42, 'wood_sks')
+    B('hg_retainer', (20.6, 21.0), (0.4, 1.55), 0.66, 'blued')
+    # --- one-piece stock: forend
+    B('nose_cap', (11.6, 12.4), (-1.35, 0.5), 0.86, 'blued')
+    B('forend', (12.4, 22.5), (-1.45, 0.5), 0.9, 'wood_sks')
+    B('band', (13.8, 14.4), (-1.5, 1.72), (-0.95, 0.95), 'blued')
+    B('swivel_f', (13.7, 14.5), (-0.6, 0.3), (-1.2, -0.95), 'parts')
+    # --- rear tangent sight on the barrel shank
+    B('rs_base', (20.6, 22.9), (0.5, 1.45), 0.62, 'blued')
+    B('rs_block', (20.6, 21.6), (1.45, 1.75), 0.5, 'blued')
+    B('rs_leaf', (21.1, 23.1), (1.65, 1.82), 0.48, 'blued')
+    B('rs_slider', (21.6, 22.2), (1.6, 1.95), 0.56, 'parts')
+    B('rs_notch_l', (22.75, 23.1), (1.82, 2.25), (-0.48, -0.1), 'blued')
+    B('rs_notch_r', (22.75, 23.1), (1.82, 2.25), (0.1, 0.48), 'blued')
+    # --- receiver, bolt carrier, receiver cover
+    B('receiver', (22.5, 31.6), (-0.95, 0.75), 0.82, 'blued')
+    B('cover', (23.1, 31.8), (0.75, 1.25), 0.72, 'blued')
+    B('cover_top', (23.3, 31.6), (1.25, 1.42), 0.48, 'blued')
+    B('carrier', (23.6, 28.4), (0.3, 0.75), (0.82, 0.9), 'parts')
+    B('bolt_root', (27.4, 28.2), (0.25, 0.7), (0.82, 1.4), 'parts')
+    B('bolt_knob', (27.3, 28.3), (0.15, 0.85), (1.35, 1.95), 'parts')
+    B('cover_latch', (31.6, 32.2), (0.3, 1.0), 0.32, 'parts')
+    # --- fixed 10-rd magazine, trigger guard, safety
+    B('mag', (23.0, 27.2), (-2.75, -0.95), 0.66, 'blued')
+    B('mag_hinge', (22.8, 23.3), (-2.35, -1.6), 0.5, 'parts')
+    B('tg_front', (27.2, 27.6), (-2.75, -0.95), 0.3, 'blued')
+    B('tg_bottom', (27.2, 31.4), (-3.0, -2.72), 0.34, 'blued')
+    B('tg_rear', (31.0, 31.4), (-2.8, -0.95), 0.32, 'blued')
+    B('trigger', (28.6, 28.9), (-2.4, -0.95), 0.12, 'parts', rot=(-22.5, (28.7, -0.95)))
+    B('safety', (30.4, 30.9), (-1.65, -1.0), 0.18, 'parts')
+    # --- wood stock: wrist and butt, drop toward the heel
+    B('stock_inlet', (22.5, 31.6), (-1.6, -0.95), 0.88, 'wood_sks')
+    B('wrist', (31.6, 33.6), (-2.1, 0.55), 0.76, 'wood_sks')
+    g.stair('stock', (33.6, 47.9), (0.5, -0.15), (-2.15, -6.0), 14, 0.86, 'wood_sks')
+    B('buttplate', (47.9, 48.5), (-6.1, -0.1), 0.92, 'blued')
+    B('sling_slot', (43.2, 45.2), (-2.2, -1.4), (-0.92, -0.86), 'blued')
+
+    D = g.dec
+    D(oval('F', 0, 0, 0.22, 0.22, els=['barrel_a', 'barrel_b'], col=(6, 6, 7)))
+    D(stripes('RL', 'b', 0.25, 0.08, els=['fs_post'], mul=0.7))
+    D(oval('RL', 1.75, 1.75, 0.2, 0.26, els=['fs_ear_*']))
+    D(stripes('RL', 'b', 99, 0.06, b=(-0.85, -0.7), els=['bay_blade'], mul=1.4, add=20))
+    D(rivet('RL', 3.1, -0.72, 0.18, els=['bay_hinge']))
+    D(oval('RL', 8.6, 0.95, 0.18, 0.18, els=['gas_block']))
+    for a0 in (14.6, 16.4, 18.2):
+        D(oval('RL', a0 + 0.5, 1.0, 0.4, 0.16, els=['hg_upper']))
+    D(stripes('TRL', 'a', 0.5, 0.14, a=(21.15, 22.9), els=['rs_leaf'], mul=1.4, add=8))
+    D(stripes('RL', 'a', 99, 0.4, a=(21.6, 22.2), els=['rs_slider'], mul=0.7))
+    def bolt_inner(ctx, m, A, Bv):
+        ctx.col[m & (Bv > 0.3)] = np.array([116, 118, 122], float)
+    D(recess('R', (24.0, 27.2), (-0.35, 0.72), els=['receiver'], inner=bolt_inner))
+    D(stripes('TRL', 'a', 0.3, 0.12, a=(29.8, 31.4), els=['cover', 'cover_top'], mul=0.6))
+    D(rivet('RL', 30.2, -0.3, 0.17, els=['receiver']))
+    D(rivet('RL', 23.4, -0.3, 0.17, els=['receiver']))
+    D(text('L', 'AXON', 24.0, 0.45, els=['receiver'], col=(160, 162, 166)))
+    D(stripes('RL', 'b', 0.45, 0.14, b=(-2.6, -1.1), els=['mag'], mul=1.25, add=6))
+    D(stripes('RLK', 'b', 0.2, 0.08, els=['bolt_knob'], mul=0.7))
+    D(rivet('RL', 36.5, -0.9, 0.17, els=['stock_*'], cols=((120, 110, 100), (40, 20, 10))))
+    D(recess('K', (-0.35, 0.35), (-2.6, -1.0), els=['buttplate'], col=(30, 30, 32), lip=False))
+    D(rivet('K', 0.0, -0.4, 0.17, els=['buttplate']))
+    D(rivet('K', 0.0, -4.6, 0.17, els=['buttplate']))
+
+    g.sight = dict(rear=(22.9, sl), front=(1.7, sl))
+    g.ads = dict(cam=(32.5, sl), front=(1.7, sl), roll=2.5, scale=(0.72, 1.15, 1.0))
+    g.grip = (33.0, -1.5)
+    return g
+
+
+def build_mac10():
+    L = 14.0
+    k = 9.51 / L
+    g = Gun('mac10', dict(ax='z', s=1, k=k, kw=k * 1.25, Zm=2.74, Yb=5.75, Xc=8.05))
+    g.density = 7.0
+    B, C = g.b, g.cyl
+    sl = 1.85
+    # --- threaded barrel stub
+    C('barrel', (0.0, 1.5), 0.0, 0.44, 'steel')
+    C('barrel_nut', (1.2, 1.5), 0.0, 0.62, 'black')
+    # --- upper receiver (stamped box)
+    B('upper', (1.5, 13.4), (-0.95, 1.25), 1.1, 'black')
+    B('lower', (1.5, 13.4), (-2.0, -0.95), 1.14, 'black')
+    B('seam', (1.5, 13.4), (-1.02, -0.88), 1.17, 'black')
+    # front sight with protective ears, rear peep sight
+    B('fs_base', (1.6, 2.7), (1.25, 1.42), 0.62, 'black')
+    B('fs_ear_l', (1.75, 2.55), (1.42, 2.25), (-0.62, -0.38), 'black')
+    B('fs_ear_r', (1.75, 2.55), (1.42, 2.25), (0.38, 0.62), 'black')
+    B('fs_post', (2.0, 2.3), (1.42, sl), 0.1, 'parts')
+    B('rs_base', (12.0, 13.2), (1.25, 1.42), 0.62, 'black')
+    B('rs_l', (12.5, 12.75), (1.42, 2.3), (-0.5, -0.32), 'black')
+    B('rs_r', (12.5, 12.75), (1.42, 2.3), (0.32, 0.5), 'black')
+    B('rs_top', (12.5, 12.75), (2.18, 2.3), (-0.32, 0.32), 'black')
+    # cocking knob on top (slot runs along the receiver)
+    B('knob', (3.3, 4.2), (1.25, 1.95), 0.32, 'parts')
+    B('knob_cap', (3.4, 4.1), (1.95, 2.1), 0.26, 'parts')
+    # strap bracket under the front, ejection port right, safety
+    B('strap_lug', (1.7, 2.9), (-2.7, -2.0), 0.36, 'black')
+    B('strap', (1.55, 3.05), (-2.6, -2.35), (-0.5, 0.5), 'band')
+    B('safety', (4.6, 5.8), (-1.75, -1.3), (1.14, 1.26), 'parts')
+    B('bolt_stop', (9.2, 10.1), (-1.6, -1.2), (-1.26, -1.14), 'parts')
+    # --- trigger guard + trigger
+    B('tg_front', (4.3, 4.65), (-3.95, -2.0), 0.3, 'black')
+    B('tg_bottom', (4.3, 7.2), (-4.25, -3.95), 0.34, 'black')
+    B('trigger', (5.5, 5.8), (-3.5, -2.0), 0.12, 'parts', rot=(-22.5, (5.6, -2.0)))
+    # --- grip / magwell, 30-rd magazine below
+    B('grip', (7.0, 10.3), (-7.6, -2.0), 0.92, 'black')
+    B('grip_front', (6.8, 7.0), (-7.4, -2.6), 0.8, 'black')
+    B('mag', (7.25, 9.95), (-12.4, -7.6), 0.78, 'magsteel')
+    B('mag_floor', (7.1, 10.1), (-12.75, -12.4), 0.86, 'magsteel')
+    B('mag_release', (10.3, 10.8), (-7.55, -6.9), 0.4, 'parts')
+    # --- retracted wire stock: side rods + folded butt plate at the back
+    B('stock_rod_l', (2.6, 13.4), (-1.6, -1.25), (-1.38, -1.14), 'steel')
+    B('stock_rod_r', (2.6, 13.4), (-1.6, -1.25), (1.14, 1.38), 'steel')
+    B('stock_tip_l', (2.3, 2.6), (-1.75, -1.1), (-1.42, -1.14), 'steel')
+    B('stock_tip_r', (2.3, 2.6), (-1.75, -1.1), (1.14, 1.42), 'steel')
+    B('butt_hinge', (13.4, 13.7), (-1.75, -1.1), 1.42, 'steel')
+    B('butt_plate', (13.7, 14.0), (-3.4, 0.6), 1.3, 'black')
+
+    D = g.dec
+    D(oval('F', 0, 0, 0.24, 0.24, els=['barrel_a', 'barrel_b'], col=(6, 6, 7)))
+    D(stripes('TBRL', 'a', 0.16, 0.07, a=(0.05, 1.15), els=['barrel_*'], mul=0.6))
+    D(recess('T', (3.0, 9.6), (-0.11, 0.11), els=['upper'], col=(14, 14, 16), lip=False))
+    D(stripes('TRLF', 'b', 0.15, 0.06, els=['knob'], mul=0.7))
+    def bolt_inner(ctx, m, A, Bv):
+        ctx.col[m & (Bv > -0.3)] = np.array([110, 112, 116], float)
+    D(recess('R', (4.0, 6.6), (-0.5, 0.6), els=['upper'], inner=bolt_inner))
+    for (a, b) in ((2.2, -1.5), (6.2, -1.5), (11.0, -1.5), (12.6, 0.3), (2.2, 0.4)):
+        D(rivet('RL', a, b, 0.14, els=['lower', 'upper']))
+    D(text('L', 'AXON', 4.6, 0.6, els=['upper'], col=(150, 150, 152)))
+    D(paint('R', (5.95, 6.15), (-1.7, -1.5), (220, 40, 30), els=['lower']))
+    D(stripes('R', 'a', 0.18, 0.07, els=['safety'], mul=0.6))
+    D(hatch('RL', els=['grip'], period=0.3, mul=0.78, b=(-7.2, -2.6)))
+    D(stripes('F', 'b', 0.35, 0.14, els=['grip_front'], mul=0.7))
+    D(stripes('RL', 'b', 0.6, 0.2, b=(-12.2, -8.0), els=['mag'], mul=1.25, add=6))
+    D(oval('K', 0, -9.6, 0.12, 0.12, els=['mag']))
+    D(stripes('RLK', 'b', 0.3, 0.1, els=['butt_plate'], mul=0.7))
+    D(stripes('TB', 'a', 0.3, 0.12, els=['strap'], mul=0.75))
+
+    g.sight = dict(rear=(12.65, sl), front=(2.15, sl))
+    g.ads = dict(cam=(16.6, sl), front=(2.15, sl), roll=2.5, scale=(0.8, 1.2, 1.0))
+    g.grip = (8.6, -5.0)
+    return g
+
 
 # ------------------------------------------------------------------ pipeline
 class Ctx:
@@ -1408,8 +1835,8 @@ def build_model(g, tex_ref, display):
         j = {'name': e.name, 'from': [r4(c) for c in lo], 'to': [r4(c) for c in hi]}
         if e.rot:
             org = g.to_mc(np.array([e.rot[1]]))[0]
-            ang = -g.qa['s'] * e.rot[0]
-            j['rotation'] = {'angle': ang, 'axis': 'z', 'origin': [r4(c) for c in org]}
+            ax, ang = g.mc_rot(e.rot[0])
+            j['rotation'] = {'angle': ang + 0.0, 'axis': ax, 'origin': [r4(c) for c in org]}
         j['faces'] = fdict
         els.append(j)
     model = {
@@ -1420,9 +1847,6 @@ def build_model(g, tex_ref, display):
         'display': display,
     }
     return model, img, dens, len(faces)
-
-
-ADS_YAW = {'ak47': 90, 'm4a1s': 90, 'remmington': -90, 'makarov': 90}
 
 
 def _R(ax, deg):
@@ -1441,8 +1865,10 @@ def ads_display(g, disp):
     d = json.loads(json.dumps(disp))
     lh = d.get('firstperson_lefthand', {})
     S = np.array(lh.get('scale', d.get('firstperson_righthand', {}).get('scale', [1, 1, 1])), float)
+    if 'scale' in g.ads:          # absolute ADS scale (new guns; QA's off-hand scales are often squashed)
+        S = np.array(g.ads['scale'], float)
     S = S * g.ads.get('sf', 1.0) * np.array(g.ads.get('sxyz', (1.0, 1.0, 1.0)), float)
-    yaw_json = ADS_YAW[g.name]
+    yaw_json = g.ads_yaw()
     to = lambda uv: g.to_mc(np.array([[0, uv[1], uv[0]]]))[0]
     C, F = to(g.ads['cam']), to(g.ads['front'])
     R0 = _R('y', -yaw_json)
@@ -1466,7 +1892,8 @@ def ads_display(g, disp):
     return d, pf
 
 
-BUILDERS = {'ak47': build_ak, 'm4a1s': build_m4, 'remmington': build_870, 'makarov': build_pm}
+BUILDERS = {'ak47': build_ak, 'm4a1s': build_m4, 'remmington': build_870, 'makarov': build_pm,
+            'awp': build_awp, 'mac10': build_mac10, 'm16': build_m16, 'sks': build_sks}
 
 if __name__ == '__main__':
     import sys
