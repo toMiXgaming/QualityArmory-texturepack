@@ -415,6 +415,7 @@ FONT = {
     'F': ['111', '100', '110', '100', '100'], 'U': ['101', '101', '101', '101', '111'],
     'T': ['111', '010', '010', '010', '010'], 'R': ['110', '101', '110', '101', '101'],
     'P': ['110', '101', '110', '100', '100'], 'I': ['111', '010', '010', '010', '111'],
+    '9': ['111', '101', '111', '001', '110'],
 }
 
 
@@ -818,6 +819,93 @@ def build_870():
     return g
 
 
+def build_pm():
+    L = 7.8
+    g = Gun('makarov', dict(s=1, k=3.8125 / L, kw=3.8125 / L * 1.25, Xm=4.5625, Yb=5.4, Zc=4.5))
+    g.density = 9.0        # small gun: finer texels so sights and markings stay readable
+    B, C = g.b, g.cyl
+    # --- slide (rounded top, tapered nose)
+    B('slide', (0.1, 7.45), (-0.55, 0.55), 0.62, 'blued')
+    B('slide_top', (0.15, 7.4), (0.55, 0.78), 0.47, 'blued')
+    B('slide_nose', (0.0, 0.1), (-0.45, 0.68), 0.52, 'blued')
+    B('fs_post', (0.3, 0.8), (0.78, 1.1), 0.08, 'blued')
+    B('rs_base', (6.55, 7.25), (0.78, 0.92), 0.42, 'blued')
+    B('rs_l', (6.85, 7.2), (0.92, 1.1), (-0.42, -0.11), 'blued')
+    B('rs_r', (6.85, 7.2), (0.92, 1.1), (0.11, 0.42), 'blued')
+    # slide-mounted safety / decocker (left side)
+    B('safety', (6.25, 7.05), (0.08, 0.36), (-0.72, -0.62), 'parts')
+    B('safety_tab', (6.05, 6.35), (0.0, 0.5), (-0.76, -0.62), 'parts')
+    # --- hammer (round spur)
+    B('hammer', (7.45, 7.7), (-0.4, 0.45), 0.2, 'steel')
+    B('hammer_spur', (7.55, 7.8), (0.25, 0.74), 0.19, 'steel')
+    # --- frame
+    B('frame', (1.0, 7.45), (-1.3, -0.55), 0.56, 'blued')
+    B('frame_nose', (0.82, 1.0), (-1.2, -0.65), 0.46, 'blued')
+    B('slide_stop', (3.9, 5.3), (-0.9, -0.6), (-0.64, -0.56), 'parts')
+    # --- trigger guard + trigger
+    B('tg_front', (1.75, 2.05), (-2.3, -1.3), 0.2, 'blued')
+    B('tg_corner', (1.9, 2.3), (-2.55, -2.2), 0.2, 'blued')
+    B('tg_bottom', (2.2, 4.7), (-2.6, -2.32), 0.2, 'blued')
+    B('trigger', (3.05, 3.3), (-2.1, -1.3), 0.11, 'parts', rot=(-22.5, (3.18, -1.3)))
+    # --- grip: metal front strap + one-piece wraparound bakelite panel, slight rake
+    for i, sh in enumerate((0.0, 0.07, 0.14, 0.21)):
+        v0 = -1.3 - 0.95 * i
+        B('fstrap_%d' % i, (4.6 + sh, 4.9 + sh), (v0 - 0.95, v0), 0.5, 'blued')
+        B('grip_%d' % i, (4.88 + sh, 7.4 + sh), (max(v0 - 0.95, -5.08), min(v0, -1.42)), 0.68, 'bakelite')
+    B('grip_core', (4.7, 7.3), (-5.0, -1.3), 0.5, 'blued')
+    B('mag_floor', (4.85, 7.6), (-5.28, -5.0), 0.6, 'magsteel')
+    B('mag_latch', (7.6, 7.8), (-5.22, -4.72), 0.3, 'parts')
+    B('lanyard', (7.15, 7.55), (-5.0, -4.6), (-0.86, -0.68), 'parts')
+
+    D = g.dec
+    # muzzle: bore + recoil spring guide face
+    D(oval('F', 0, 0.0, 0.2, 0.2, els=['slide_nose'], col=(8, 8, 9)))
+    D(stripes('F', 'b', 99, 0.08, b=(-0.45, -0.3), els=['slide_nose'], mul=0.7))
+    # rear slide serrations (both sides)
+    D(stripes('RL', 'a', 0.22, 0.09, a=(5.7, 6.6), b=(-0.45, 0.5), els=['slide'], mul=0.5))
+    # ejection port w/ barrel hood visible
+    def barrel_inner(ctx, m, A, Bv):
+        mm = m & (Bv < 0.4)
+        ctx.col[mm] = np.array([92, 94, 98], float) * (0.9 + 0.2 * white(ctx.G[mm], 5, 4.0)[:, None])
+    D(recess('R', (3.3, 4.9), (-0.1, 0.55), els=['slide', 'slide_top'], inner=barrel_inner))
+    # sights: white dot-free blade, notch shading
+    D(stripes('RL', 'b', 0.18, 0.06, els=['fs_post'], mul=0.75))
+    D(stripes('K', 'a', 99, 0.2, a=(-0.12, 0.12), els=['rs_base'], mul=0.4))
+    # safety markings (red dot = fire), markings on left of slide
+    D(paint('L', (6.0, 6.2), (-0.35, -0.18), (200, 40, 30), els=['slide']))
+    D(paint('L', (6.0, 6.2), (0.6, 0.72), (220, 220, 214), els=['slide_top']))
+    D(text('L', 'AXON', 1.5, 0.3, els=['slide'], col=(170, 172, 176)))
+    # hammer spur hole + serrations
+    D(oval('RL', 7.68, 0.55, 0.08, 0.08, els=['hammer_spur']))
+    D(stripes('K', 'b', 0.14, 0.06, els=['hammer_spur'], mul=0.6))
+    # frame pins
+    for (a, b) in ((2.6, -0.95), (4.2, -1.05), (6.8, -0.9)):
+        D(rivet('RL', a, b, 0.11, els=['frame']))
+    D(stripes('L', 'a', 0.2, 0.08, a=(3.95, 4.3), els=['slide_stop'], mul=0.6))
+    # grip: checkering, star-in-circle medallion, screw
+    D(hatch('RL', els=['grip_*'], period=0.3, mul=0.78, b=(-4.8, -2.6)))
+    D(stripes('K', 'b', 0.3, 0.12, els=['grip_*'], mul=0.75))
+
+    def medallion(ctx):
+        if ctx.side not in 'RL' or ctx.el.name != 'grip_0':
+            return
+        A, Bv = ab(ctx)
+        d = np.sqrt((A - 6.1) ** 2 + (Bv + 1.84) ** 2)
+        disc = d < 0.3
+        ctx.col[disc] = ctx.col[disc] * 0.75 + np.array([150, 74, 42], float) * 0.25
+        ctx.col[(d > 0.22) & (d < 0.32)] *= 0.5
+        ctx.col[d < 0.09] *= 0.55
+    D(custom(medallion))
+    D(rivet('RL', 6.1, -3.6, 0.1, els=['grip_*'], cols=((140, 140, 144), (30, 14, 8))))
+    D(stripes('RL', 'a', 0.25, 0.1, els=['mag_floor'], mul=0.7))
+
+    g.sight = dict(rear=(7.0, 1.1), front=(0.55, 1.1))
+    # same idea as the AK: eye just behind the rear notch, 2.5deg cant, post on the crosshair
+    g.ads = dict(cam=(13.0, 1.1), front=(0.55, 1.1), roll=2.5, sxyz=(1.0, 1.0, 1.1))
+    g.grip = (6.0, -3.0)
+    return g
+
+
 # ------------------------------------------------------------------ pipeline
 class Ctx:
     pass
@@ -967,7 +1055,7 @@ def r4(x):
 def build_model(g, tex_ref, display):
     faces = face_list(g)
     global CUR_DENS
-    dens = DENSITY
+    dens = getattr(g, 'density', DENSITY)
     while not pack(faces, dens):
         dens -= 0.125
     CUR_DENS = dens
@@ -1009,7 +1097,7 @@ def build_model(g, tex_ref, display):
     return model, img, dens, len(faces)
 
 
-ADS_YAW = {'ak47': 90, 'm4a1s': 90, 'remmington': -90}
+ADS_YAW = {'ak47': 90, 'm4a1s': 90, 'remmington': -90, 'makarov': 90}
 
 
 def _R(ax, deg):
@@ -1053,7 +1141,7 @@ def ads_display(g, disp):
     return d, pf
 
 
-BUILDERS = {'ak47': build_ak, 'm4a1s': build_m4, 'remmington': build_870}
+BUILDERS = {'ak47': build_ak, 'm4a1s': build_m4, 'remmington': build_870, 'makarov': build_pm}
 
 if __name__ == '__main__':
     import sys
