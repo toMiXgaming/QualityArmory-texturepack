@@ -13,6 +13,7 @@ uniform sampler2D Sampler2;
 uniform mat4 ModelViewMat;
 uniform mat4 ProjMat;
 uniform int FogShape;
+uniform float GameTime;
 
 out float vertexDistance;
 out vec4 vertexColor;
@@ -20,7 +21,6 @@ out vec2 texCoord0;
 flat out int axonMap;
 flat out int axonTile;
 flat out vec2 axonCursor;
-flat out int axonPanel;
 
 // AxonMap: ekran mapy na cały ekran. Musi się zgadzać z pluginem (OverlayLayout).
 #define AXON_COLS 5
@@ -29,11 +29,6 @@ flat out int axonPanel;
 // Plugin ustawia graczowi yaw 0 i pitch 0 przy otwarciu mapy (OverlayLayout.CURSOR_*).
 #define AXON_YAW_RANGE 180.0
 #define AXON_PITCH_RANGE 100.0
-// Panel zasłaniający hotbar i serduszka: tytuł ze znakiem z czcionki axonmap:panel w tym kolorze
-// (OverlayLayout.PANEL_COLOR). Cień tekstu ma ten kolor razy 0.25. Rozmiar w pikselach GUI.
-#define AXON_PANEL_COLOR vec3(164.0, 92.0, 24.0)
-#define AXON_PANEL_WIDTH 190.0
-#define AXON_PANEL_HEIGHT 54.0
 
 // Znacznik: w pierwszym wierszu mapy piksele 0-7 to na przemian biały (A) i czarny (B),
 // w pikselach 8-23 liczba białych pikseli to numer kafelka, a w ostatnim wierszu
@@ -66,13 +61,38 @@ int axonTileIndex() {
     return index < AXON_COLS * AXON_ROWS ? index : -1;
 }
 
-bool axonIsPanel() {
-    // GUI ma rzut ortogonalny (ProjMat[2][3] == 0), świat perspektywiczny (-1).
-    if (ProjMat[2][3] != 0.0) {
-        return false;
-    }
+// AxonMap: przy otwartej mapie plugin ustawia graczowi czas gry, którego reszta z 24000 jest
+// w [AXON_HUD_TIME, AXON_HUD_TIME + AXON_HUD_WINDOW) (OverlayLayout.HUD_TIME). Wtedy GUI chowa
+// hotbar, serduszka, pasek doświadczenia i celownik.
+#define AXON_HUD_TIME 12000.0
+#define AXON_HUD_WINDOW 60.0
+
+bool axonMapOpen(float gameTime) {
+    float t = gameTime * 24000.0;
+    return t >= AXON_HUD_TIME && t < AXON_HUD_TIME + AXON_HUD_WINDOW;
+}
+
+// Pozycja w pikselach GUI (0,0 w lewym górnym rogu) i rozmiar GUI, z rzutu ortogonalnego.
+vec2 axonGuiSize(mat4 proj) {
+    return vec2(2.0 / proj[0][0], -2.0 / proj[1][1]);
+}
+
+vec2 axonGuiPos(vec4 clip, mat4 proj) {
+    return vec2(clip.x + 1.0, 1.0 - clip.y) * 0.5 * axonGuiSize(proj);
+}
+
+// Hotbar ze wszystkim nad nim (serduszka, głód, pancerz, doświadczenie) i celownik na środku.
+bool axonInHud(vec2 pos, vec2 size, float hudHeight) {
+    vec2 center = size * 0.5;
+    bool hotbar = abs(pos.x - center.x) <= 92.0 && pos.y >= size.y - hudHeight;
+    bool crosshair = abs(pos.x - center.x) <= 8.0 && abs(pos.y - center.y) <= 8.0;
+    return hotbar || crosshair;
+}
+
+// Poziom doświadczenia nad hotbarem: zielony napis z czarną obwódką.
+bool axonIsXpText() {
     vec3 c = floor(Color.rgb * 255.0 + 0.5);
-    return c == AXON_PANEL_COLOR || c == floor(AXON_PANEL_COLOR * 0.25);
+    return c == vec3(128.0, 255.0, 32.0) || c == vec3(0.0);
 }
 
 void main() {
@@ -84,19 +104,10 @@ void main() {
     axonMap = 0;
     axonTile = 0;
     axonCursor = vec2(-1.0);
-    axonPanel = 0;
 
-    if (axonIsPanel()) {
-        // Wierzchołki znaku: 0 lewy górny, 1 lewy dolny, 2 prawy dolny, 3 prawy górny.
-        int corner = gl_VertexID % 4;
-        vec2 local = vec2(corner >= 2 ? 1.0 : 0.0, (corner == 1 || corner == 2) ? 1.0 : 0.0);
-        float guiWidth = 2.0 / ProjMat[0][0];
-        float guiHeight = -2.0 / ProjMat[1][1];
-        float halfWidth = AXON_PANEL_WIDTH / guiWidth;
-        float top = -1.0 + 2.0 * AXON_PANEL_HEIGHT / guiHeight;
-        gl_Position = vec4(mix(-halfWidth, halfWidth, local.x), mix(top, -1.0, local.y), gl_Position.z, 1.0);
-        texCoord0 = local;
-        axonPanel = 1;
+    if (ProjMat[2][3] == 0.0 && axonMapOpen(GameTime) && axonIsXpText()
+            && axonInHud(axonGuiPos(gl_Position, ProjMat), axonGuiSize(ProjMat), 40.0)) {
+        gl_Position = vec4(-10.0, -10.0, -10.0, 1.0);
         return;
     }
 
