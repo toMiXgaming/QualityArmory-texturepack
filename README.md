@@ -1,6 +1,6 @@
 # QualityArmory texturepack (AXON)
 
-Paczka zasobów do QualityArmory na Paper 1.21.4. To kopia domyślnej paczki `QualityArmory-21.zip` (QualityGuns 2.1.9) z autorskimi, szczegółowymi modelami czterech broni. Reszta broni, dźwięki i numery modeli są bez zmian.
+Paczka zasobów do QualityArmory na Paper 1.21.4. To kopia domyślnej paczki `QualityArmory-21.zip` (QualityGuns 2.1.9) z autorskimi, szczegółowymi modelami broni. Reszta broni, dźwięki i numery modeli są bez zmian.
 
 | Broń | Przedmiot | custom_model_data | Model w paczce |
 |---|---|---|---|
@@ -8,10 +8,14 @@ Paczka zasobów do QualityArmory na Paper 1.21.4. To kopia domyślnej paczki `Qu
 | Remington 870 | crossbow | 7 | `qualityarmory:gun/remmington` |
 | M4A1-S | crossbow | 25 | `qualityarmory:gun/m4a1s` |
 | Makarov PM | crossbow | 53 | `qualityarmory:gun/makarov` |
+| AWP | crossbow | 20 | `qualityarmory:gun/awp` |
+| MAC-10 | crossbow | 48 | `qualityarmory:gun/mac10` |
+| M16A2 | crossbow | 6 | `qualityarmory:gun/m16` |
+| SKS-45 | crossbow | 51 | `qualityarmory:gun/sks` |
 
 Zmienione pliki względem oryginału:
-- `assets/qualityarmory/models/gun/{ak47,m4a1s,remmington,makarov}.json` – nowe modele (AK 75 elementów, M4 76, Remington 56, Makarov 30).
-- `assets/qualityarmory/textures/axon/{ak47,m4a1s,remmington,makarov}.png` – tekstury 128×128 (Makarov ma gęstsze teksele, bo jest mały).
+- `assets/qualityarmory/models/gun/<broń>.json` – nowe modele (AK 75 elementów, M4 76, Remington 56, Makarov 30, AWP 119, MAC-10 35, M16 63, SKS 59).
+- `assets/qualityarmory/textures/axon/<broń>.png` – tekstury 128×128 (małe bronie mają gęstsze teksele).
 - `assets/minecraft/atlases/blocks.json` – dodane źródło `axon/` (bez tego tekstury byłyby fioletowo-czarne).
 - `pack.mcmeta` – opis zaczyna się od „AXON”, żeby w grze było widać, która paczka jest wczytana.
 
@@ -78,6 +82,9 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 - AK47 i M4A1-S: oko tuż za tylnym celownikiem, broń przechylona o 2,5°, muszka na krzyżyku. M4 ma cienki, otwarty przeziernik.
 - Makarov PM: tak samo, oko kilka jednostek za szczerbinką, przechył 2,5°, muszka w szczerbince na krzyżyku. Oryginalny model QA nie ma pozycji `head`, więc nowy też jej nie ma.
 - Remington: bez prawdziwego celowania (właściciel serwera tak zostawił).
+- M16A2 i MAC-10: oko za otwartym przeziernikiem (jak M4), przechył 2,5°. SKS: oko za szczerbinką, przechył 2,5°.
+- AWP: celowanie przez lunetę. Luneta jest pustą rurą z krzyżem w środku, a przy celowaniu broń jest skrócona wzdłuż (skala 0,3) i poszerzona (2,2), żeby przez rurę było widać świat z krzyżem na środku ekranu (QA też skraca AWP przy celowaniu).
+- AWP, MAC-10 i SKS leżą w modelach QA wzdłuż osi Z, nie X; `gen.py` obsługuje to przez `ax='z'` w ramce broni.
 
 ## Historia
 
@@ -88,8 +95,9 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 4. Makarov PM (custom_model_data 53): nowy model z suwadłem, bezpiecznikiem po lewej, kurkiem, osłoną spustu i okładziną z bakelitu; celowanie zza szczerbinki.
 
 5. Skiny premium: po 7 do AK47 (101–107), M4A1-S (111–117), Remingtona (121–127) i Makarova (131–137).
+6. AWP (zielona kolba z otworem na kciuk, złożony bipod, luneta z krzyżem), MAC-10 (złożona kolba drutowa, nasada kurkowa na górze), M16A2 (rączka z przeziernikiem A2, okrągłe łoże z żeberkami), SKS-45 (złożony bagnet pod lufą, stały magazynek, drewniana kolba z opadem).
 
-Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
+Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3, Makarova i broni z punktu 6 (zwłaszcza widok przez lunetę AWP).
 
 ## Katalogi
 
