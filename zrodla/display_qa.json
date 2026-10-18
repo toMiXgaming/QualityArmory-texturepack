@@ -1,0 +1,371 @@
+{
+ "ak47": {
+  "thirdperson_righthand": {
+   "rotation": [
+    90,
+    -90,
+    90
+   ],
+   "translation": [
+    -6.75,
+    -5.25,
+    -8
+   ],
+   "scale": [
+    1.4,
+    1.4,
+    1.4
+   ]
+  },
+  "thirdperson_lefthand": {
+   "rotation": [
+    -113,
+    85,
+    115
+   ],
+   "translation": [
+    -7,
+    -3.5,
+    -4.5
+   ],
+   "scale": [
+    1.4,
+    1.4,
+    1.4
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    0,
+    -95,
+    0
+   ],
+   "translation": [
+    -5.67,
+    0.38,
+    0.94
+   ],
+   "scale": [
+    0.85,
+    1.07,
+    0.82
+   ]
+  },
+  "firstperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    0
+   ],
+   "translation": [
+    -6,
+    1.5,
+    7
+   ],
+   "scale": [
+    0.85,
+    1.07,
+    0.82
+   ]
+  },
+  "ground": {
+   "rotation": [
+    0,
+    -7,
+    -41
+   ],
+   "translation": [
+    -1.89,
+    -3.02,
+    2.27
+   ]
+  },
+  "gui": {
+   "rotation": [
+    -27,
+    133,
+    3
+   ],
+   "translation": [
+    3.4,
+    -3.21,
+    0
+   ]
+  },
+  "head": {
+   "rotation": [
+    -7,
+    6,
+    -51
+   ],
+   "translation": [
+    -8.13,
+    -14.36,
+    12.85
+   ],
+   "scale": [
+    2,
+    2,
+    2
+   ]
+  },
+  "fixed": {
+   "rotation": [
+    0,
+    0,
+    -34
+   ],
+   "translation": [
+    -3.4,
+    -0.9,
+    2.8
+   ]
+  }
+ },
+ "m4a1s": {
+  "thirdperson_righthand": {
+   "rotation": [
+    -3,
+    -91,
+    -4
+   ],
+   "translation": [
+    -7.18,
+    -0.57,
+    -0.19
+   ],
+   "scale": [
+    1.45,
+    1.2,
+    1.2
+   ]
+  },
+  "thirdperson_lefthand": {
+   "rotation": [
+    -3,
+    89,
+    10
+   ],
+   "translation": [
+    -4.5,
+    0,
+    -1.13
+   ],
+   "scale": [
+    1.45,
+    1.2,
+    1.2
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    0,
+    -98,
+    0
+   ],
+   "translation": [
+    -8.13,
+    2.46,
+    3.4
+   ]
+  },
+  "firstperson_lefthand": {
+   "rotation": [
+    0,
+    90,
+    -1
+   ],
+   "translation": [
+    -3.5,
+    3.83,
+    4.8687
+   ]
+  },
+  "ground": {
+   "rotation": [
+    0,
+    0,
+    -38
+   ],
+   "translation": [
+    -0.38,
+    -3.02,
+    4.72
+   ]
+  },
+  "gui": {
+   "rotation": [
+    14,
+    143,
+    -35
+   ],
+   "translation": [
+    2.27,
+    -0.57,
+    -0.19
+   ],
+   "scale": [
+    1.26,
+    1.01,
+    0.88
+   ]
+  },
+  "head": {
+   "rotation": [
+    1,
+    -177,
+    -47
+   ],
+   "translation": [
+    0.38,
+    -16.63,
+    -7.94
+   ],
+   "scale": [
+    2,
+    2,
+    2
+   ]
+  },
+  "fixed": {
+   "rotation": [
+    0,
+    -1,
+    -48
+   ],
+   "translation": [
+    0,
+    -2.25,
+    4.7
+   ]
+  }
+ },
+ "remmington": {
+  "thirdperson_righthand": {
+   "rotation": [
+    -34,
+    86,
+    31
+   ],
+   "translation": [
+    5.29,
+    -3.4,
+    -5.48
+   ],
+   "scale": [
+    1.17,
+    1.51,
+    1.57
+   ]
+  },
+  "thirdperson_lefthand": {
+   "rotation": [
+    28,
+    -78,
+    31
+   ],
+   "translation": [
+    -8.623,
+    -3.399,
+    -2.697
+   ],
+   "scale": [
+    1.17,
+    1.51,
+    1.57
+   ]
+  },
+  "firstperson_righthand": {
+   "rotation": [
+    0,
+    87,
+    -4
+   ],
+   "translation": [
+    -1.7,
+    2.27,
+    2.27
+   ],
+   "scale": [
+    1.0347,
+    0.9651,
+    1.0347
+   ]
+  },
+  "firstperson_lefthand": {
+   "rotation": [
+    0,
+    -103,
+    3
+   ],
+   "translation": [
+    -7.56,
+    2.27,
+    1.13
+   ]
+  },
+  "gui": {
+   "rotation": [
+    -20,
+    -29,
+    22
+   ],
+   "translation": [
+    0.4516,
+    1.13,
+    0
+   ],
+   "scale": [
+    0.7913,
+    1.1273,
+    0.8755
+   ]
+  },
+  "head": {
+   "rotation": [
+    0,
+    -1,
+    45
+   ],
+   "translation": [
+    6.43,
+    -14.36,
+    11.15
+   ],
+   "scale": [
+    2,
+    2,
+    2
+   ]
+  },
+  "ground": {
+   "rotation": [
+    18,
+    -37,
+    18
+   ],
+   "translation": [
+    0.76,
+    -0.57,
+    4.91
+   ]
+  },
+  "fixed": {
+   "rotation": [
+    0,
+    -180,
+    40
+   ],
+   "translation": [
+    -2.65,
+    -0.19,
+    -4.72
+   ],
+   "scale": [
+    1.23,
+    1.2,
+    1.13
+   ]
+  }
+ }
+}
