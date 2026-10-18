@@ -9,8 +9,8 @@ from render import *
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 QA = '/tmp/qa/pack'
-S_OF = {'ak47': 1, 'm4a1s': 1, 'remmington': -1}
-TITLE = {'ak47': 'AK-47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington 870'}
+S_OF = {'ak47': 1, 'm4a1s': 1, 'remmington': -1, 'makarov': 1}
+TITLE = {'ak47': 'AK-47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington 870', 'makarov': 'Makarov PM'}
 SKY = ((126, 168, 214), (196, 214, 226))
 
 
@@ -134,7 +134,7 @@ def compare(name):
 
 
 if __name__ == '__main__':
-    names = sys.argv[1:] or ['ak47', 'm4a1s', 'remmington']
+    names = sys.argv[1:] or ['ak47', 'm4a1s', 'remmington', 'makarov']
     os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
     for n in names:
         sheet(n).save(os.path.join(HERE, 'out', n + '-podglad.png'))

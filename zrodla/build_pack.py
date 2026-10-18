@@ -9,8 +9,9 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = sys.argv[1] if len(sys.argv) > 1 else '/tmp/qa/QA21.zip'
 DST = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, 'QualityArmory-21-axon.zip')
-GUNS = ['ak47', 'm4a1s', 'remmington']
+GUNS = ['ak47', 'm4a1s', 'remmington', 'makarov']
 ATLAS = 'assets/minecraft/atlases/blocks.json'
+NO_HEAD = {'makarov'}   # QA's own model has no head transform either
 
 
 def validate(model, tex_png, name):
@@ -39,6 +40,8 @@ def validate(model, tex_png, name):
                 errs.append('%s.%s uv out of range' % (e['name'], fn))
     for k in ('thirdperson_righthand', 'thirdperson_lefthand', 'firstperson_righthand',
               'firstperson_lefthand', 'gui', 'ground', 'fixed', 'head'):
+        if k == 'head' and name in NO_HEAD:
+            continue
         d = m['display'].get(k)
         if d is None:
             errs.append('missing display ' + k)
