@@ -58,6 +58,10 @@ Model w paczce to `qualityarmory:gun/<name>`. Na serwerze skin to „attachment�
 
 Paczka zawiera też shadery `assets/minecraft/shaders/core/rendertype_text` i `position_tex_color` z pluginu [AxonMap](https://github.com/toMiXgaming/AXONMAP). Rysuje on mapę świata na cały ekran po wpisaniu `/mapa`. Shader rozpoznaje tylko mapy pluginu (po znaczniku w pierwszym wierszu), więc zwykłe napisy, tabliczki i mapy działają jak wcześniej. Przy otwartej mapie chowają też hotbar, serduszka i celownik. Źródła są w `zrodla/shadery/`, a `build_pack.py` dodaje je do zipa.
 
+## Zrzut (AXON-Structure)
+
+Model skrzyni zrzutu: oliwkowa skrzynia z okuciami, pasem ostrzegawczym, złożonym spadochronem na wieku i świecącą czerwoną lampą. Przedmiot `axon:zrzut` (komponent `item_model`, dowolny materiał), model `axon:block/zrzut`, tekstura `axon:item/zrzut` (64×64). Plugin AXON-Structure stawia w strukturze beczkę jako prawdziwy pojemnik i nad nią wyświetlacz przedmiotu z tym modelem; model jest odrobinę większy od bloku, więc beczki nie widać. Generator: `zrodla/gen_zrzut.py`, podgląd: `podglady/zrzut.png`.
+
 ## Wgranie na serwer
 
 Repo musi być **publiczne**, inaczej gracze nie pobiorą paczki. W `plugins/QualityArmory/config.yml`:
@@ -99,4 +103,4 @@ Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
 - `zrodla/` – generator (`gen.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
-Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.

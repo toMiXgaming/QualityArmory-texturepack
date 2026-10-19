@@ -85,6 +85,11 @@ def main():
     shaders = os.path.join(HERE, 'shadery')   # AxonMap: full screen map shader (rendertype_text)
     for fn in sorted(os.listdir(shaders)):
         repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
+    # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut
+    for src, dst in (('zrzut.json', 'assets/axon/models/block/zrzut.json'),
+                     ('zrzut.png', 'assets/axon/textures/item/zrzut.png'),
+                     ('zrzut_item.json', 'assets/axon/items/zrzut.json')):
+        repl[dst] = open(os.path.join(HERE, 'build', src), 'rb').read()
     mc = os.path.join(HERE, 'pack.mcmeta')   # owner-edited description, carried over
     if os.path.exists(mc):
         repl['pack.mcmeta'] = open(mc, 'rb').read()
