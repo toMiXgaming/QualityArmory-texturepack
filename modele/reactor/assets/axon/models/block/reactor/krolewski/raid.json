@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/krolewski/shell",
+ "textures": {
+  "core": "axon:block/reactor/krolewski/core_raid",
+  "top": "axon:block/reactor/krolewski/top_raid",
+  "glow": "axon:block/reactor/krolewski/glow_raid"
+ }
+}

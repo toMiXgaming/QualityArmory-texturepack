@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/lodowy/shell",
+ "textures": {
+  "core": "axon:block/reactor/lodowy/core_off",
+  "top": "axon:block/reactor/lodowy/top_off",
+  "glow": "axon:block/reactor/lodowy/glow_off"
+ }
+}

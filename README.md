@@ -58,6 +58,26 @@ Model w paczce to `qualityarmory:gun/<name>`. Na serwerze skin to „attachment�
 
 Paczka zawiera też shadery `assets/minecraft/shaders/core/rendertype_text` i `position_tex_color` z pluginu [AxonMap](https://github.com/toMiXgaming/AXONMAP). Rysuje on mapę świata na cały ekran po wpisaniu `/mapa`. Shader rozpoznaje tylko mapy pluginu (po znaczniku w pierwszym wierszu), więc zwykłe napisy, tabliczki i mapy działają jak wcześniej. Przy otwartej mapie chowają też hotbar, serduszka i celownik. Źródła są w `zrodla/shadery/`, a `build_pack.py` dodaje je do zipa.
 
+## Reaktor działki (AxonPlot)
+
+Rdzeń działki z [AxonPlot](https://github.com/toMiXgaming/AXONPLOT) wygląda jak reaktor. Plugin stawia na bloku rdzenia ItemDisplay z przedmiotem `crying_obsidian` i `custom_model_data`, a `assets/minecraft/items/crying_obsidian.json` wybiera po tej liczbie model z `assets/axon/`. Zwykły crying obsidian (bez liczby) wygląda jak w vanilli.
+
+Numer modelu to `7100 + 20 × skin + stan`, gdzie stan to 1 zasilony, 2 mało paliwa (przygaszony żółty, migocze), 3 wygaszony, 4 atak (czerwony, szybki puls). Kryształ nad reaktorem ma numer o 10 większy (wygaszony reaktor go nie ma).
+
+| Skin | Obudowa | Kryształ | Zasilony świeci |
+|---|---|---|---|
+| 0 Standard | 7101–7104 | 7111–7114 | zielono |
+| 1 Kwantowy | 7121–7124 | 7131–7134 | błękitnie |
+| 2 Pustka | 7141–7144 | 7151–7154 | fioletowo |
+| 3 Piekielny | 7161–7164 | 7171–7174 | turkusowo (ogień dusz) |
+| 4 Królewski | 7181–7184 | 7191–7194 | różowo |
+| 5 Miedziany | 7201–7204 | 7211–7214 | limonkowo (iskry w cewkach) |
+| 6 Lodowy | 7221–7224 | 7231–7234 | mroźną bielą |
+
+![Skiny reaktora](podglady/reaktor-skiny.png)
+
+Obudowa ma wgłębienia, więc plugin pokazuje ją w skali 1,2 (inaczej prawdziwy blok przebijałby przez okna). Energia w oknach, emiter na górze i kryształ są animowanymi teksturami (`.png.mcmeta`). Generator: `zrodla/gen_reactor.py`, podglądy i miniatury do menu w pluginie (`out/miniatury/`, kopiowane do `AXONPLOT/src/main/resources/reactor/`): `zrodla/preview_reactor.py`, dopisanie do gotowego zipa bez pełnej przebudowy: `zrodla/dodaj_reaktor.py` (pełna przebudowa `build_pack.py` też dodaje reaktor). Gotowe pliki są w `modele/reactor/`, podglądy w `podglady/reaktor-*`.
+
 ## Zrzut (AXON-Structure)
 
 Model skrzyni zrzutu: oliwkowa skrzynia z okuciami, pasem ostrzegawczym, złożonym spadochronem na wieku i świecącą czerwoną lampą. Przedmiot `axon:zrzut` (komponent `item_model`, dowolny materiał), model `axon:block/zrzut`, tekstura `axon:item/zrzut` (64×64). Plugin AXON-Structure stawia w strukturze beczkę jako prawdziwy pojemnik i nad nią wyświetlacz przedmiotu z tym modelem; model jest odrobinę większy od bloku, więc beczki nie widać. Generator: `zrodla/gen_zrzut.py`, podgląd: `podglady/zrzut.png`.
@@ -110,6 +130,6 @@ Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 - `modele/` – wygenerowane modele i tekstury (to samo co w zipie).
 - `podglady/` – podglądy i porównania ze starymi modelami (`<broń>-skiny.png` – skiny danej broni).
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
-- `zrodla/` – generator (`gen.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
+- `zrodla/` – generator broni (`gen.py`) i reaktora (`gen_reactor.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
 Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.

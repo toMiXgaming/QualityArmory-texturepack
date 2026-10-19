@@ -85,6 +85,8 @@ def main():
     shaders = os.path.join(HERE, 'shadery')   # AxonMap: full screen map shader (rendertype_text)
     for fn in sorted(os.listdir(shaders)):
         repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
+    from dodaj_reaktor import reactor_files   # reaktor AxonPlot (gen_reactor.py)
+    repl.update(reactor_files())
     # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut
     # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko) i meble z gen_meble.py
     from gen_meble import MEBLE

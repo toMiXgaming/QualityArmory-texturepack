@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/pustka/shell",
+ "textures": {
+  "core": "axon:block/reactor/pustka/core_raid",
+  "top": "axon:block/reactor/pustka/top_raid",
+  "glow": "axon:block/reactor/pustka/glow_raid"
+ }
+}

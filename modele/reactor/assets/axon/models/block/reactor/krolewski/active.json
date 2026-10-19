@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/krolewski/shell",
+ "textures": {
+  "core": "axon:block/reactor/krolewski/core_active",
+  "top": "axon:block/reactor/krolewski/top_active",
+  "glow": "axon:block/reactor/krolewski/glow_active"
+ }
+}

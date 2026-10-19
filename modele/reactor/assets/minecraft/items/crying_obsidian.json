@@ -1,0 +1,356 @@
+{
+ "model": {
+  "type": "minecraft:range_dispatch",
+  "property": "minecraft:custom_model_data",
+  "index": 0,
+  "entries": [
+   {
+    "threshold": 7101,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/standard/active"
+    }
+   },
+   {
+    "threshold": 7102,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/standard/low"
+    }
+   },
+   {
+    "threshold": 7103,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/standard/off"
+    }
+   },
+   {
+    "threshold": 7104,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/standard/raid"
+    }
+   },
+   {
+    "threshold": 7111,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/standard/crystal_active"
+    }
+   },
+   {
+    "threshold": 7112,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/standard/crystal_low"
+    }
+   },
+   {
+    "threshold": 7114,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/standard/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7121,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/kwantowy/active"
+    }
+   },
+   {
+    "threshold": 7122,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/kwantowy/low"
+    }
+   },
+   {
+    "threshold": 7123,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/kwantowy/off"
+    }
+   },
+   {
+    "threshold": 7124,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/kwantowy/raid"
+    }
+   },
+   {
+    "threshold": 7131,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/kwantowy/crystal_active"
+    }
+   },
+   {
+    "threshold": 7132,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/kwantowy/crystal_low"
+    }
+   },
+   {
+    "threshold": 7134,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/kwantowy/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7141,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pustka/active"
+    }
+   },
+   {
+    "threshold": 7142,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pustka/low"
+    }
+   },
+   {
+    "threshold": 7143,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pustka/off"
+    }
+   },
+   {
+    "threshold": 7144,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pustka/raid"
+    }
+   },
+   {
+    "threshold": 7151,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pustka/crystal_active"
+    }
+   },
+   {
+    "threshold": 7152,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pustka/crystal_low"
+    }
+   },
+   {
+    "threshold": 7154,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pustka/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7161,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/piekielny/active"
+    }
+   },
+   {
+    "threshold": 7162,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/piekielny/low"
+    }
+   },
+   {
+    "threshold": 7163,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/piekielny/off"
+    }
+   },
+   {
+    "threshold": 7164,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/piekielny/raid"
+    }
+   },
+   {
+    "threshold": 7171,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/piekielny/crystal_active"
+    }
+   },
+   {
+    "threshold": 7172,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/piekielny/crystal_low"
+    }
+   },
+   {
+    "threshold": 7174,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/piekielny/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7181,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/krolewski/active"
+    }
+   },
+   {
+    "threshold": 7182,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/krolewski/low"
+    }
+   },
+   {
+    "threshold": 7183,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/krolewski/off"
+    }
+   },
+   {
+    "threshold": 7184,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/krolewski/raid"
+    }
+   },
+   {
+    "threshold": 7191,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/krolewski/crystal_active"
+    }
+   },
+   {
+    "threshold": 7192,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/krolewski/crystal_low"
+    }
+   },
+   {
+    "threshold": 7194,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/krolewski/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7201,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/active"
+    }
+   },
+   {
+    "threshold": 7202,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/low"
+    }
+   },
+   {
+    "threshold": 7203,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/off"
+    }
+   },
+   {
+    "threshold": 7204,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/raid"
+    }
+   },
+   {
+    "threshold": 7211,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/crystal_active"
+    }
+   },
+   {
+    "threshold": 7212,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/crystal_low"
+    }
+   },
+   {
+    "threshold": 7214,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7221,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/active"
+    }
+   },
+   {
+    "threshold": 7222,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/low"
+    }
+   },
+   {
+    "threshold": 7223,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/off"
+    }
+   },
+   {
+    "threshold": 7224,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/raid"
+    }
+   },
+   {
+    "threshold": 7231,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/crystal_active"
+    }
+   },
+   {
+    "threshold": 7232,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/crystal_low"
+    }
+   },
+   {
+    "threshold": 7234,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/crystal_raid"
+    }
+   }
+  ],
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:block/crying_obsidian"
+  }
+ }
+}
