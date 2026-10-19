@@ -1,0 +1,12 @@
+invalid: false
+name: makarov_polar
+displayname: '&6Makarov &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 136
+material: CROSSBOW
+baseGun: makarov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

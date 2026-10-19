@@ -308,6 +308,15 @@ def base_color(mat, G, side, el):
         col[st > 0.975] = (235, 235, 255)
         col[(st > 0.955) & (st <= 0.975)] = col[(st > 0.955) & (st <= 0.975)] * 0.4 + 150
         return col
+    if k == 'holo':
+        # holographic foil: hue sweeps along the gun, broken up by noise, with bright sheen bands
+        n = fbm(G * 0.35, 3, seed)
+        h = (u * 0.035 + v * 0.07 + w * 0.05 + n * 0.45) % 1.0
+        sat, val = m.get('sat', 0.6), m.get('val', 0.95)
+        rgb = np.clip(np.abs(((h[:, None] * 6 + np.array([0, 4, 2])) % 6) - 3) - 1, 0, 1)
+        col = 255 * val * (1 - sat + sat * rgb)
+        sheen = (0.5 + 0.5 * np.sin((u * 0.6 - v * 1.4 + n * 3) * math.pi)) ** 6
+        return col * (1 - 0.5 * sheen[:, None]) + 255 * 0.5 * sheen[:, None]
     if k == 'carbon':
         # 2x2 twill weave
         L = np.array(m['light'], float)
@@ -1180,6 +1189,10 @@ def generic_skin(theme, sc=1.0):
             put(('rubber', 'band'), dict(kind='poly', base=black, wear=(80, 80, 86), var=0.05, edge=0.5))
             zones = [(0.0, 0.35 * sc, black), (0.35 * sc, 2.6 * sc, orange), (2.6 * sc, 2.95 * sc, black)]
             D(by_mat(('blued', 'black', 'supp', 'magsteel'), bands('RL', None, 8.0 * sc, zones)))
+        elif theme == 'holo':
+            put(METAL + FURN, dict(kind='holo', wear=(255, 255, 255), edge=0.5))
+            put(('steel',) + ACCENT, dict(kind='metal', base=(48, 50, 58), wear=(150, 156, 170), var=0.06, edge=0.7))
+            put(('rubber', 'band'), dict(MATS['rubber']))
         elif theme == 'damast':
             put(METAL, dict(kind='damascus', light=(158, 160, 166), dark=(66, 67, 73), wear=(205, 206, 210), edge=0.6))
             put(ACCENT, dict(kind='metal', base=(168, 112, 58), wear=(230, 180, 120), var=0.08, edge=0.6))
@@ -1192,8 +1205,8 @@ def generic_skin(theme, sc=1.0):
 
 def _gun_skins(base, first, sc, themes):
     names = {'zloto': 'Złoto', 'neon': 'Neon', 'lawa': 'Lawa', 'galaktyka': 'Galaktyka',
-             'polar': 'Polar', 'damast': 'Damast'}
-    title = {'m4a1s': 'M4A1-S', 'remmington': 'Remington', 'makarov': 'Makarov'}[base]
+             'polar': 'Polar', 'damast': 'Damast', 'holo': 'Holo'}
+    title = {'ak47': 'AK47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington', 'makarov': 'Makarov'}[base]
     return {'%s_%s' % (base, t): (base, generic_skin(t, sc), first + i, '%s [%s]' % (title, names[t]))
             for i, t in enumerate(themes)}
 
@@ -1208,9 +1221,11 @@ SKINS = {
     'ak47_galaktyka': ('ak47', skin_galaktyka, 106, 'AK47 [Galaktyka]'),
 }
 # custom_model_data blocks of ten per gun: AK 101-, M4 111-, Remington 121-, Makarov 131-
-SKINS.update(_gun_skins('m4a1s', 111, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'polar')))
-SKINS.update(_gun_skins('remmington', 121, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast')))
-SKINS.update(_gun_skins('makarov', 131, 0.35, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast')))
+# every gun has the same seven themes
+SKINS.update(_gun_skins('ak47', 107, 1.0, ('holo',)))
+SKINS.update(_gun_skins('m4a1s', 111, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'polar', 'damast', 'holo')))
+SKINS.update(_gun_skins('remmington', 121, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+SKINS.update(_gun_skins('makarov', 131, 0.35, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 
 
 # ------------------------------------------------------------------ pipeline

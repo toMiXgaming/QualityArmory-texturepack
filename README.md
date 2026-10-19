@@ -19,7 +19,7 @@ Zmienione pliki względem oryginału:
 
 Skin używa tego samego modelu co bazowa broń (te same elementy i pozycje, także celowanie), różni się tylko teksturą. Generuje je `gen.py` (słownik `SKINS`; AK ma własne malowania, reszta broni wspólne motywy z `generic_skin`), a `build_pack.py` dopisuje je do `assets/minecraft/items/crossbow.json`. Numery idą blokami po dziesięć na broń (AK 101–, M4A1-S 111–, Remington 121–, Makarov 131–), bo oryginalne numery QA kończą się na 85.
 
-Motywy: Złoto (złoto z grawerem, heban), Neon (czarny mat i karbon, świecące krawędzie cyan/magenta), Polar (biały, pomarańczowe i czarne pasy), Damast (stal damasceńska, czerwone drewno, mosiądz), Lawa (obsydian z żarzącymi się pęknięciami), Galaktyka (mgławica z gwiazdami, chromowane części).
+Motywy: Złoto (złoto z grawerem, heban), Neon (czarny mat i karbon, świecące krawędzie cyan/magenta), Polar (biały, pomarańczowe i czarne pasy), Damast (stal damasceńska, czerwone drewno, mosiądz), Lawa (obsydian z żarzącymi się pęknięciami), Galaktyka (mgławica z gwiazdami, chromowane części), Holo (tęczowa folia holograficzna). Każda broń ma wszystkie siedem.
 
 | Skin | custom_model_data | name w QualityArmory (`/qa give <gracz> <name>`) |
 |---|---|---|
@@ -29,21 +29,28 @@ Motywy: Złoto (złoto z grawerem, heban), Neon (czarny mat i karbon, świecące
 | AK47 [Damast] | 104 | `ak47_damast` |
 | AK47 [Lawa] | 105 | `ak47_lawa` |
 | AK47 [Galaktyka] | 106 | `ak47_galaktyka` |
+| AK47 [Holo] | 107 | `ak47_holo` |
 | M4A1-S [Złoto] | 111 | `m4a1s_zloto` |
 | M4A1-S [Neon] | 112 | `m4a1s_neon` |
 | M4A1-S [Lawa] | 113 | `m4a1s_lawa` |
 | M4A1-S [Galaktyka] | 114 | `m4a1s_galaktyka` |
 | M4A1-S [Polar] | 115 | `m4a1s_polar` |
+| M4A1-S [Damast] | 116 | `m4a1s_damast` |
+| M4A1-S [Holo] | 117 | `m4a1s_holo` |
 | Remington [Złoto] | 121 | `remmington_zloto` |
 | Remington [Neon] | 122 | `remmington_neon` |
 | Remington [Lawa] | 123 | `remmington_lawa` |
 | Remington [Galaktyka] | 124 | `remmington_galaktyka` |
 | Remington [Damast] | 125 | `remmington_damast` |
+| Remington [Polar] | 126 | `remmington_polar` |
+| Remington [Holo] | 127 | `remmington_holo` |
 | Makarov [Złoto] | 131 | `makarov_zloto` |
 | Makarov [Neon] | 132 | `makarov_neon` |
 | Makarov [Lawa] | 133 | `makarov_lawa` |
 | Makarov [Galaktyka] | 134 | `makarov_galaktyka` |
 | Makarov [Damast] | 135 | `makarov_damast` |
+| Makarov [Polar] | 136 | `makarov_polar` |
+| Makarov [Holo] | 137 | `makarov_holo` |
 
 Model w paczce to `qualityarmory:gun/<name>`. Na serwerze skin to „attachment” QualityArmory z `baseGun` ustawionym na bazową broń, więc przejmuje jej statystyki. Pliki z `serwer/attachments/` trzeba skopiować do `plugins/QualityArmory/attachments/` i zrestartować serwer. Skiny nie są do craftingu ani w sklepie QA.
 
@@ -80,7 +87,7 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 
 4. Makarov PM (custom_model_data 53): nowy model z suwadłem, bezpiecznikiem po lewej, kurkiem, osłoną spustu i okładziną z bakelitu; celowanie zza szczerbinki.
 
-5. Skiny premium: 6 do AK47 (101–106) i po 5 do M4A1-S (111–115), Remingtona (121–125) i Makarova (131–135).
+5. Skiny premium: po 7 do AK47 (101–107), M4A1-S (111–117), Remingtona (121–127) i Makarova (131–137).
 
 Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 
