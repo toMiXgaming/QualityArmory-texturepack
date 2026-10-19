@@ -78,6 +78,19 @@ Numer modelu to `7100 + 20 × skin + stan`, gdzie stan to 1 zasilony, 2 mało pa
 
 Obudowa ma wgłębienia, więc plugin pokazuje ją w skali 1,2 (inaczej prawdziwy blok przebijałby przez okna). Energia w oknach, emiter na górze i kryształ są animowanymi teksturami (`.png.mcmeta`). Generator: `zrodla/gen_reactor.py`, podglądy i miniatury do menu w pluginie (`out/miniatury/`, kopiowane do `AXONPLOT/src/main/resources/reactor/`): `zrodla/preview_reactor.py`, dopisanie do gotowego zipa bez pełnej przebudowy: `zrodla/dodaj_reaktor.py` (pełna przebudowa `build_pack.py` też dodaje reaktor). Gotowe pliki są w `modele/reactor/`, podglądy w `podglady/reaktor-*`.
 
+## Zrzut (AXON-Structure)
+
+Model skrzyni zrzutu: oliwkowa skrzynia z okuciami, pasem ostrzegawczym, złożonym spadochronem na wieku i świecącą czerwoną lampą. Przedmiot `axon:zrzut` (komponent `item_model`, dowolny materiał), model `axon:block/zrzut`, tekstura `axon:item/zrzut` (64×64). Plugin AXON-Structure stawia w strukturze beczkę jako prawdziwy pojemnik i nad nią wyświetlacz przedmiotu z tym modelem; model jest odrobinę większy od bloku, więc beczki nie widać. Generator: `zrodla/gen_zrzut.py`, podgląd: `podglady/zrzut.png`.
+
+## Rekwizyty do struktur (AXON-Structure)
+
+`zrodla/gen_rekwizyty.py` robi dwa modele stawiane przez plugin AXON-Structure jako wyświetlacze przedmiotów:
+
+- `axon:wrak_mi8` – wrak śmigłowca Mi-8 na lądowisku jednostki wojskowej: przeszklony kokpit, otwarte drzwi przesuwne (da się wejść do środka po skrzynię), silniki, połamane łopaty, belka ogonowa z szachownicą, zbiorniki paliwa. Model opisany jest w kratkach `jednostka.axs`; plugin rysuje go ze skalą 8, a kolizję dają bariery w pliku struktury. Podgląd: `podglady/wrak_mi8.png`.
+- `axon:lozko` – metalowe łóżko z materacem w paski, wojskowym kocem i poduszką. Plugin stawia je zamiast łóżek z Minecrafta (poza oazą). Podgląd: `podglady/lozko.png`.
+
+Meble z `zrodla/gen_meble.py` (jedna kratka, przód na południe): `axon:regal` (regał z segregatorami), `axon:kartoteka` (szafa kartotekowa), `axon:umywalka`, `axon:warsztat` (stół z imadłem), `axon:kuchenka` (kuchenka gazowa), `axon:piecyk` (koza), `axon:radiostacja`, `axon:biurko` (z komputerem), `axon:kroplowka`, `axon:kosz`, `axon:szlifierka` oraz drzwi `axon:drzwi_drewniane` i `axon:drzwi_stalowe` (dwie kratki wysokości, płyta na środku, plugin przestawia je przy otwieraniu). Plugin stawia je zamiast bloków wymienionych w `meble.bloki` i `meble.drzwi` w configu. Podglądy: `podglady/meble.png`, `podglady/meble-2.png`.
+
 ## Wgranie na serwer
 
 Repo musi być **publiczne**, inaczej gracze nie pobiorą paczki. W `plugins/QualityArmory/config.yml`:
@@ -119,4 +132,4 @@ Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
 - `zrodla/` – generator broni (`gen.py`) i reaktora (`gen_reactor.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
-Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
