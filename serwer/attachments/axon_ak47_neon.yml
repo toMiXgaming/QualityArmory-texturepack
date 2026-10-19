@@ -1,0 +1,12 @@
+invalid: false
+name: ak47_neon
+displayname: '&6AK47 &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 102
+material: CROSSBOW
+baseGun: ak47
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

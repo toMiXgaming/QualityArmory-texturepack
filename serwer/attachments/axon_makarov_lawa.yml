@@ -1,0 +1,12 @@
+invalid: false
+name: makarov_lawa
+displayname: '&6Makarov &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 133
+material: CROSSBOW
+baseGun: makarov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: m4a1s_damast
+displayname: '&6M4A1-S &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 116
+material: CROSSBOW
+baseGun: m4a1s
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -133,10 +133,47 @@ def compare(name):
     return out
 
 
+def skins_compare(base):
+    """Old models vs every premium skin of `base`: side, 3/4, hip, ADS and the GUI slot."""
+    from gen import SKINS
+    rows = [('qa', base, 'QualityArmory (oryginal)'), ('axon', base, 'AXON (obecny)')]
+    rows += [('axon', n, '%s  (custom_model_data %d)' % (v[3], v[2]))
+             for n, v in SKINS.items() if v[0] == base]
+    H = 230
+    out = []
+    for which, name, lab in rows:
+        m, q = load(name, which)
+        S_OF.setdefault(name, S_OF[base])
+        sv = label(side_view(q, name, 560, H), lab, 17)
+        tq = side_view(q, name, 400, H, left=True, yaw_off=-32, pitch=18)
+        fp = fp_view(m, q, 409, H)
+        ads = fp_view(m, q, 409, H, left=True)
+        gb, gs = gui_view_img(m, q, 130)
+        gui = Image.new('RGB', (150, H), (60, 60, 64))
+        gui.paste(gb, (10, 8)); gui.paste(gs.resize((64, 64), Image.NEAREST), (43, 150))
+        r = Image.new('RGB', (560 + 400 + 409 * 2 + 150 + 16, H), (20, 22, 26))
+        x = 0
+        for im in (sv, tq, fp, ads, gui):
+            r.paste(im, (x, 0)); x += im.width + 4
+        out.append(r)
+    sheet_ = Image.new('RGB', (out[0].width, (H + 4) * len(out) + 30), (20, 22, 26))
+    hdr = ('bok', '3/4 (lewa)', 'biodro', 'celowanie', 'GUI')
+    xs = (0, 564, 968, 1381, 1794)
+    for t, x in zip(hdr, xs):
+        label(sheet_, t, 15, (x + 10, 6), (200, 200, 200))
+    for i, r in enumerate(out):
+        sheet_.paste(r, (0, 30 + i * (H + 4)))
+    return sheet_
+
+
 if __name__ == '__main__':
     names = sys.argv[1:] or ['ak47', 'm4a1s', 'remmington', 'makarov']
     os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
     for n in names:
+        if n.startswith('skiny-'):
+            skins_compare(n[6:]).save(os.path.join(HERE, 'out', n[6:] + '-skiny.png'))
+            print('rendered skins of', n[6:])
+            continue
         sheet(n).save(os.path.join(HERE, 'out', n + '-podglad.png'))
         compare(n).save(os.path.join(HERE, 'out', n + '-porownanie.png'))
         print('rendered', n)

@@ -1,0 +1,12 @@
+invalid: false
+name: makarov_neon
+displayname: '&6Makarov &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 132
+material: CROSSBOW
+baseGun: makarov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

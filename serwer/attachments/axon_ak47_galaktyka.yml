@@ -1,0 +1,12 @@
+invalid: false
+name: ak47_galaktyka
+displayname: '&6AK47 &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 106
+material: CROSSBOW
+baseGun: ak47
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

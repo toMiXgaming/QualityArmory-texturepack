@@ -1,0 +1,12 @@
+invalid: false
+name: ak47_polar
+displayname: '&6AK47 &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 103
+material: CROSSBOW
+baseGun: ak47
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

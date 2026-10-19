@@ -1,0 +1,12 @@
+invalid: false
+name: makarov_holo
+displayname: '&6Makarov &e[Holo]'
+lore:
+- '&7Skin premium AXON'
+id: 137
+material: CROSSBOW
+baseGun: makarov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
