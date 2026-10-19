@@ -130,7 +130,7 @@ def main():
             sheet.paste(label(im, '%s: %s' % (s.name, NAMES[st]), 15), (i * (W + 4), r * (W + 4)))
     sheet.save(os.path.join(out, 'reaktor-stany.png'))
 
-    big = 360
+    big = 300
     skins = Image.new('RGB', ((big + 4) * len(SKINS) - 4, big), (20, 22, 26))
     for i, (sid, s) in enumerate(SKINS.items()):
         tag = s.name if s.index == 0 else s.name + ' (premium)'
@@ -156,6 +156,7 @@ def main():
     for sid in SKINS:
         for st in states:
             thumbnail(sid, st, 72).save(os.path.join(out, 'miniatury', '%s_%s.png' % (sid, st)))
+        thumbnail(sid, 'active', 52).save(os.path.join(out, 'miniatury', '%s_card.png' % sid))
     print('rendered')
 
 

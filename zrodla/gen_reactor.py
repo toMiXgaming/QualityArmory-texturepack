@@ -13,6 +13,8 @@ Kryształ nad reaktorem ma numer o 10 większy (wygaszony reaktor nie ma kryszta
   skin 2 pustka      7141..7144, kryształ 7151..7154
   skin 3 piekielny   7161..7164, kryształ 7171..7174
   skin 4 krolewski   7181..7184, kryształ 7191..7194
+  skin 5 miedziany   7201..7204, kryształ 7211..7214
+  skin 6 lodowy      7221..7224, kryształ 7231..7234
 
 Stany są takie same we wszystkich skinach, żeby gracz od razu je rozpoznał: zasilony świeci
 kolorem skina, mało paliwa przygasa i mruga na żółto, atak pulsuje na czerwono, wygaszony jest ciemny.
@@ -560,6 +562,156 @@ def els_krolewski():
     return els
 
 
+# ---- Miedziany (steampunk) i Lodowy ---------------------------------------
+
+def trim_copper(s):
+    """Miedź z zieloną patyną przy dolnej krawędzi i rzędem nitów."""
+    im = metal_tex(s, 3, rivets=False)
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            n = noise(x, y, 17)
+            if y >= 28 - int(3 * n):
+                px[x, y] = mix((66, 160, 132), (96, 196, 160), n) + (255,)
+            elif y == 24 and x % 4 == 1:
+                px[x, y] = s.light + (255,)
+            elif y == 25 and x % 4 == 2:
+                px[x, y] = s.dark + (255,)
+    return im
+
+
+def pillar_pipe(s):
+    """Rura: walcowy połysk w pionie, kołnierze co kawałek."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            k = math.sin((x + 0.5) / T * math.pi)
+            c = mix(s.dark, s.light, 0.15 + 0.75 * k * k)
+            if y % 16 in (0, 1, 2):
+                c = mix(c, s.light, 0.35) if y % 16 == 0 else mix(c, s.dark, 0.25)
+            if noise(x, y, 19) > 0.94:
+                c = (78, 176, 146)
+            px[x, y] = c + (255,)
+    return im
+
+
+def core_coils(color, bright, speed, flick, x, y, t):
+    """Cewki z miedzianego drutu; w szczelinach między zwojami przeskakują iskry."""
+    band = y % 6
+    if band in (0, 1, 2):
+        k = math.sin((band + 0.5) / 3 * math.pi)
+        c = mix((110, 56, 32), (236, 160, 104), 0.2 + 0.7 * k)
+        if (x + y // 6 * 3) % 8 == 0:
+            c = mix(c, (80, 40, 24), 0.4)
+        return c
+    c = mix((14, 16, 14), (26, 28, 24), noise(x, y, 18))
+    if bright <= 0:
+        return c
+    # łuk elektryczny: zygzak, który przesuwa się w poprzek
+    row = y // 6
+    arc = int((math.sin(x * 0.9 + t * 2 * math.pi * speed * 2 + row * 1.7) + 1) * 1.5) + 3
+    glow = 0.25 + 0.15 * math.sin(t * 2 * math.pi * speed + row)
+    if band == arc:
+        return mix(color, (255, 255, 240), 0.35 * bright * flick)
+    return mix(c, color, glow * bright * flick)
+
+
+def els_miedziany():
+    """Parowy generator z miedzi: rury w rogach, obręcze, dwa kominy na górze."""
+    els = [
+        box('podstawa', [0, 0, 0], [16, 2.5, 16], '#trim', per_face={'up': '#metal', 'down': '#metal'}),
+        box('pokrywa', [0, 13.5, 0], [16, 16, 16], '#metal', per_face={'up': '#top'}),
+        box('rdzen', [1.25, 2.5, 1.25], [14.75, 13.5, 14.75], '#core', which='nsew'),
+    ]
+    for x, z in corners(2.5):
+        els.append(box('rura', [x, 2.5, z], [x + 2.5, 13.5, z + 2.5], '#pillar', which='nsew'))
+    for y in (5, 10.75):
+        els.append(box('obrecz', [2.5, y, 0.25], [13.5, y + 1.25, 1.25], '#pillar', which='nud'))
+        els.append(box('obrecz', [2.5, y, 14.75], [13.5, y + 1.25, 15.75], '#pillar', which='sud'))
+        els.append(box('obrecz', [0.25, y, 2.5], [1.25, y + 1.25, 13.5], '#pillar', which='wud'))
+        els.append(box('obrecz', [14.75, y, 2.5], [15.75, y + 1.25, 13.5], '#pillar', which='eud'))
+    for (x, z, h) in ((2, 2, 4.5), (11.5, 11.5, 3.5)):
+        els.append(box('komin', [x, 16, z], [x + 2.5, 16 + h, z + 2.5], '#pillar', which='nsew'))
+        els.append(box('kolnierz', [x - 0.25, 16 + h, z - 0.25], [x + 2.75, 16.75 + h, z + 2.75], '#metal', which='nsewd'))
+        els.append(box('zar', [x, 16.5 + h, z], [x + 2.5, 16.75 + h, z + 2.5], '#glow', which='u'))
+    return els
+
+
+def trim_snow(s):
+    """Ubity lód z bąbelkami powietrza, u dołu szron."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            n = noise(x, y, 23)
+            c = mix(s.metal, s.light, 0.2 + 0.35 * n + 0.15 * ((x - y) % 12 < 2))
+            if y >= 28:
+                c = mix((236, 246, 255), (205, 225, 245), n)
+            elif n > 0.95:
+                c = (240, 250, 255)
+            px[x, y] = c + (255,)
+    return im
+
+
+def pillar_ice(s):
+    """Niebieski lód: pionowe smugi i jasne krawędzie."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            n = noise(x // 2, y // 5, 29)
+            c = mix(s.dark, s.metal, 0.35 + 0.5 * n)
+            if x in (0, 1, T - 1):
+                c = mix(c, (240, 250, 255), 0.55)
+            px[x, y] = c + (255,)
+    return im
+
+
+def core_frost(color, bright, speed, flick, x, y, t):
+    """Głęboki lód ze śnieżynką; po jej ramionach biegnie światło od środka na zewnątrz."""
+    cx, cy = x - 15.5, y - 15.5
+    r = math.hypot(cx, cy)
+    a = math.atan2(cy, cx)
+    c = mix((10, 22, 48), (22, 44, 82), 0.5 * noise(x, y, 24) + 0.3 * (1 - min(1, r / 22)))
+    # sześć ramion i odgałęzienia
+    arm = abs(((a / (math.pi / 3)) % 1) - 0.5) * 2   # 1 na ramieniu, 0 pomiędzy
+    on_arm = arm > 1 - 1.2 / max(r, 1.2) and r < 15
+    branch = r > 5 and r < 13 and abs(((a / (math.pi / 3)) % 1) - 0.5) * 2 > 1 - (2.6 / max(r, 1)) and int(r) % 4 == 1
+    if bright <= 0:
+        return mix(c, (70, 90, 120), 0.6) if on_arm or branch else c
+    if on_arm or branch:
+        pulse = 0.5 + 0.5 * math.sin(r * 0.6 - t * 2 * math.pi * speed)
+        return mix(mix(c, color, 0.55), (255, 255, 255), 0.45 * pulse * bright * flick) if bright else c
+    return mix(c, color, 0.12 * bright * flick * max(0.0, 1 - r / 18))
+
+
+def els_lodowy():
+    """Lodowy rdzeń: sople pod pokrywą i cztery przechylone kryształy lodu na górze."""
+    els = [
+        box('podstawa', [0, 0, 0], [16, 2.5, 16], '#trim', per_face={'up': '#metal', 'down': '#trim'}),
+        box('pokrywa', [0, 13.5, 0], [16, 16, 16], '#metal', per_face={'up': '#top'}),
+        box('rdzen', [1.25, 2.5, 1.25], [14.75, 13.5, 14.75], '#core', which='nsew'),
+    ]
+    for x, z in corners(2):
+        els.append(box('slup', [x, 2.5, z], [x + 2, 13.5, z + 2], '#pillar', which='nsew'))
+    # sople pod pokrywą, różnej długości
+    for i, (x, l) in enumerate(((3, 2.5), (5.5, 1.5), (8, 3), (10.5, 1.75), (12.5, 2.25))):
+        els.append(box('sopel', [x, 13.5 - l, 0.25], [x + 1, 13.5, 1.25], '#pillar', which='nsewd'))
+        els.append(box('sopel', [15 - x, 13.5 - l, 14.75], [16 - x, 13.5, 15.75], '#pillar', which='nsewd'))
+        els.append(box('sopel', [0.25, 13.5 - l, 15 - x], [1.25, 13.5, 16 - x], '#pillar', which='nsewd'))
+        els.append(box('sopel', [14.75, 13.5 - l, x], [15.75, 13.5, x + 1], '#pillar', which='nsewd'))
+    # kryształy przechylone na zewnątrz (każdy w swoją stronę)
+    for (x, z, axis, angle) in ((1.5, 7, 'z', 22.5), (12.5, 7, 'z', -22.5), (7, 1.5, 'x', -22.5), (7, 12.5, 'x', 22.5)):
+        rot = {'origin': [x + 1, 16, z + 1], 'axis': axis, 'angle': angle}
+        shard = box('krysztal_lodu', [x, 15, z], [x + 2, 19.5, z + 2], '#pillar', which='nsew')
+        tip = box('czubek', [x + 0.5, 19.5, z + 0.5], [x + 1.5, 21, z + 1.5], '#glow', which='nsewu')
+        shard['rotation'] = rot
+        tip['rotation'] = dict(rot)
+        els += [shard, tip]
+    return els
+
+
 SKINS = {
     'standard': Skin(0, 'Standard', (60, 240, 90), (52, 54, 60), (84, 88, 96), (28, 29, 33),
                      core_rods, trim_hazard, pillar_groove, els_standard),
@@ -571,6 +723,10 @@ SKINS = {
                       core_cracks, trim_gold_band, pillar_banded, els_piekielny),
     'krolewski': Skin(4, 'Królewski', (255, 70, 200), (214, 166, 46), (255, 230, 120), (130, 88, 20),
                       core_facets, trim_engraved, pillar_fluted, els_krolewski),
+    'miedziany': Skin(5, 'Miedziany', (170, 255, 50), (184, 104, 62), (232, 156, 104), (104, 52, 30),
+                      core_coils, trim_copper, pillar_pipe, els_miedziany),
+    'lodowy': Skin(6, 'Lodowy', (215, 240, 255), (140, 182, 230), (206, 228, 250), (70, 100, 150),
+                   core_frost, trim_snow, pillar_ice, els_lodowy),
 }
 
 

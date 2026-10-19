@@ -32,6 +32,8 @@ Numer modelu to `7100 + 20 × skin + stan`, gdzie stan to 1 zasilony, 2 mało pa
 | 2 Pustka | 7141–7144 | 7151–7154 | fioletowo |
 | 3 Piekielny | 7161–7164 | 7171–7174 | turkusowo (ogień dusz) |
 | 4 Królewski | 7181–7184 | 7191–7194 | różowo |
+| 5 Miedziany | 7201–7204 | 7211–7214 | limonkowo (iskry w cewkach) |
+| 6 Lodowy | 7221–7224 | 7231–7234 | mroźną bielą |
 
 ![Skiny reaktora](podglady/reaktor-skiny.png)
 

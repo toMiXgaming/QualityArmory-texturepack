@@ -248,6 +248,104 @@
      "type": "minecraft:model",
      "model": "axon:block/reactor/krolewski/crystal_raid"
     }
+   },
+   {
+    "threshold": 7201,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/active"
+    }
+   },
+   {
+    "threshold": 7202,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/low"
+    }
+   },
+   {
+    "threshold": 7203,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/off"
+    }
+   },
+   {
+    "threshold": 7204,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/raid"
+    }
+   },
+   {
+    "threshold": 7211,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/crystal_active"
+    }
+   },
+   {
+    "threshold": 7212,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/crystal_low"
+    }
+   },
+   {
+    "threshold": 7214,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/miedziany/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7221,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/active"
+    }
+   },
+   {
+    "threshold": 7222,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/low"
+    }
+   },
+   {
+    "threshold": 7223,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/off"
+    }
+   },
+   {
+    "threshold": 7224,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/raid"
+    }
+   },
+   {
+    "threshold": 7231,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/crystal_active"
+    }
+   },
+   {
+    "threshold": 7232,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/crystal_low"
+    }
+   },
+   {
+    "threshold": 7234,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/lodowy/crystal_raid"
+    }
    }
   ],
   "fallback": {

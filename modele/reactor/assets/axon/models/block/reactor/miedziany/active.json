@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/miedziany/shell",
+ "textures": {
+  "core": "axon:block/reactor/miedziany/core_active",
+  "top": "axon:block/reactor/miedziany/top_active",
+  "glow": "axon:block/reactor/miedziany/glow_active"
+ }
+}
