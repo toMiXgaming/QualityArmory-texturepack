@@ -23,15 +23,19 @@ Paczka zawiera też shadery `assets/minecraft/shaders/core/rendertype_text` i `p
 
 Rdzeń działki z [AxonPlot](https://github.com/toMiXgaming/AXONPLOT) wygląda jak reaktor. Plugin stawia na bloku rdzenia ItemDisplay z przedmiotem `crying_obsidian` i `custom_model_data`, a `assets/minecraft/items/crying_obsidian.json` wybiera po tej liczbie model z `assets/axon/`. Zwykły crying obsidian (bez liczby) wygląda jak w vanilli.
 
-| custom_model_data | Model |
-|---|---|
-| 7101 | obudowa, reaktor zasilony (pomarańczowa energia) |
-| 7102 | obudowa, mało paliwa (przygaszona, migocze) |
-| 7103 | obudowa, wygaszony |
-| 7104 | obudowa, atak (czerwona, szybki puls) |
-| 7111 / 7112 / 7114 | kryształ nad reaktorem w tych samych stanach |
+Numer modelu to `7100 + 20 × skin + stan`, gdzie stan to 1 zasilony, 2 mało paliwa (przygaszony żółty, migocze), 3 wygaszony, 4 atak (czerwony, szybki puls). Kryształ nad reaktorem ma numer o 10 większy (wygaszony reaktor go nie ma).
 
-Obudowa ma wgłębienia, więc plugin pokazuje ją w skali 1,2 (inaczej prawdziwy blok przebijałby przez okna). Energia w oknach, emiter na górze i kryształ są animowanymi teksturami (`.png.mcmeta`). Generator: `zrodla/gen_reactor.py`, podglądy: `zrodla/preview_reactor.py`, dopisanie do gotowego zipa bez pełnej przebudowy: `zrodla/dodaj_reaktor.py` (pełna przebudowa `build_pack.py` też dodaje reaktor). Gotowe pliki są w `modele/reactor/`, podglądy w `podglady/reaktor-*`.
+| Skin | Obudowa | Kryształ | Zasilony świeci |
+|---|---|---|---|
+| 0 Standard | 7101–7104 | 7111–7114 | zielono |
+| 1 Kwantowy | 7121–7124 | 7131–7134 | błękitnie |
+| 2 Pustka | 7141–7144 | 7151–7154 | fioletowo |
+| 3 Piekielny | 7161–7164 | 7171–7174 | turkusowo (ogień dusz) |
+| 4 Królewski | 7181–7184 | 7191–7194 | różowo |
+
+![Skiny reaktora](podglady/reaktor-skiny.png)
+
+Obudowa ma wgłębienia, więc plugin pokazuje ją w skali 1,2 (inaczej prawdziwy blok przebijałby przez okna). Energia w oknach, emiter na górze i kryształ są animowanymi teksturami (`.png.mcmeta`). Generator: `zrodla/gen_reactor.py`, podglądy i miniatury do menu w pluginie (`out/miniatury/`, kopiowane do `AXONPLOT/src/main/resources/reactor/`): `zrodla/preview_reactor.py`, dopisanie do gotowego zipa bez pełnej przebudowy: `zrodla/dodaj_reaktor.py` (pełna przebudowa `build_pack.py` też dodaje reaktor). Gotowe pliki są w `modele/reactor/`, podglądy w `podglady/reaktor-*`.
 
 ## Wgranie na serwer
 

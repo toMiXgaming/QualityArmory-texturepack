@@ -24,7 +24,8 @@ def main():
     files = reactor_files()
     zin = zipfile.ZipFile(ZIP)
     entries = [(i, zin.read(i.filename)) for i in zin.infolist()
-               if i.filename not in files and not i.filename.startswith('assets/axon/')]
+               if i.filename not in files and not i.filename.startswith(('assets/axon/models/block/reactor/',
+                                                                   'assets/axon/textures/block/reactor/'))]
     zin.close()
     with zipfile.ZipFile(ZIP, 'w', zipfile.ZIP_DEFLATED) as zout:
         for info, data in entries:

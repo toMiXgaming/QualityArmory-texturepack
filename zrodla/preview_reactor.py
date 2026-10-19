@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
-"""Podglądy reaktora (gen_reactor.py): cztery stany obok siebie, porównanie z crying obsidian
-i animacja GIF zasilonego reaktora z obracającym się kryształem."""
+"""Podglądy reaktora (gen_reactor.py): wszystkie skiny w czterech stanach, porównanie z crying
+obsidian, animacja GIF i miniatury do menu rdzenia w pluginie (out/miniatury/<skin>_<stan>.png)."""
 import json, math, os, sys, tempfile
 import numpy as np
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from render import *
 from preview import label
+from gen_reactor import SKINS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'build', 'reactor')
@@ -35,13 +36,13 @@ def resolver(frame):
     return resolve
 
 
-def model_quads(name, frame):
-    m = json.load(open(os.path.join(MODELS, name + '.json')))
+def model_quads(skin, name, frame):
+    m = json.load(open(os.path.join(MODELS, skin, name + '.json')))
     if 'parent' in m and m['parent'].startswith('axon:'):
-        base = json.load(open(os.path.join(MODELS, m['parent'].split('/')[-1] + '.json')))
+        base = json.load(open(os.path.join(MODELS, skin, m['parent'].split('/')[-1] + '.json')))
         base['textures'] = dict(base['textures'], **m['textures'])
         m = base
-    path = os.path.join(TMP, name + '.json')
+    path = os.path.join(TMP, skin + '_' + name + '.json')
     json.dump(m, open(path, 'w'))
     return load_model(path, resolver(frame))[1]
 
@@ -62,25 +63,41 @@ def crystal_matrix(spin):
     return rot_axis('y', spin) @ tilt * CRYSTAL_SCALE
 
 
-def scene(state, frame=0, spin=20.0):
-    shell = placed(model_quads(state, frame), np.eye(3) * SCALE, np.zeros(3))
+def scene(skin, state, frame=0, spin=20.0):
+    shell = placed(model_quads(skin, state, frame), np.eye(3) * SCALE, np.zeros(3))
     crystal = []
     if state != 'off':
         bob = 0.6 * math.sin(spin / 180 * math.pi)
-        crystal = placed(model_quads('crystal_' + state, frame), crystal_matrix(spin), np.array([0, CRYSTAL_Y + bob, 0]))
+        crystal = placed(model_quads(skin, 'crystal_' + state, frame), crystal_matrix(spin),
+                         np.array([0, CRYSTAL_Y + bob, 0]))
     return shell, crystal
 
 
-def render_state(state, W, H, frame=0, spin=20.0, yaw=-35, pitch=24):
-    shell, crystal = scene(state, frame, spin)
+def frame_ref():
+    """Ten sam kadr dla wszystkich skinów (największy z nich), żeby miały tę samą skalę."""
+    return (placed(model_quads('pustka', 'active', 0), np.eye(3) * SCALE, np.zeros(3)) +
+            placed(model_quads('standard', 'active', 0), np.eye(3) * 0.42, np.array([0, 22, 0])))
+
+
+def render_state(skin, state, W, H, frame=0, spin=20.0, yaw=-35, pitch=24, bg=None, margin=0.08, glow=1.05):
+    shell, crystal = scene(skin, state, frame, spin)
     R = ortho_view(yaw, pitch)
-    cv = Canvas(W, H, grad=SKY)
-    frame_pts = shell + placed(model_quads('active', 0), np.eye(3) * 0.42, np.array([0, 22, 0]))
-    xf, pr, _ = fit_ortho(frame_pts, R, W, H, 0.08)
+    cv = Canvas(W, H, grad=None if bg else SKY, bg=bg or (0, 0, 0))
+    xf, pr, _ = fit_ortho(frame_ref(), R, W, H, margin)
     draw(cv, shell, xf, pr, light_preview)
     if crystal:
-        draw(cv, crystal, xf, pr, lambda n: 1.05)   # kryształ świeci (pełna jasność)
-    return cv.image()
+        draw(cv, crystal, xf, pr, lambda n: glow)   # kryształ świeci (pełna jasność)
+    return cv
+
+
+def thumbnail(skin, state, size):
+    """Miniatura z przezroczystym tłem (alfa z bufora głębokości)."""
+    # Kryształ ciemniejszy niż w grze: jasne pastele paleta map zamienia na błękit.
+    cv = render_state(skin, state, size, size, frame=4, bg=(0, 0, 0), margin=0.02, glow=0.75)
+    im = cv.image().convert('RGBA')
+    mask = Image.fromarray(((cv.z > -1e8) * 255).astype(np.uint8)).resize((size, size), Image.BILINEAR)
+    im.putalpha(mask.point(lambda a: 255 if a >= 110 else 0))
+    return im
 
 
 def crying_obsidian(W, H, yaw=-35, pitch=24):
@@ -96,30 +113,49 @@ def crying_obsidian(W, H, yaw=-35, pitch=24):
         else:
             q.append(dict(P=P, color=np.array((40, 20, 70), float), n=np.array(FACE_N[face], float)))
     R = ortho_view(yaw, pitch)
-    ref = placed(model_quads('active', 0), np.eye(3) * SCALE, np.zeros(3)) + \
-        placed(model_quads('active', 0), np.eye(3) * 0.42, np.array([0, 22, 0]))
-    xf, pr, _ = fit_ortho(ref, R, W, H, 0.08)
+    xf, pr, _ = fit_ortho(frame_ref(), R, W, H, 0.08)
     draw(cv, q, xf, pr, light_preview)
     return cv.image()
 
 
 def main():
-    os.makedirs(os.path.join(HERE, 'out'), exist_ok=True)
-    W = 320
-    sheet = Image.new('RGB', (W * 5 + 16, W + 4), (20, 22, 26))
-    sheet.paste(label(crying_obsidian(W, W), 'dziś: crying obsidian', 16), (0, 2))
-    for i, st in enumerate(('active', 'low', 'raid', 'off')):
-        sheet.paste(label(render_state(st, W, W, frame=3), 'reaktor: ' + NAMES[st], 16), ((i + 1) * (W + 4), 2))
-    sheet.save(os.path.join(HERE, 'out', 'reaktor-stany.png'))
+    out = os.path.join(HERE, 'out')
+    os.makedirs(os.path.join(out, 'miniatury'), exist_ok=True)
+    W = 260
+    states = ('active', 'low', 'raid', 'off')
+    sheet = Image.new('RGB', (W * 4 + 12, (W + 4) * len(SKINS)), (20, 22, 26))
+    for r, (sid, s) in enumerate(SKINS.items()):
+        for i, st in enumerate(states):
+            im = render_state(sid, st, W, W, frame=3).image()
+            sheet.paste(label(im, '%s: %s' % (s.name, NAMES[st]), 15), (i * (W + 4), r * (W + 4)))
+    sheet.save(os.path.join(out, 'reaktor-stany.png'))
 
-    close = Image.new('RGB', (2 * 520 + 4, 520), (20, 22, 26))
-    close.paste(label(render_state('active', 520, 520, frame=5, yaw=-28, pitch=14), 'zasilony z bliska', 18), (0, 0))
-    close.paste(label(render_state('raid', 520, 520, frame=9, yaw=50, pitch=38), 'atak, widok z góry', 18), (524, 0))
-    close.save(os.path.join(HERE, 'out', 'reaktor-z-bliska.png'))
+    big = 360
+    skins = Image.new('RGB', ((big + 4) * len(SKINS) - 4, big), (20, 22, 26))
+    for i, (sid, s) in enumerate(SKINS.items()):
+        tag = s.name if s.index == 0 else s.name + ' (premium)'
+        skins.paste(label(render_state(sid, 'active', big, big, frame=5, yaw=-28, pitch=16).image(), tag, 17),
+                    (i * (big + 4), 0))
+    skins.save(os.path.join(out, 'reaktor-skiny.png'))
 
-    frames = [render_state('active', 360, 360, frame=f, spin=f * 360 / 32) for f in range(32)]
-    frames[0].save(os.path.join(HERE, 'out', 'reaktor-animacja.gif'), save_all=True, append_images=frames[1:],
+    cmp = Image.new('RGB', (2 * W + 4, W), (20, 22, 26))
+    cmp.paste(label(crying_obsidian(W, W), 'bez paczki: crying obsidian', 15), (0, 0))
+    cmp.paste(label(render_state('standard', 'active', W, W, frame=3).image(), 'z paczką: reaktor', 15), (W + 4, 0))
+    cmp.save(os.path.join(out, 'reaktor-porownanie.png'))
+
+    fw = 200
+    frames = []
+    for f in range(32):
+        im = Image.new('RGB', (fw * len(SKINS), fw))
+        for i, sid in enumerate(SKINS):
+            im.paste(render_state(sid, 'active', fw, fw, frame=f, spin=f * 360 / 32).image(), (i * fw, 0))
+        frames.append(im)
+    frames[0].save(os.path.join(out, 'reaktor-animacja.gif'), save_all=True, append_images=frames[1:],
                    duration=100, loop=0)
+
+    for sid in SKINS:
+        for st in states:
+            thumbnail(sid, st, 72).save(os.path.join(out, 'miniatury', '%s_%s.png' % (sid, st)))
     print('rendered')
 
 

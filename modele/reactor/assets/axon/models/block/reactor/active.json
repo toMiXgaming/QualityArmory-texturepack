@@ -1,7 +1,0 @@
-{
- "parent": "axon:block/reactor/shell",
- "textures": {
-  "core": "axon:block/reactor/core_active",
-  "top": "axon:block/reactor/top_active"
- }
-}

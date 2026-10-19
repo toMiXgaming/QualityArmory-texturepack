@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/piekielny/shell",
+ "textures": {
+  "core": "axon:block/reactor/piekielny/core_raid",
+  "top": "axon:block/reactor/piekielny/top_raid",
+  "glow": "axon:block/reactor/piekielny/glow_raid"
+ }
+}
