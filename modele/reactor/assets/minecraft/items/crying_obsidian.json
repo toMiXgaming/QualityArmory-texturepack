@@ -1,0 +1,62 @@
+{
+ "model": {
+  "type": "minecraft:range_dispatch",
+  "property": "minecraft:custom_model_data",
+  "index": 0,
+  "entries": [
+   {
+    "threshold": 7101,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/active"
+    }
+   },
+   {
+    "threshold": 7102,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/low"
+    }
+   },
+   {
+    "threshold": 7103,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/off"
+    }
+   },
+   {
+    "threshold": 7104,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/raid"
+    }
+   },
+   {
+    "threshold": 7111,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/crystal_active"
+    }
+   },
+   {
+    "threshold": 7112,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/crystal_low"
+    }
+   },
+   {
+    "threshold": 7114,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/crystal_raid"
+    }
+   }
+  ],
+  "fallback": {
+   "type": "minecraft:model",
+   "model": "minecraft:block/crying_obsidian"
+  }
+ }
+}
