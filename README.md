@@ -15,20 +15,37 @@ Zmienione pliki względem oryginału:
 - `assets/minecraft/atlases/blocks.json` – dodane źródło `axon/` (bez tego tekstury byłyby fioletowo-czarne).
 - `pack.mcmeta` – opis zaczyna się od „AXON”, żeby w grze było widać, która paczka jest wczytana.
 
-## Skiny premium AK47
+## Skiny premium
 
-Sześć skinów używa tego samego modelu AK47 (te same elementy i pozycje, także celowanie), różnią się tylko teksturą. Generuje je `gen.py` (słownik `SKINS`), a `build_pack.py` dopisuje je do `assets/minecraft/items/crossbow.json` pod nowymi numerami (oryginalne numery QA kończą się na 85).
+Skin używa tego samego modelu co bazowa broń (te same elementy i pozycje, także celowanie), różni się tylko teksturą. Generuje je `gen.py` (słownik `SKINS`; AK ma własne malowania, reszta broni wspólne motywy z `generic_skin`), a `build_pack.py` dopisuje je do `assets/minecraft/items/crossbow.json`. Numery idą blokami po dziesięć na broń (AK 101–, M4A1-S 111–, Remington 121–, Makarov 131–), bo oryginalne numery QA kończą się na 85.
 
-| Skin | custom_model_data | Model w paczce | Wygląd |
-|---|---|---|---|
-| AK47 [Złoto] | 101 | `qualityarmory:gun/ak47_zloto` | złoto z grawerem, heban z intarsją |
-| AK47 [Neon] | 102 | `qualityarmory:gun/ak47_neon` | czarny mat i karbon, świecące krawędzie cyan/magenta |
-| AK47 [Polar] | 103 | `qualityarmory:gun/ak47_polar` | biały, pomarańczowe i czarne pasy |
-| AK47 [Damast] | 104 | `qualityarmory:gun/ak47_damast` | stal damasceńska, czerwone drewno, mosiądz |
-| AK47 [Lawa] | 105 | `qualityarmory:gun/ak47_lawa` | obsydian z żarzącymi się pęknięciami, pomarańczowe krawędzie |
-| AK47 [Galaktyka] | 106 | `qualityarmory:gun/ak47_galaktyka` | mgławica fiolet/niebieski/róż z gwiazdami, chromowane części |
+Motywy: Złoto (złoto z grawerem, heban), Neon (czarny mat i karbon, świecące krawędzie cyan/magenta), Polar (biały, pomarańczowe i czarne pasy), Damast (stal damasceńska, czerwone drewno, mosiądz), Lawa (obsydian z żarzącymi się pęknięciami), Galaktyka (mgławica z gwiazdami, chromowane części).
 
-Na serwerze skin to „attachment” QualityArmory z `baseGun: ak47`, więc przejmuje statystyki AK47. Pliki z `serwer/attachments/` trzeba skopiować do `plugins/QualityArmory/attachments/` i zrestartować serwer. Skiny nie są do craftingu ani w sklepie QA; wydaje się je komendą `/qa give <gracz> ak47_zloto` (`ak47_neon`, `ak47_polar`, `ak47_damast`, `ak47_lawa`, `ak47_galaktyka`).
+| Skin | custom_model_data | name w QualityArmory (`/qa give <gracz> <name>`) |
+|---|---|---|
+| AK47 [Złoto] | 101 | `ak47_zloto` |
+| AK47 [Neon] | 102 | `ak47_neon` |
+| AK47 [Polar] | 103 | `ak47_polar` |
+| AK47 [Damast] | 104 | `ak47_damast` |
+| AK47 [Lawa] | 105 | `ak47_lawa` |
+| AK47 [Galaktyka] | 106 | `ak47_galaktyka` |
+| M4A1-S [Złoto] | 111 | `m4a1s_zloto` |
+| M4A1-S [Neon] | 112 | `m4a1s_neon` |
+| M4A1-S [Lawa] | 113 | `m4a1s_lawa` |
+| M4A1-S [Galaktyka] | 114 | `m4a1s_galaktyka` |
+| M4A1-S [Polar] | 115 | `m4a1s_polar` |
+| Remington [Złoto] | 121 | `remmington_zloto` |
+| Remington [Neon] | 122 | `remmington_neon` |
+| Remington [Lawa] | 123 | `remmington_lawa` |
+| Remington [Galaktyka] | 124 | `remmington_galaktyka` |
+| Remington [Damast] | 125 | `remmington_damast` |
+| Makarov [Złoto] | 131 | `makarov_zloto` |
+| Makarov [Neon] | 132 | `makarov_neon` |
+| Makarov [Lawa] | 133 | `makarov_lawa` |
+| Makarov [Galaktyka] | 134 | `makarov_galaktyka` |
+| Makarov [Damast] | 135 | `makarov_damast` |
+
+Model w paczce to `qualityarmory:gun/<name>`. Na serwerze skin to „attachment” QualityArmory z `baseGun` ustawionym na bazową broń, więc przejmuje jej statystyki. Pliki z `serwer/attachments/` trzeba skopiować do `plugins/QualityArmory/attachments/` i zrestartować serwer. Skiny nie są do craftingu ani w sklepie QA.
 
 ## Mapa AxonMap (shader)
 
@@ -63,7 +80,7 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 
 4. Makarov PM (custom_model_data 53): nowy model z suwadłem, bezpiecznikiem po lewej, kurkiem, osłoną spustu i okładziną z bakelitu; celowanie zza szczerbinki.
 
-5. Sześć skinów premium AK47 (custom_model_data 101–106).
+5. Skiny premium: 6 do AK47 (101–106) i po 5 do M4A1-S (111–115), Remingtona (121–125) i Makarova (131–135).
 
 Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 
@@ -71,8 +88,8 @@ Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 
 - `QualityArmory-21-axon.zip` – gotowa paczka.
 - `modele/` – wygenerowane modele i tekstury (to samo co w zipie).
-- `podglady/` – podglądy i porównania ze starymi modelami (`ak47-skiny.png` – wszystkie skiny AK47).
+- `podglady/` – podglądy i porównania ze starymi modelami (`<broń>-skiny.png` – skiny danej broni).
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
 - `zrodla/` – generator (`gen.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
-Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 preview.py && python3 preview.py skiny-ak47 && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.

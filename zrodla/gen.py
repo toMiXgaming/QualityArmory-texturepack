@@ -233,6 +233,8 @@ MATS = {
 
 def base_color(mat, G, side, el):
     m = MATS[mat]
+    if 'sc' in m:            # skins on small guns: pattern size in AK-sized units
+        G = G / m['sc']
     w, v, u = G[:, 0], G[:, 1], G[:, 2]
     k = m['kind']
     seed = zlib.crc32(el.name.encode()) & 0xFFFF
@@ -1116,6 +1118,86 @@ def skin_galaktyka(g):
     return mats
 
 
+# --- generic skins for the other AXON guns: materials grouped by role
+METAL = ('blued', 'steel', 'black', 'rail', 'magsteel', 'supp')
+ACCENT = ('parts', 'brass')
+FURN = ('wood_ak', 'wood_870', 'polymer', 'tan', 'bakelite', 'rubber', 'band')
+
+
+def by_mat(mats, fn):
+    """Run a decal only on elements made of the given (base gun) materials."""
+    def w(ctx):
+        if ctx.el.mat in mats:
+            fn(ctx)
+    return w
+
+
+def free_engraving(sides, sc, col_mul=0.55):
+    def fn(ctx):
+        if ctx.side not in sides:
+            return
+        A, Bv = ab(ctx)
+        A, Bv = A / sc, Bv / sc
+        vine = np.abs(np.sin(A * 1.9 + 1.4 * np.sin(Bv * 2.6 + A * 0.8))) < 0.2
+        curl = np.abs(np.sin(A * 3.1 - 1.2 * np.cos(Bv * 3.3 - A * 0.5))) < 0.12
+        ctx.col[vine | curl] *= col_mul
+    return fn
+
+
+def generic_skin(theme, sc=1.0):
+    def painter(g):
+        M = {}
+
+        def put(group, d):
+            for k in group:
+                M[k] = dict(d, sc=sc)
+        D = g.dec
+        if theme == 'zloto':
+            put(METAL, dict(kind='metal', base=(200, 152, 50), wear=(255, 232, 150), var=0.08, edge=0.7))
+            put(('steel',), dict(kind='metal', base=(36, 34, 33), wear=(110, 100, 80), var=0.10, edge=0.6))
+            put(ACCENT, dict(kind='metal', base=(222, 178, 70), wear=(255, 240, 170), var=0.06, edge=0.6))
+            put(FURN, dict(kind='wood', light=(78, 46, 32), dark=(24, 13, 9), wear=(120, 80, 54), edge=0.35))
+            D(by_mat(('blued', 'black', 'magsteel', 'supp'), free_engraving('RL', sc)))
+        elif theme == 'neon':
+            cyan, mag = (40, 236, 255), (255, 50, 200)
+            put(METAL, dict(kind='metal', base=(30, 31, 36), wear=cyan, var=0.06, edge=0.95, glow=True))
+            put(ACCENT, dict(kind='metal', base=(40, 40, 46), wear=mag, var=0.05, edge=0.95, glow=True))
+            put(FURN, dict(kind='carbon', light=(58, 60, 66), dark=(18, 18, 21), wear=mag, edge=0.9, glow=True))
+        elif theme == 'lawa':
+            lava = dict(kind='lava', base=(30, 22, 24), glow_col=(232, 74, 12), hot_col=(255, 214, 70),
+                        wear=(255, 120, 30), edge=0.85, glow=True)
+            put(METAL + FURN, lava)
+            put(ACCENT, dict(kind='metal', base=(255, 150, 40), wear=(255, 230, 120), var=0.08, edge=0.6))
+        elif theme == 'galaktyka':
+            put(METAL + FURN, dict(kind='galaxy', cols=((14, 10, 44), (86, 30, 150), (30, 150, 220), (236, 80, 190)),
+                                   wear=(200, 180, 255), edge=0.55))
+            put(('steel', 'rail') + ACCENT, dict(kind='metal', base=(186, 190, 204), wear=(250, 250, 255), var=0.05, edge=0.6))
+        elif theme == 'polar':
+            white_, orange, black = (232, 233, 236), (240, 112, 28), (26, 26, 30)
+            put(METAL, dict(kind='poly', base=white_, wear=(150, 152, 158), var=0.03, edge=0.3))
+            put(('steel', 'rail') + ACCENT, dict(kind='metal', base=(36, 36, 40), wear=(130, 132, 138), var=0.06, edge=0.6))
+            put(FURN, dict(kind='poly', base=orange, wear=(255, 190, 120), var=0.04, edge=0.5))
+            put(('rubber', 'band'), dict(kind='poly', base=black, wear=(80, 80, 86), var=0.05, edge=0.5))
+            zones = [(0.0, 0.35 * sc, black), (0.35 * sc, 2.6 * sc, orange), (2.6 * sc, 2.95 * sc, black)]
+            D(by_mat(('blued', 'black', 'supp', 'magsteel'), bands('RL', None, 8.0 * sc, zones)))
+        elif theme == 'damast':
+            put(METAL, dict(kind='damascus', light=(158, 160, 166), dark=(66, 67, 73), wear=(205, 206, 210), edge=0.6))
+            put(ACCENT, dict(kind='metal', base=(168, 112, 58), wear=(230, 180, 120), var=0.08, edge=0.6))
+            put(FURN, dict(kind='wood', light=(172, 38, 30), dark=(66, 8, 10), wear=(212, 92, 76), edge=0.45))
+            put(('bakelite', 'polymer'), dict(kind='bakelite', base=(110, 18, 16), dark=(42, 6, 8), wear=(170, 70, 60), edge=0.5))
+            put(('rubber', 'band'), dict(MATS['rubber']))
+        return M
+    return painter
+
+
+def _gun_skins(base, first, sc, themes):
+    names = {'zloto': 'Złoto', 'neon': 'Neon', 'lawa': 'Lawa', 'galaktyka': 'Galaktyka',
+             'polar': 'Polar', 'damast': 'Damast'}
+    title = {'m4a1s': 'M4A1-S', 'remmington': 'Remington', 'makarov': 'Makarov'}[base]
+    return {'%s_%s' % (base, t): (base, generic_skin(t, sc), first + i, '%s [%s]' % (title, names[t]))
+            for i, t in enumerate(themes)}
+
+
 SKINS = {
     # name: (base gun, painter, custom_model_data on crossbow, display name)
     'ak47_zloto': ('ak47', skin_zloto, 101, 'AK47 [Złoto]'),
@@ -1125,6 +1207,10 @@ SKINS = {
     'ak47_lawa': ('ak47', skin_lawa, 105, 'AK47 [Lawa]'),
     'ak47_galaktyka': ('ak47', skin_galaktyka, 106, 'AK47 [Galaktyka]'),
 }
+# custom_model_data blocks of ten per gun: AK 101-, M4 111-, Remington 121-, Makarov 131-
+SKINS.update(_gun_skins('m4a1s', 111, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'polar')))
+SKINS.update(_gun_skins('remmington', 121, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast')))
+SKINS.update(_gun_skins('makarov', 131, 0.35, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast')))
 
 
 # ------------------------------------------------------------------ pipeline

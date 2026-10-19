@@ -1,0 +1,12 @@
+invalid: false
+name: remmington_damast
+displayname: '&6Remington &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 125
+material: CROSSBOW
+baseGun: remmington
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
