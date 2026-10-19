@@ -1,0 +1,12 @@
+invalid: false
+name: ak47_damast
+displayname: '&6AK47 &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 104
+material: CROSSBOW
+baseGun: ak47
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
