@@ -278,6 +278,34 @@ def base_color(mat, G, side, el):
         ph = (v * 1.4 + w * 0.9 + 0.2 * u + warp) * 2 * math.pi * 0.55
         t = (0.5 + 0.5 * np.sin(ph)) ** 1.3
         return L[None] * (1 - t[:, None]) + D[None] * t[:, None]
+    if k == 'lava':
+        # cooled obsidian crust split by glowing cracks (thin iso-lines of warped noise)
+        base = np.array(m['base'], float)
+        crust = base[None] * (0.75 + 0.5 * fbm(G * 1.3, 2, seed + 2))[:, None]
+        Q = G * np.array([0.3, 0.3, 0.2])
+        n = fbm(Q + fbm(Q * 1.7, 2, seed + 4)[:, None] * 1.6, 3, seed)
+        d = np.abs(np.sin(n * 2 * math.pi * 1.6))
+        hot = np.clip(1 - d / 0.4, 0, 1) ** 0.8
+        core = np.clip(1 - d / 0.16, 0, 1)
+        glow = np.array(m['glow_col'], float)
+        hotc = np.array(m['hot_col'], float)
+        col = crust * (1 - hot[:, None]) + glow[None] * hot[:, None]
+        return col * (1 - core[:, None]) + hotc[None] * core[:, None]
+    if k == 'galaxy':
+        # nebula clouds in several colours + scattered stars
+        cs = [np.array(c, float) for c in m['cols']]
+        a = fbm(G * 0.45, 3, seed)
+        b = fbm(G * 0.6 + 7.3, 3, seed + 9)
+        t1 = np.clip((a - 0.35) * 2.6, 0, 1)[:, None]
+        t2 = np.clip((b - 0.5) * 3.0, 0, 1)[:, None]
+        col = cs[0][None] * (1 - t1) + cs[1][None] * t1
+        col = col * (1 - t2 * 0.8) + cs[2][None] * t2 * 0.8
+        hl = np.clip((a + b - 1.15) * 3.0, 0, 1)[:, None]
+        col = col * (1 - hl * 0.7) + cs[3][None] * hl * 0.7
+        st = white(G, seed + 13, 4.0)
+        col[st > 0.975] = (235, 235, 255)
+        col[(st > 0.955) & (st <= 0.975)] = col[(st > 0.955) & (st <= 0.975)] * 0.4 + 150
+        return col
     if k == 'carbon':
         # 2x2 twill weave
         L = np.array(m['light'], float)
@@ -1063,12 +1091,39 @@ def skin_damast(g):
     return mats
 
 
+def skin_lawa(g):
+    lava = dict(kind='lava', base=(30, 22, 24), glow_col=(232, 74, 12), hot_col=(255, 214, 70),
+                wear=(255, 120, 30), edge=0.85, glow=True)
+    mats = {
+        'blued': lava, 'magsteel': lava, 'wood_ak': lava,
+        'steel':    dict(kind='metal', base=(28, 24, 26), wear=(255, 120, 30), var=0.08, edge=0.85, glow=True),
+        'parts':    dict(kind='metal', base=(255, 150, 40), wear=(255, 230, 120), var=0.08, edge=0.6),
+        'bakelite': dict(lava, base=(22, 16, 18)),
+    }
+    return mats
+
+
+def skin_galaktyka(g):
+    gal = dict(kind='galaxy', cols=((14, 10, 44), (86, 30, 150), (30, 150, 220), (236, 80, 190)),
+               wear=(200, 180, 255), edge=0.55)
+    mats = {
+        'blued': gal, 'magsteel': gal, 'wood_ak': gal, 'bakelite': gal,
+        'steel':    dict(kind='metal', base=(176, 182, 198), wear=(240, 244, 255), var=0.06, edge=0.6),
+        'parts':    dict(kind='metal', base=(196, 200, 214), wear=(250, 250, 255), var=0.05, edge=0.6),
+    }
+    D = g.dec
+    D(lines('RL', ['receiver'], 'b', (1.05,), 0.14, (220, 225, 240)))
+    return mats
+
+
 SKINS = {
     # name: (base gun, painter, custom_model_data on crossbow, display name)
     'ak47_zloto': ('ak47', skin_zloto, 101, 'AK47 [Złoto]'),
     'ak47_neon': ('ak47', skin_neon, 102, 'AK47 [Neon]'),
     'ak47_polar': ('ak47', skin_polar, 103, 'AK47 [Polar]'),
     'ak47_damast': ('ak47', skin_damast, 104, 'AK47 [Damast]'),
+    'ak47_lawa': ('ak47', skin_lawa, 105, 'AK47 [Lawa]'),
+    'ak47_galaktyka': ('ak47', skin_galaktyka, 106, 'AK47 [Galaktyka]'),
 }
 
 

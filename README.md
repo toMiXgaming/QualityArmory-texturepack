@@ -17,7 +17,7 @@ Zmienione pliki względem oryginału:
 
 ## Skiny premium AK47
 
-Cztery skiny używają tego samego modelu AK47 (te same elementy i pozycje, także celowanie), różnią się tylko teksturą. Generuje je `gen.py` (słownik `SKINS`), a `build_pack.py` dopisuje je do `assets/minecraft/items/crossbow.json` pod nowymi numerami (oryginalne numery QA kończą się na 85).
+Sześć skinów używa tego samego modelu AK47 (te same elementy i pozycje, także celowanie), różnią się tylko teksturą. Generuje je `gen.py` (słownik `SKINS`), a `build_pack.py` dopisuje je do `assets/minecraft/items/crossbow.json` pod nowymi numerami (oryginalne numery QA kończą się na 85).
 
 | Skin | custom_model_data | Model w paczce | Wygląd |
 |---|---|---|---|
@@ -25,8 +25,10 @@ Cztery skiny używają tego samego modelu AK47 (te same elementy i pozycje, tak�
 | AK47 [Neon] | 102 | `qualityarmory:gun/ak47_neon` | czarny mat i karbon, świecące krawędzie cyan/magenta |
 | AK47 [Polar] | 103 | `qualityarmory:gun/ak47_polar` | biały, pomarańczowe i czarne pasy |
 | AK47 [Damast] | 104 | `qualityarmory:gun/ak47_damast` | stal damasceńska, czerwone drewno, mosiądz |
+| AK47 [Lawa] | 105 | `qualityarmory:gun/ak47_lawa` | obsydian z żarzącymi się pęknięciami, pomarańczowe krawędzie |
+| AK47 [Galaktyka] | 106 | `qualityarmory:gun/ak47_galaktyka` | mgławica fiolet/niebieski/róż z gwiazdami, chromowane części |
 
-Na serwerze skin to „attachment” QualityArmory z `baseGun: ak47`, więc przejmuje statystyki AK47. Pliki z `serwer/attachments/` trzeba skopiować do `plugins/QualityArmory/attachments/` i zrestartować serwer. Skiny nie są do craftingu ani w sklepie QA; wydaje się je komendą `/qa give <gracz> ak47_zloto` (`ak47_neon`, `ak47_polar`, `ak47_damast`).
+Na serwerze skin to „attachment” QualityArmory z `baseGun: ak47`, więc przejmuje statystyki AK47. Pliki z `serwer/attachments/` trzeba skopiować do `plugins/QualityArmory/attachments/` i zrestartować serwer. Skiny nie są do craftingu ani w sklepie QA; wydaje się je komendą `/qa give <gracz> ak47_zloto` (`ak47_neon`, `ak47_polar`, `ak47_damast`, `ak47_lawa`, `ak47_galaktyka`).
 
 ## Mapa AxonMap (shader)
 
@@ -61,7 +63,7 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 
 4. Makarov PM (custom_model_data 53): nowy model z suwadłem, bezpiecznikiem po lewej, kurkiem, osłoną spustu i okładziną z bakelitu; celowanie zza szczerbinki.
 
-5. Cztery skiny premium AK47 (custom_model_data 101–104).
+5. Sześć skinów premium AK47 (custom_model_data 101–106).
 
 Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 
