@@ -1,0 +1,77 @@
+{
+ "textures": {
+  "particle": "axon:block/reactor/krolewski/crystal_low",
+  "c": "axon:block/reactor/krolewski/crystal_low"
+ },
+ "elements": [
+  {
+   "name": "krysztal",
+   "from": [
+    4.5,
+    4.5,
+    4.5
+   ],
+   "to": [
+    11.5,
+    11.5,
+    11.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#c",
+     "uv": [
+      4.5,
+      4.5,
+      11.5,
+      11.5
+     ]
+    },
+    "south": {
+     "texture": "#c",
+     "uv": [
+      4.5,
+      4.5,
+      11.5,
+      11.5
+     ]
+    },
+    "east": {
+     "texture": "#c",
+     "uv": [
+      4.5,
+      4.5,
+      11.5,
+      11.5
+     ]
+    },
+    "west": {
+     "texture": "#c",
+     "uv": [
+      4.5,
+      4.5,
+      11.5,
+      11.5
+     ]
+    },
+    "up": {
+     "texture": "#c",
+     "uv": [
+      4.5,
+      4.5,
+      11.5,
+      11.5
+     ]
+    },
+    "down": {
+     "texture": "#c",
+     "uv": [
+      4.5,
+      4.5,
+      11.5,
+      11.5
+     ]
+    }
+   }
+  }
+ ]
+}

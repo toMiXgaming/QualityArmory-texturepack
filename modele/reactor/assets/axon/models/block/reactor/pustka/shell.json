@@ -1,0 +1,884 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "particle": "axon:block/reactor/pustka/metal",
+  "metal": "axon:block/reactor/pustka/metal",
+  "trim": "axon:block/reactor/pustka/trim",
+  "pillar": "axon:block/reactor/pustka/pillar"
+ },
+ "elements": [
+  {
+   "name": "podstawa",
+   "from": [
+    0,
+    0,
+    0
+   ],
+   "to": [
+    16,
+    3,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#trim",
+     "uv": [
+      0,
+      13,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#trim",
+     "uv": [
+      0,
+      13,
+      16,
+      16
+     ]
+    },
+    "east": {
+     "texture": "#trim",
+     "uv": [
+      0,
+      13,
+      16,
+      16
+     ]
+    },
+    "west": {
+     "texture": "#trim",
+     "uv": [
+      0,
+      13,
+      16,
+      16
+     ]
+    },
+    "up": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "down": {
+     "texture": "#trim",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    }
+   }
+  },
+  {
+   "name": "pokrywa",
+   "from": [
+    0,
+    13,
+    0
+   ],
+   "to": [
+    16,
+    15.5,
+    16
+   ],
+   "faces": {
+    "north": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0.5,
+      16,
+      3
+     ]
+    },
+    "south": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0.5,
+      16,
+      3
+     ]
+    },
+    "east": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0.5,
+      16,
+      3
+     ]
+    },
+    "west": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0.5,
+      16,
+      3
+     ]
+    },
+    "up": {
+     "texture": "#top",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    },
+    "down": {
+     "texture": "#metal",
+     "uv": [
+      0,
+      0,
+      16,
+      16
+     ]
+    }
+   }
+  },
+  {
+   "name": "rdzen",
+   "from": [
+    1.25,
+    3,
+    1.25
+   ],
+   "to": [
+    14.75,
+    13,
+    14.75
+   ],
+   "faces": {
+    "north": {
+     "texture": "#core",
+     "uv": [
+      1.25,
+      3,
+      14.75,
+      13
+     ]
+    },
+    "south": {
+     "texture": "#core",
+     "uv": [
+      1.25,
+      3,
+      14.75,
+      13
+     ]
+    },
+    "east": {
+     "texture": "#core",
+     "uv": [
+      1.25,
+      3,
+      14.75,
+      13
+     ]
+    },
+    "west": {
+     "texture": "#core",
+     "uv": [
+      1.25,
+      3,
+      14.75,
+      13
+     ]
+    }
+   }
+  },
+  {
+   "name": "obelisk",
+   "from": [
+    0,
+    3,
+    0
+   ],
+   "to": [
+    2.5,
+    19,
+    2.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16,
+      16
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      0,
+      0,
+      2.5,
+      2.5
+     ]
+    }
+   }
+  },
+  {
+   "name": "szczyt",
+   "from": [
+    0.5,
+    19,
+    0.5
+   ],
+   "to": [
+    2,
+    21,
+    2
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      14,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2,
+      2
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      14,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2,
+      2
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0.5,
+      2,
+      2
+     ]
+    }
+   }
+  },
+  {
+   "name": "runa",
+   "from": [
+    -0.15,
+    16.25,
+    -0.15
+   ],
+   "to": [
+    2.65,
+    17,
+    2.65
+   ],
+   "faces": {
+    "north": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    },
+    "south": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    },
+    "east": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    },
+    "west": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    }
+   }
+  },
+  {
+   "name": "obelisk",
+   "from": [
+    13.5,
+    3,
+    0
+   ],
+   "to": [
+    16.0,
+    19,
+    2.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      0.0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16.0,
+      16
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16,
+      16
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16.0,
+      2.5
+     ]
+    }
+   }
+  },
+  {
+   "name": "szczyt",
+   "from": [
+    14.0,
+    19,
+    0.5
+   ],
+   "to": [
+    15.5,
+    21,
+    2
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2.0,
+      2
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      14.0,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      14,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2,
+      2
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      14.0,
+      0.5,
+      15.5,
+      2
+     ]
+    }
+   }
+  },
+  {
+   "name": "runa",
+   "from": [
+    13.35,
+    16.25,
+    -0.15
+   ],
+   "to": [
+    16.15,
+    17,
+    2.65
+   ],
+   "faces": {
+    "north": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    },
+    "south": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    },
+    "east": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    },
+    "west": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    }
+   }
+  },
+  {
+   "name": "obelisk",
+   "from": [
+    0,
+    3,
+    13.5
+   ],
+   "to": [
+    2.5,
+    19,
+    16.0
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      0.0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16.0,
+      16
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      0,
+      13.5,
+      2.5,
+      16.0
+     ]
+    }
+   }
+  },
+  {
+   "name": "szczyt",
+   "from": [
+    0.5,
+    19,
+    14.0
+   ],
+   "to": [
+    2,
+    21,
+    15.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      14,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2,
+      2
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2.0,
+      2
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      14.0,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      14.0,
+      2,
+      15.5
+     ]
+    }
+   }
+  },
+  {
+   "name": "runa",
+   "from": [
+    -0.15,
+    16.25,
+    13.35
+   ],
+   "to": [
+    2.65,
+    17,
+    16.15
+   ],
+   "faces": {
+    "north": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    },
+    "south": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    },
+    "east": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    },
+    "west": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    }
+   }
+  },
+  {
+   "name": "obelisk",
+   "from": [
+    13.5,
+    3,
+    13.5
+   ],
+   "to": [
+    16.0,
+    19,
+    16.0
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      0.0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16.0,
+      16
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      0.0,
+      0,
+      2.5,
+      16
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      0,
+      16.0,
+      16
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      13.5,
+      13.5,
+      16.0,
+      16.0
+     ]
+    }
+   }
+  },
+  {
+   "name": "szczyt",
+   "from": [
+    14.0,
+    19,
+    14.0
+   ],
+   "to": [
+    15.5,
+    21,
+    15.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2.0,
+      2
+     ]
+    },
+    "south": {
+     "texture": "#pillar",
+     "uv": [
+      14.0,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "east": {
+     "texture": "#pillar",
+     "uv": [
+      0.5,
+      0,
+      2.0,
+      2
+     ]
+    },
+    "west": {
+     "texture": "#pillar",
+     "uv": [
+      14.0,
+      0,
+      15.5,
+      2
+     ]
+    },
+    "up": {
+     "texture": "#pillar",
+     "uv": [
+      14.0,
+      14.0,
+      15.5,
+      15.5
+     ]
+    }
+   }
+  },
+  {
+   "name": "runa",
+   "from": [
+    13.35,
+    16.25,
+    13.35
+   ],
+   "to": [
+    16.15,
+    17,
+    16.15
+   ],
+   "faces": {
+    "north": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    },
+    "south": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    },
+    "east": {
+     "texture": "#glow",
+     "uv": [
+      0.0,
+      0,
+      2.8,
+      0.75
+     ]
+    },
+    "west": {
+     "texture": "#glow",
+     "uv": [
+      13.2,
+      0,
+      16.0,
+      0.75
+     ]
+    }
+   }
+  }
+ ]
+}
