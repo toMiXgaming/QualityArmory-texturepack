@@ -69,7 +69,7 @@ Model skrzyni zrzutu: oliwkowa skrzynia z okuciami, pasem ostrzegawczym, złożo
 - `axon:wrak_mi8` – wrak śmigłowca Mi-8 na lądowisku jednostki wojskowej: przeszklony kokpit, otwarte drzwi przesuwne (da się wejść do środka po skrzynię), silniki, połamane łopaty, belka ogonowa z szachownicą, zbiorniki paliwa. Model opisany jest w kratkach `jednostka.axs`; plugin rysuje go ze skalą 8, a kolizję dają bariery w pliku struktury. Podgląd: `podglady/wrak_mi8.png`.
 - `axon:lozko` – metalowe łóżko z materacem w paski, wojskowym kocem i poduszką. Plugin stawia je zamiast łóżek z Minecrafta (poza oazą). Podgląd: `podglady/lozko.png`.
 
-Meble z `zrodla/gen_meble.py` (jedna kratka, przód na południe): `axon:regal` (regał z segregatorami), `axon:kartoteka` (szafa kartotekowa), `axon:umywalka`, `axon:warsztat` (stół z imadłem), `axon:kuchenka` (kuchenka gazowa), `axon:piecyk` (koza), `axon:radiostacja`. Plugin stawia je zamiast bloków wymienionych w `meble.bloki` w configu. Podgląd: `podglady/meble.png`.
+Meble z `zrodla/gen_meble.py` (jedna kratka, przód na południe): `axon:regal` (regał z segregatorami), `axon:kartoteka` (szafa kartotekowa), `axon:umywalka`, `axon:warsztat` (stół z imadłem), `axon:kuchenka` (kuchenka gazowa), `axon:piecyk` (koza), `axon:radiostacja`, `axon:biurko` (z komputerem), `axon:kroplowka`, `axon:kosz`, `axon:szlifierka` oraz drzwi `axon:drzwi_drewniane` i `axon:drzwi_stalowe` (dwie kratki wysokości, płyta na środku, plugin przestawia je przy otwieraniu). Plugin stawia je zamiast bloków wymienionych w `meble.bloki` i `meble.drzwi` w configu. Podglądy: `podglady/meble.png`, `podglady/meble-2.png`.
 
 ## Wgranie na serwer
 

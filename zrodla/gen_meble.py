@@ -246,9 +246,142 @@ def radiostacja():
     model('radiostacja', parts, P, 17)
 
 
-MEBLE = ['regal', 'kartoteka', 'umywalka', 'warsztat', 'kuchenka', 'piecyk', 'radiostacja']
+# ---------------------------------------------------------------- drzwi (2 kratki wysokości, płyta wzdłuż x na środku)
+
+
+def wood_door(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (122, 104, 82), 6, rnd)
+    for x in range(x0 + 2, x1, 4):
+        d.line([(x, y0), (x, y1 - 1)], fill=(100, 84, 64, 255))
+    d.rectangle([x0 + 2, y0 + 1, x1 - 3, y0 + 6], fill=(60, 70, 74, 255), outline=(150, 136, 110, 255))
+    d.line([(x0 + 3, y0 + 2), (x0 + 6, y0 + 5)], fill=(150, 170, 176, 255))
+    d.rectangle([x0 + 2, y0 + 9, x1 - 3, y1 - 2], outline=(96, 80, 60, 255))
+    stains(im, b, (150, 140, 120, 255), 6, rnd, 1)      # łuszcząca się farba
+    d.rectangle([x1 - 4, y0 + 8, x1 - 3, y0 + 9], fill=(170, 160, 120, 255))
+
+
+def steel_door(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (92, 100, 96), 5, rnd)
+    d.rectangle([x0, y0, x1 - 1, y1 - 1], outline=(60, 66, 62, 255))
+    for x in (x0 + 2, x1 - 3):
+        for y in range(y0 + 2, y1, 4):
+            im.putpixel((x, y), (150, 156, 150, 255))
+    d.rectangle([x0 + 5, y0 + 2, x0 + 10, y0 + 4], fill=(30, 34, 36, 255), outline=(130, 136, 130, 255))
+    for y in range(y1 - 3, y1):
+        for x in range(x0, x1):
+            im.putpixel((x, y), (222, 182, 40, 255) if ((x + y) // 2) % 2 == 0 else (30, 30, 30, 255))
+    stains(im, b, (120, 72, 40, 255), 6, rnd, 1)
+
+
+def drzwi_drewniane():
+    """Stare drewniane drzwi z szybką (zamiast drzwi świerkowych, brzozowych, z ciemnego dębu)."""
+    P = [('plyta', wood_door), ('krawedz', plain((100, 84, 64), 5)), ('klamka', plain((170, 160, 120), 8))]
+    parts = [([-0.2, 0, 6.2], [16.2, 32, 9.8], 'krawedz', {'north': 'plyta', 'south': 'plyta'}),
+             ([12.5, 13, 5.2], [14.5, 14, 10.8], 'klamka')]
+    model('drzwi_drewniane', parts, P, 21)
+
+
+def drzwi_stalowe():
+    """Ciężkie stalowe drzwi z wizjerem, nitami i pasem ostrzegawczym (zamiast żelaznych)."""
+    P = [('plyta', steel_door), ('krawedz', plain((70, 76, 72), 4)), ('rygiel', plain((140, 144, 140), 8, 2))]
+    parts = [([-0.2, 0, 6.2], [16.2, 32, 9.8], 'krawedz', {'north': 'plyta', 'south': 'plyta'}),
+             ([2, 12, 5.4], [14, 13.5, 10.6], 'rygiel'),
+             ([12.5, 10, 5], [14, 15.5, 11], 'rygiel'),
+             ([1, 4, 5.6], [3, 8, 10.4], 'rygiel'), ([1, 24, 5.6], [3, 28, 10.4], 'rygiel')]
+    model('drzwi_stalowe', parts, P, 22)
+
+
+# ---------------------------------------------------------------- kolejne meble
+
+
+def monitor(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (196, 190, 168), 4, rnd)
+    d.rectangle([x0 + 2, y0 + 2, x1 - 3, y1 - 4], fill=(24, 34, 30, 255), outline=(150, 146, 128, 255))
+    for y in range(y0 + 4, y1 - 5, 2):
+        d.line([(x0 + 4, y), (x0 + 4 + rnd.randint(2, 7), y)], fill=(80, 220, 120, 255))
+    d.point((x1 - 4, y1 - 2), fill=(230, 60, 40, 255))
+
+
+def keyboard(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (186, 180, 160), 4, rnd)
+    for y in range(y0 + 2, y1 - 2, 3):
+        for x in range(x0 + 1, x1 - 1, 2):
+            im.putpixel((x, y), (120, 116, 104, 255))
+
+
+def iv_bag(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (210, 226, 230), 4, rnd)
+    d.rectangle([x0 + 2, y0 + 7, x1 - 3, y1 - 2], fill=(200, 60, 60, 255))
+    d.rectangle([x0 + 3, y0 + 2, x1 - 4, y0 + 5], fill=(240, 240, 236, 255))
+
+
+def trash(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (104, 112, 104), 6, rnd)
+    for x in range(x0 + 1, x1, 3):
+        d.line([(x, y0), (x, y1 - 1)], fill=(80, 86, 80, 255))
+    stains(im, b, (120, 72, 40, 255), 5, rnd, 1)
+
+
+def biurko():
+    """Metalowe biurko ze starym komputerem (zamiast pulpitu)."""
+    P = [('blat', wood_top), ('metal', plain((96, 102, 98), 4, 3)), ('monitor', monitor),
+         ('obudowa', plain((196, 190, 168), 4)), ('klawiatura', keyboard), ('szuflady', drawers)]
+    parts = [([0, 11, 0], [16, 12.5, 16], 'blat'),
+             ([0.5, 0, 0.5], [2, 11, 15.5], 'metal'),
+             ([9, 0, 1], [15.5, 11, 15.5], 'metal', {'south': 'szuflady'}),
+             ([3, 12.5, 2], [13, 20.5, 10], 'obudowa', {'south': 'monitor'}),
+             ([4.5, 12.5, 4], [11.5, 13.5, 6], 'obudowa'),
+             ([3, 12.5, 11], [12, 13, 14.5], 'klawiatura')]
+    model('biurko', parts, P, 23)
+
+
+def kroplowka():
+    """Stojak z kroplówką na kółkach (zamiast statywu alchemicznego)."""
+    P = [('chrom', plain((176, 180, 184), 8)), ('worek', iv_bag), ('kolko', plain((30, 30, 32), 3))]
+    parts = [([7.4, 1, 7.4], [8.6, 28, 8.6], 'chrom'),
+             ([3, 1, 7.5], [13, 1.8, 8.5], 'chrom'), ([7.5, 1, 3], [8.5, 1.8, 13], 'chrom'),
+             ([2.5, 0, 7.3], [3.9, 1, 8.7], 'kolko'), ([12.1, 0, 7.3], [13.5, 1, 8.7], 'kolko'),
+             ([7.3, 0, 2.5], [8.7, 1, 3.9], 'kolko'), ([7.3, 0, 12.1], [8.7, 1, 13.5], 'kolko'),
+             ([4, 27, 7.6], [12, 27.6, 8.4], 'chrom'),
+             ([3.5, 20.5, 7], [6.5, 26.5, 9], 'worek'),
+             ([4.8, 13, 7.9], [5.2, 20.5, 8.1], 'chrom')]
+    model('kroplowka', parts, P, 24)
+
+
+def kosz():
+    """Blaszany kosz na śmieci z pokrywą i workiem (zamiast kompostownika)."""
+    P = [('blacha', trash), ('pokrywa', plain((88, 94, 88), 5, 3)), ('worek', plain((34, 36, 34), 3))]
+    parts = [([3, 0, 3], [13, 13, 13], 'blacha', {'up': 'worek'}),
+             ([2.5, 13, 2.5], [13.5, 14, 13.5], 'pokrywa'),
+             ([7, 14, 5], [9, 15, 11], 'pokrywa'),
+             ([3.5, 12, 12.6], [7, 14.5, 14], 'worek')]
+    model('kosz', parts, P, 25)
+
+
+def szlifierka():
+    """Szlifierka stołowa na stojaku (zamiast kamienia szlifierskiego)."""
+    P = [('silnik', plain((60, 100, 70), 5, 2)), ('tarcza', plain((150, 144, 130), 10)),
+         ('stojak', plain((70, 72, 74), 4, 3)), ('oslona', plain((110, 114, 116), 5))]
+    parts = [([6.5, 0, 6.5], [9.5, 10, 9.5], 'stojak'), ([3, 0, 3], [13, 1, 13], 'stojak'),
+             ([5, 10, 4], [11, 11, 12], 'stojak'),
+             ([5.5, 11, 5.5], [10.5, 15, 10.5], 'silnik'),
+             ([1.5, 10.5, 5], [5.5, 15.5, 11], 'oslona', {'west': 'tarcza'}),
+             ([10.5, 10.5, 5], [14.5, 15.5, 11], 'oslona', {'east': 'tarcza'}),
+             ([2, 11, 11], [5, 11.5, 13], 'stojak'), ([11, 11, 11], [14, 11.5, 13], 'stojak')]
+    model('szlifierka', parts, P, 26)
+
+
+MEBLE = ['regal', 'kartoteka', 'umywalka', 'warsztat', 'kuchenka', 'piecyk', 'radiostacja',
+         'drzwi_drewniane', 'drzwi_stalowe', 'biurko', 'kroplowka', 'kosz', 'szlifierka']
 
 if __name__ == '__main__':
-    for fn in (regal, kartoteka, umywalka, warsztat, kuchenka, piecyk, radiostacja):
+    for fn in (regal, kartoteka, umywalka, warsztat, kuchenka, piecyk, radiostacja,
+               drzwi_drewniane, drzwi_stalowe, biurko, kroplowka, kosz, szlifierka):
         fn()
     print('ok', MEBLE)
