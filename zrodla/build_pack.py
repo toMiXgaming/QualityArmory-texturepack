@@ -86,10 +86,12 @@ def main():
     for fn in sorted(os.listdir(shaders)):
         repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
     # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut
-    for src, dst in (('zrzut.json', 'assets/axon/models/block/zrzut.json'),
-                     ('zrzut.png', 'assets/axon/textures/item/zrzut.png'),
-                     ('zrzut_item.json', 'assets/axon/items/zrzut.json')):
-        repl[dst] = open(os.path.join(HERE, 'build', src), 'rb').read()
+    # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko)
+    for name in ('zrzut', 'wrak_mi8', 'lozko'):
+        for src, dst in ((name + '.json', 'assets/axon/models/block/%s.json' % name),
+                         (name + '.png', 'assets/axon/textures/item/%s.png' % name),
+                         (name + '_item.json', 'assets/axon/items/%s.json' % name)):
+            repl[dst] = open(os.path.join(HERE, 'build', src), 'rb').read()
     mc = os.path.join(HERE, 'pack.mcmeta')   # owner-edited description, carried over
     if os.path.exists(mc):
         repl['pack.mcmeta'] = open(mc, 'rb').read()
