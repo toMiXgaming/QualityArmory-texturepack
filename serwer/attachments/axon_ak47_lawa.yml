@@ -1,0 +1,12 @@
+invalid: false
+name: ak47_lawa
+displayname: '&6AK47 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 105
+material: CROSSBOW
+baseGun: ak47
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

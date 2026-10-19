@@ -1,0 +1,12 @@
+invalid: false
+name: ak47_zloto
+displayname: '&6AK47 &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 101
+material: CROSSBOW
+baseGun: ak47
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

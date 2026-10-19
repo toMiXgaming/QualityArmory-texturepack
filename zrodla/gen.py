@@ -233,6 +233,8 @@ MATS = {
 
 def base_color(mat, G, side, el):
     m = MATS[mat]
+    if 'sc' in m:            # skins on small guns: pattern size in AK-sized units
+        G = G / m['sc']
     w, v, u = G[:, 0], G[:, 1], G[:, 2]
     k = m['kind']
     seed = zlib.crc32(el.name.encode()) & 0xFFFF
@@ -270,6 +272,61 @@ def base_color(mat, G, side, el):
         pores = white(G * np.array([1, 1, 0.25]), seed + 9, 4.0) > 0.93
         col[pores] *= 0.85
         return col
+    if k == 'damascus':
+        # folded steel: wavy light/dark layers running along the gun, warped by noise
+        L = np.array(m['light'], float)
+        D = np.array(m['dark'], float)
+        warp = fbm(G * np.array([0.5, 0.5, 0.18]), 3, seed) * 3.2
+        ph = (v * 1.4 + w * 0.9 + 0.2 * u + warp) * 2 * math.pi * 0.55
+        t = (0.5 + 0.5 * np.sin(ph)) ** 1.3
+        return L[None] * (1 - t[:, None]) + D[None] * t[:, None]
+    if k == 'lava':
+        # cooled obsidian crust split by glowing cracks (thin iso-lines of warped noise)
+        base = np.array(m['base'], float)
+        crust = base[None] * (0.75 + 0.5 * fbm(G * 1.3, 2, seed + 2))[:, None]
+        Q = G * np.array([0.3, 0.3, 0.2])
+        n = fbm(Q + fbm(Q * 1.7, 2, seed + 4)[:, None] * 1.6, 3, seed)
+        d = np.abs(np.sin(n * 2 * math.pi * 1.6))
+        hot = np.clip(1 - d / 0.4, 0, 1) ** 0.8
+        core = np.clip(1 - d / 0.16, 0, 1)
+        glow = np.array(m['glow_col'], float)
+        hotc = np.array(m['hot_col'], float)
+        col = crust * (1 - hot[:, None]) + glow[None] * hot[:, None]
+        return col * (1 - core[:, None]) + hotc[None] * core[:, None]
+    if k == 'galaxy':
+        # nebula clouds in several colours + scattered stars
+        cs = [np.array(c, float) for c in m['cols']]
+        a = fbm(G * 0.45, 3, seed)
+        b = fbm(G * 0.6 + 7.3, 3, seed + 9)
+        t1 = np.clip((a - 0.35) * 2.6, 0, 1)[:, None]
+        t2 = np.clip((b - 0.5) * 3.0, 0, 1)[:, None]
+        col = cs[0][None] * (1 - t1) + cs[1][None] * t1
+        col = col * (1 - t2 * 0.8) + cs[2][None] * t2 * 0.8
+        hl = np.clip((a + b - 1.15) * 3.0, 0, 1)[:, None]
+        col = col * (1 - hl * 0.7) + cs[3][None] * hl * 0.7
+        st = white(G, seed + 13, 4.0)
+        col[st > 0.975] = (235, 235, 255)
+        col[(st > 0.955) & (st <= 0.975)] = col[(st > 0.955) & (st <= 0.975)] * 0.4 + 150
+        return col
+    if k == 'holo':
+        # holographic foil: hue sweeps along the gun, broken up by noise, with bright sheen bands
+        n = fbm(G * 0.35, 3, seed)
+        h = (u * 0.035 + v * 0.07 + w * 0.05 + n * 0.45) % 1.0
+        sat, val = m.get('sat', 0.6), m.get('val', 0.95)
+        rgb = np.clip(np.abs(((h[:, None] * 6 + np.array([0, 4, 2])) % 6) - 3) - 1, 0, 1)
+        col = 255 * val * (1 - sat + sat * rgb)
+        sheen = (0.5 + 0.5 * np.sin((u * 0.6 - v * 1.4 + n * 3) * math.pi)) ** 6
+        return col * (1 - 0.5 * sheen[:, None]) + 255 * 0.5 * sheen[:, None]
+    if k == 'carbon':
+        # 2x2 twill weave
+        L = np.array(m['light'], float)
+        D = np.array(m['dark'], float)
+        a = u if side not in 'FK' else w
+        b = v if side not in 'TB' else w
+        cell = (np.floor(a * 2.0) + np.floor(b * 2.0)) % 2
+        f = np.where(cell == 0, (a * 2.0) % 1, (b * 2.0) % 1)
+        t = cell * 0.55 + 0.45 * np.abs(f - 0.5) * 2
+        return L[None] * (1 - t[:, None]) + D[None] * t[:, None]
     if k == 'shell':
         red = np.array(m['base'], float)
         brass = np.array([206, 170, 82], float)
@@ -906,6 +963,271 @@ def build_pm():
     return g
 
 
+# ------------------------------------------------------------------ skins
+# Premium skins reuse a gun's geometry and display untouched; only the materials are swapped
+# and extra decals painted.  Face packing depends on geometry alone, so the UVs match the base
+# model and a skin is just the base model pointing at another texture.
+AK_RECV = ['receiver', 'dust_cover', 'rear_trunnion']
+AK_WOOD = ['hg_*', 'stock_*']
+
+
+def engraving(sides, els, a, b, col_mul=0.5):
+    """Scrollwork: interleaved sine vines with a border line, cut into the surface."""
+    def fn(ctx):
+        if not _sel(ctx, sides, els):
+            return
+        A, Bv = ab(ctx)
+        reg = (A > a[0]) & (A < a[1]) & (Bv > b[0]) & (Bv < b[1])
+        vine = np.abs(np.sin(A * 1.9 + 1.4 * np.sin(Bv * 2.6 + A * 0.8))) < 0.2
+        curl = np.abs(np.sin(A * 3.1 - 1.2 * np.cos(Bv * 3.3 - A * 0.5))) < 0.12
+        border = ((np.abs(A - a[0] - 0.35) < 0.14) | (np.abs(A - a[1] + 0.35) < 0.14) |
+                  (np.abs(Bv - b[0] - 0.3) < 0.13) | (np.abs(Bv - b[1] + 0.3) < 0.13))
+        inside = (A > a[0] + 0.21) & (A < a[1] - 0.21) & (Bv > b[0] + 0.17) & (Bv < b[1] - 0.17)
+        m = reg & inside & (vine | curl | border)
+        ctx.col[m] *= col_mul
+    return fn
+
+
+def lines(sides, els, axis, at, width, col, a=(-99, 99), b=(-99, 99)):
+    """Solid colour lines at given positions along one face axis (inlays, neon strips)."""
+    def fn(ctx):
+        if not _sel(ctx, sides, els):
+            return
+        A, Bv = ab(ctx)
+        X = Bv if axis == 'b' else A
+        reg = (A > a[0]) & (A < a[1]) & (Bv > b[0]) & (Bv < b[1])
+        m = np.zeros(len(A), bool)
+        for p in at:
+            m |= np.abs(X - p) < width / 2
+        ctx.col[reg & m] = np.array(col, float)
+        ctx.flat[reg & m] = True
+    return fn
+
+
+def chevrons(sides, els, period, width, col, slope=0.8):
+    def fn(ctx):
+        if not _sel(ctx, sides, els):
+            return
+        A, Bv = ab(ctx)
+        m = ((A + np.abs(Bv - (ctx.el.lo[1] + ctx.el.hi[1]) / 2) * slope) % period) < width
+        ctx.col[m] = np.array(col, float)
+        ctx.flat[m] = True
+    return fn
+
+
+def bands(sides, els, period, zones, k=0.55):
+    """Graphic diagonal bands: zones = [(start, end, colour)] within one period of A + k*B."""
+    def fn(ctx):
+        if not _sel(ctx, sides, els):
+            return
+        A, Bv = ab(ctx)
+        X = (A + k * Bv) % period
+        for z0, z1, col in zones:
+            m = (X >= z0) & (X < z1)
+            ctx.col[m] = ctx.col[m] * 0.15 + np.array(col, float) * 0.85
+    return fn
+
+
+def skin_zloto(g):
+    mats = {
+        'blued':    dict(kind='metal', base=(200, 152, 50), wear=(255, 232, 150), var=0.08, edge=0.7),
+        'steel':    dict(kind='metal', base=(36, 34, 33), wear=(110, 100, 80), var=0.10, edge=0.6),
+        'parts':    dict(kind='metal', base=(222, 178, 70), wear=(255, 240, 170), var=0.06, edge=0.6),
+        'magsteel': dict(kind='metal', base=(184, 136, 42), wear=(250, 220, 130), var=0.08, edge=0.7),
+        'wood_ak':  dict(kind='wood', light=(78, 46, 32), dark=(24, 13, 9), wear=(120, 80, 54), edge=0.35),
+        'bakelite': dict(kind='wood', light=(70, 40, 28), dark=(20, 11, 8), wear=(110, 74, 50), edge=0.35),
+    }
+    D = g.dec
+    D(engraving('RL', ['receiver'], (19.8, 32.5), (-1.85, 1.15)))
+    D(engraving('RL', ['dust_cover'], (23.0, 29.3), (1.2, 2.0)))
+    D(engraving('RL', ['mag_*'], (19.0, 27.0), (-9.4, -1.9), col_mul=0.6))
+    # gold inlay lines on the ebony furniture
+    D(lines('RL', ['stock_comb'], 'b', (0.35, -0.95), 0.16, (226, 182, 74)))
+    D(lines('RL', ['hg_lower', 'hg_upper'], 'b', (0.6, 1.95), 0.14, (226, 182, 74)))
+    return mats
+
+
+def skin_neon(g):
+    cyan, mag = (40, 236, 255), (255, 50, 200)
+    mats = {
+        'blued':    dict(kind='metal', base=(30, 31, 36), wear=cyan, var=0.06, edge=0.95, glow=True),
+        'steel':    dict(kind='metal', base=(24, 25, 29), wear=cyan, var=0.06, edge=0.8, glow=True),
+        'parts':    dict(kind='metal', base=(40, 40, 46), wear=mag, var=0.05, edge=0.95, glow=True),
+        'magsteel': dict(kind='metal', base=(26, 26, 30), wear=mag, var=0.06, edge=0.95, glow=True),
+        'wood_ak':  dict(kind='carbon', light=(58, 60, 66), dark=(18, 18, 21), wear=cyan, edge=0.9, glow=True),
+        'bakelite': dict(kind='carbon', light=(58, 60, 66), dark=(18, 18, 21), wear=mag, edge=0.9, glow=True),
+    }
+    D = g.dec
+    # circuit traces on the receiver and stock, chevrons on the magazine
+    D(lines('RL', ['receiver'], 'b', (-1.0,), 0.2, cyan, a=(20.5, 31.5)))
+    D(lines('RL', ['receiver'], 'a', (20.5, 31.5), 0.2, cyan, b=(-1.1, -0.2)))
+    D(lines('RL', ['stock_comb'], 'b', (-0.25,), 0.22, mag, a=(34.0, 41.2)))
+    D(lines('RL', ['stock_comb'], 'a', (41.2,), 0.22, mag, b=(-0.35, 0.6)))
+    D(lines('RL', ['hg_upper'], 'b', (1.95,), 0.2, cyan))
+    D(chevrons('RL', ['mag_*'], 1.6, 0.3, cyan))
+    return mats
+
+
+def skin_polar(g):
+    white_ = (232, 233, 236)
+    orange, black = (240, 112, 28), (26, 26, 30)
+    mats = {
+        'blued':    dict(kind='poly', base=white_, wear=(150, 152, 158), var=0.03, edge=0.3),
+        'steel':    dict(kind='metal', base=(34, 34, 38), wear=(110, 112, 118), var=0.08, edge=0.6),
+        'parts':    dict(kind='metal', base=(36, 36, 40), wear=(130, 132, 138), var=0.06, edge=0.6),
+        'magsteel': dict(kind='poly', base=orange, wear=(255, 190, 120), var=0.04, edge=0.5),
+        'wood_ak':  dict(kind='poly', base=white_, wear=(150, 152, 158), var=0.03, edge=0.3),
+        'bakelite': dict(kind='poly', base=black, wear=(80, 80, 86), var=0.05, edge=0.5),
+    }
+    D = g.dec
+    zones = [(0.0, 0.35, black), (0.35, 2.6, orange), (2.6, 2.95, black)]
+    D(bands('RL', AK_WOOD, 7.0, zones))
+    D(bands('RL', ['receiver', 'dust_cover'], 9.0, [(0.0, 0.3, black), (5.2, 5.5, black)]))
+    D(bands('T', ['dust_cover_top', 'hg_upper_top', 'stock_comb'], 7.0, zones, k=0.0))
+    D(lines('RL', ['mag_*'], 'b', (-7.0,), 0.3, black))
+    return mats
+
+
+def skin_damast(g):
+    mats = {
+        'blued':    dict(kind='damascus', light=(158, 160, 166), dark=(66, 67, 73), wear=(205, 206, 210), edge=0.6),
+        'steel':    dict(kind='damascus', light=(120, 122, 128), dark=(34, 35, 39), wear=(190, 190, 195), edge=0.6),
+        'parts':    dict(kind='metal', base=(168, 112, 58), wear=(230, 180, 120), var=0.08, edge=0.6),
+        'magsteel': dict(kind='damascus', light=(136, 138, 144), dark=(52, 53, 58), wear=(190, 190, 195), edge=0.6),
+        'wood_ak':  dict(kind='wood', light=(172, 38, 30), dark=(66, 8, 10), wear=(212, 92, 76), edge=0.45),
+        'bakelite': dict(kind='bakelite', base=(110, 18, 16), dark=(42, 6, 8), wear=(170, 70, 60), edge=0.5),
+    }
+    D = g.dec
+    D(lines('RL', ['hg_lower', 'stock_comb'], 'b', (0.6,), 0.14, (186, 128, 66)))
+    return mats
+
+
+def skin_lawa(g):
+    lava = dict(kind='lava', base=(30, 22, 24), glow_col=(232, 74, 12), hot_col=(255, 214, 70),
+                wear=(255, 120, 30), edge=0.85, glow=True)
+    mats = {
+        'blued': lava, 'magsteel': lava, 'wood_ak': lava,
+        'steel':    dict(kind='metal', base=(28, 24, 26), wear=(255, 120, 30), var=0.08, edge=0.85, glow=True),
+        'parts':    dict(kind='metal', base=(255, 150, 40), wear=(255, 230, 120), var=0.08, edge=0.6),
+        'bakelite': dict(lava, base=(22, 16, 18)),
+    }
+    return mats
+
+
+def skin_galaktyka(g):
+    gal = dict(kind='galaxy', cols=((14, 10, 44), (86, 30, 150), (30, 150, 220), (236, 80, 190)),
+               wear=(200, 180, 255), edge=0.55)
+    mats = {
+        'blued': gal, 'magsteel': gal, 'wood_ak': gal, 'bakelite': gal,
+        'steel':    dict(kind='metal', base=(176, 182, 198), wear=(240, 244, 255), var=0.06, edge=0.6),
+        'parts':    dict(kind='metal', base=(196, 200, 214), wear=(250, 250, 255), var=0.05, edge=0.6),
+    }
+    D = g.dec
+    D(lines('RL', ['receiver'], 'b', (1.05,), 0.14, (220, 225, 240)))
+    return mats
+
+
+# --- generic skins for the other AXON guns: materials grouped by role
+METAL = ('blued', 'steel', 'black', 'rail', 'magsteel', 'supp')
+ACCENT = ('parts', 'brass')
+FURN = ('wood_ak', 'wood_870', 'polymer', 'tan', 'bakelite', 'rubber', 'band')
+
+
+def by_mat(mats, fn):
+    """Run a decal only on elements made of the given (base gun) materials."""
+    def w(ctx):
+        if ctx.el.mat in mats:
+            fn(ctx)
+    return w
+
+
+def free_engraving(sides, sc, col_mul=0.55):
+    def fn(ctx):
+        if ctx.side not in sides:
+            return
+        A, Bv = ab(ctx)
+        A, Bv = A / sc, Bv / sc
+        vine = np.abs(np.sin(A * 1.9 + 1.4 * np.sin(Bv * 2.6 + A * 0.8))) < 0.2
+        curl = np.abs(np.sin(A * 3.1 - 1.2 * np.cos(Bv * 3.3 - A * 0.5))) < 0.12
+        ctx.col[vine | curl] *= col_mul
+    return fn
+
+
+def generic_skin(theme, sc=1.0):
+    def painter(g):
+        M = {}
+
+        def put(group, d):
+            for k in group:
+                M[k] = dict(d, sc=sc)
+        D = g.dec
+        if theme == 'zloto':
+            put(METAL, dict(kind='metal', base=(200, 152, 50), wear=(255, 232, 150), var=0.08, edge=0.7))
+            put(('steel',), dict(kind='metal', base=(36, 34, 33), wear=(110, 100, 80), var=0.10, edge=0.6))
+            put(ACCENT, dict(kind='metal', base=(222, 178, 70), wear=(255, 240, 170), var=0.06, edge=0.6))
+            put(FURN, dict(kind='wood', light=(78, 46, 32), dark=(24, 13, 9), wear=(120, 80, 54), edge=0.35))
+            D(by_mat(('blued', 'black', 'magsteel', 'supp'), free_engraving('RL', sc)))
+        elif theme == 'neon':
+            cyan, mag = (40, 236, 255), (255, 50, 200)
+            put(METAL, dict(kind='metal', base=(30, 31, 36), wear=cyan, var=0.06, edge=0.95, glow=True))
+            put(ACCENT, dict(kind='metal', base=(40, 40, 46), wear=mag, var=0.05, edge=0.95, glow=True))
+            put(FURN, dict(kind='carbon', light=(58, 60, 66), dark=(18, 18, 21), wear=mag, edge=0.9, glow=True))
+        elif theme == 'lawa':
+            lava = dict(kind='lava', base=(30, 22, 24), glow_col=(232, 74, 12), hot_col=(255, 214, 70),
+                        wear=(255, 120, 30), edge=0.85, glow=True)
+            put(METAL + FURN, lava)
+            put(ACCENT, dict(kind='metal', base=(255, 150, 40), wear=(255, 230, 120), var=0.08, edge=0.6))
+        elif theme == 'galaktyka':
+            put(METAL + FURN, dict(kind='galaxy', cols=((14, 10, 44), (86, 30, 150), (30, 150, 220), (236, 80, 190)),
+                                   wear=(200, 180, 255), edge=0.55))
+            put(('steel', 'rail') + ACCENT, dict(kind='metal', base=(186, 190, 204), wear=(250, 250, 255), var=0.05, edge=0.6))
+        elif theme == 'polar':
+            white_, orange, black = (232, 233, 236), (240, 112, 28), (26, 26, 30)
+            put(METAL, dict(kind='poly', base=white_, wear=(150, 152, 158), var=0.03, edge=0.3))
+            put(('steel', 'rail') + ACCENT, dict(kind='metal', base=(36, 36, 40), wear=(130, 132, 138), var=0.06, edge=0.6))
+            put(FURN, dict(kind='poly', base=orange, wear=(255, 190, 120), var=0.04, edge=0.5))
+            put(('rubber', 'band'), dict(kind='poly', base=black, wear=(80, 80, 86), var=0.05, edge=0.5))
+            zones = [(0.0, 0.35 * sc, black), (0.35 * sc, 2.6 * sc, orange), (2.6 * sc, 2.95 * sc, black)]
+            D(by_mat(('blued', 'black', 'supp', 'magsteel'), bands('RL', None, 8.0 * sc, zones)))
+        elif theme == 'holo':
+            put(METAL + FURN, dict(kind='holo', wear=(255, 255, 255), edge=0.5))
+            put(('steel',) + ACCENT, dict(kind='metal', base=(48, 50, 58), wear=(150, 156, 170), var=0.06, edge=0.7))
+            put(('rubber', 'band'), dict(MATS['rubber']))
+        elif theme == 'damast':
+            put(METAL, dict(kind='damascus', light=(158, 160, 166), dark=(66, 67, 73), wear=(205, 206, 210), edge=0.6))
+            put(ACCENT, dict(kind='metal', base=(168, 112, 58), wear=(230, 180, 120), var=0.08, edge=0.6))
+            put(FURN, dict(kind='wood', light=(172, 38, 30), dark=(66, 8, 10), wear=(212, 92, 76), edge=0.45))
+            put(('bakelite', 'polymer'), dict(kind='bakelite', base=(110, 18, 16), dark=(42, 6, 8), wear=(170, 70, 60), edge=0.5))
+            put(('rubber', 'band'), dict(MATS['rubber']))
+        return M
+    return painter
+
+
+def _gun_skins(base, first, sc, themes):
+    names = {'zloto': 'Złoto', 'neon': 'Neon', 'lawa': 'Lawa', 'galaktyka': 'Galaktyka',
+             'polar': 'Polar', 'damast': 'Damast', 'holo': 'Holo'}
+    title = {'ak47': 'AK47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington', 'makarov': 'Makarov'}[base]
+    return {'%s_%s' % (base, t): (base, generic_skin(t, sc), first + i, '%s [%s]' % (title, names[t]))
+            for i, t in enumerate(themes)}
+
+
+SKINS = {
+    # name: (base gun, painter, custom_model_data on crossbow, display name)
+    'ak47_zloto': ('ak47', skin_zloto, 101, 'AK47 [Złoto]'),
+    'ak47_neon': ('ak47', skin_neon, 102, 'AK47 [Neon]'),
+    'ak47_polar': ('ak47', skin_polar, 103, 'AK47 [Polar]'),
+    'ak47_damast': ('ak47', skin_damast, 104, 'AK47 [Damast]'),
+    'ak47_lawa': ('ak47', skin_lawa, 105, 'AK47 [Lawa]'),
+    'ak47_galaktyka': ('ak47', skin_galaktyka, 106, 'AK47 [Galaktyka]'),
+}
+# custom_model_data blocks of ten per gun: AK 101-, M4 111-, Remington 121-, Makarov 131-
+# every gun has the same seven themes
+SKINS.update(_gun_skins('ak47', 107, 1.0, ('holo',)))
+SKINS.update(_gun_skins('m4a1s', 111, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'polar', 'damast', 'holo')))
+SKINS.update(_gun_skins('remmington', 121, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+SKINS.update(_gun_skins('makarov', 131, 0.35, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+
+
 # ------------------------------------------------------------------ pipeline
 class Ctx:
     pass
@@ -1022,7 +1344,10 @@ def paint_face(g, fd, img, filled):
     ef[ctx.flat] = 0
     wear = np.array(m.get('wear', m.get('base', (128, 128, 128))), float)
     rnd = fbm(P * 2.2, 2, 11)
-    amt = (ef * m.get('edge', 0.5) * (0.25 + 0.6 * rnd))[:, None]
+    if m.get('glow'):     # skins: crisp, even outline on every convex edge instead of wear
+        amt = ((ef > 0.45) * m.get('edge', 0.5))[:, None]
+    else:
+        amt = (ef * m.get('edge', 0.5) * (0.25 + 0.6 * rnd))[:, None]
     ctx.col = ctx.col * (1 - amt) + wear[None] * amt
     # dither
     ctx.col += (white(P, 99, 4.0)[:, None] - 0.5) * 4
@@ -1162,3 +1487,19 @@ if __name__ == '__main__':
             grip_mc=g.to_mc(np.array([[0, g.grip[1], g.grip[0]]]))[0].tolist())
         json.dump(meta, open(os.path.join(OUT, name + '.meta.json'), 'w'), indent=1)
         print(name, 'elements', len(model['elements']), 'faces', nf, 'density', dens)
+    for name, (base, painter, cmd, _) in SKINS.items():
+        if len(sys.argv) > 1 and name not in sys.argv[1:] and base not in sys.argv[1:]:
+            continue
+        g = BUILDERS[base]()
+        dsp, _ = ads_display(g, disp[base])
+        saved = dict(MATS)
+        MATS.update(painter(g))
+        try:
+            model, img, dens, nf = build_model(g, 'qualityarmory:axon/' + name, dsp)
+        finally:
+            MATS.clear()
+            MATS.update(saved)
+        model['credit'] = 'AXON guns - %s skin, generated by gen.py' % name
+        json.dump(model, open(os.path.join(OUT, name + '.json'), 'w'), indent=1)
+        Image.fromarray(img, 'RGBA').save(os.path.join(OUT, name + '.png'))
+        print(name, 'skin of', base, 'custom_model_data', cmd, 'density', dens)

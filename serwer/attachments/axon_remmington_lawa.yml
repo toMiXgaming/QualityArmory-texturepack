@@ -1,0 +1,12 @@
+invalid: false
+name: remmington_lawa
+displayname: '&6Remington &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 123
+material: CROSSBOW
+baseGun: remmington
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

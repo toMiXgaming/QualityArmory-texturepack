@@ -5,13 +5,16 @@ assets/qualityarmory/textures/axon/, and an 'axon' directory source added to the
 atlas (QA's atlas file only lists 'all/', so new texture folders must be registered)."""
 import hashlib, io, json, os, sys, zipfile
 from PIL import Image
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from gen import SKINS
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = sys.argv[1] if len(sys.argv) > 1 else '/tmp/qa/QA21.zip'
 DST = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, 'QualityArmory-21-axon.zip')
-GUNS = ['ak47', 'm4a1s', 'remmington', 'makarov']
+GUNS = ['ak47', 'm4a1s', 'remmington', 'makarov'] + list(SKINS)
+ITEMS = 'assets/minecraft/items/crossbow.json'
 ATLAS = 'assets/minecraft/atlases/blocks.json'
-NO_HEAD = {'makarov'}   # QA's own model has no head transform either
+NO_HEAD = {'makarov'} | {n for n, v in SKINS.items() if v[0] == 'makarov'}   # QA's own model has no head transform either
 
 
 def validate(model, tex_png, name):
@@ -68,11 +71,30 @@ def main():
     if not any(s.get('source') == 'axon' for s in atlas['sources']):
         atlas['sources'].append({'type': 'directory', 'source': 'axon', 'prefix': 'axon/'})
     repl[ATLAS] = json.dumps(atlas, indent=4).encode()
+    # premium skins: new custom_model_data entries on the crossbow (QA's own ids end at 85)
+    items = json.loads(zin.read(ITEMS))
+    ent = items['model']['entries']
+    for n, (base, _, cmd, _) in SKINS.items():
+        ref = 'qualityarmory:gun/' + n
+        if any(e['threshold'] == cmd and e['model'].get('model') != ref for e in ent):
+            raise SystemExit('custom_model_data %d already used' % cmd)
+        ent[:] = [e for e in ent if e['threshold'] != cmd]
+        ent.append({'threshold': cmd, 'model': {'type': 'model', 'model': ref}})
+    ent.sort(key=lambda e: e['threshold'])
+    repl[ITEMS] = json.dumps(items, indent=2).encode()
     shaders = os.path.join(HERE, 'shadery')   # AxonMap: full screen map shader (rendertype_text)
     for fn in sorted(os.listdir(shaders)):
         repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
     from dodaj_reaktor import reactor_files   # reaktor AxonPlot (gen_reactor.py)
     repl.update(reactor_files())
+    # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut
+    # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko) i meble z gen_meble.py
+    from gen_meble import MEBLE
+    for name in ['zrzut', 'wrak_mi8', 'lozko'] + MEBLE:
+        for src, dst in ((name + '.json', 'assets/axon/models/block/%s.json' % name),
+                         (name + '.png', 'assets/axon/textures/item/%s.png' % name),
+                         (name + '_item.json', 'assets/axon/items/%s.json' % name)):
+            repl[dst] = open(os.path.join(HERE, 'build', src), 'rb').read()
     mc = os.path.join(HERE, 'pack.mcmeta')   # owner-edited description, carried over
     if os.path.exists(mc):
         repl['pack.mcmeta'] = open(mc, 'rb').read()
