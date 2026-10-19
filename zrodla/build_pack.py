@@ -86,8 +86,9 @@ def main():
     for fn in sorted(os.listdir(shaders)):
         repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
     # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut
-    # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko)
-    for name in ('zrzut', 'wrak_mi8', 'lozko'):
+    # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko) i meble z gen_meble.py
+    from gen_meble import MEBLE
+    for name in ['zrzut', 'wrak_mi8', 'lozko'] + MEBLE:
         for src, dst in ((name + '.json', 'assets/axon/models/block/%s.json' % name),
                          (name + '.png', 'assets/axon/textures/item/%s.png' % name),
                          (name + '_item.json', 'assets/axon/items/%s.json' % name)):
