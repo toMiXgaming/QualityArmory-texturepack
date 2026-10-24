@@ -88,9 +88,10 @@ def main():
     from dodaj_reaktor import reactor_files   # reaktor AxonPlot (gen_reactor.py)
     repl.update(reactor_files())
     # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut
-    # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko) i meble z gen_meble.py
+    # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko) i meble z gen_meble.py i gen_sklep.py
     from gen_meble import MEBLE
-    for name in ['zrzut', 'wrak_mi8', 'lozko'] + MEBLE:
+    from gen_sklep import SKLEP
+    for name in ['zrzut', 'wrak_mi8', 'lozko'] + MEBLE + SKLEP:
         for src, dst in ((name + '.json', 'assets/axon/models/block/%s.json' % name),
                          (name + '.png', 'assets/axon/textures/item/%s.png' % name),
                          (name + '_item.json', 'assets/axon/items/%s.json' % name)):
