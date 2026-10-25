@@ -92,6 +92,25 @@ Model skrzyni zrzutu: oliwkowa skrzynia z okuciami, pasem ostrzegawczym, złożo
 
 Meble z `zrodla/gen_meble.py` (jedna kratka, przód na południe): `axon:regal` (regał z segregatorami), `axon:kartoteka` (szafa kartotekowa), `axon:umywalka`, `axon:warsztat` (stół z imadłem), `axon:kuchenka` (kuchenka gazowa), `axon:piecyk` (koza), `axon:radiostacja`, `axon:biurko` (z komputerem), `axon:kroplowka`, `axon:kosz`, `axon:szlifierka` oraz drzwi `axon:drzwi_drewniane` i `axon:drzwi_stalowe` (dwie kratki wysokości, płyta na środku, plugin przestawia je przy otwieraniu). Plugin stawia je zamiast bloków wymienionych w `meble.bloki` i `meble.drzwi` w configu. Podglądy: `podglady/meble.png`, `podglady/meble-2.png`.
 
+Meble do nowych struktur (stacja Oilen, kiosk, fastfood, osiedle, zajezdnia, elektrownia, galeria) z `zrodla/gen_sklep.py`, też przód na południe:
+
+| Model | Co to | Blok w strukturze (`meble.bloki`) |
+|---|---|---|
+| `axon:kasa` | kasa fiskalna z szufladą i wyświetlaczem (stoi na ladzie) | `ender_chest` |
+| `axon:lada` | lada sklepowa z witryną, półki od strony sprzedawcy | `jack_o_lantern` |
+| `axon:kibel` | kompakt WC ze spłuczką, podniesiona deska | `end_portal_frame` |
+| `axon:regal_sklepowy` | regał z puszkami, słoikami, kartonami i butelkami | `bee_nest` |
+| `axon:lodowka` | przeszklona lodówka na napoje (2 kratki) | `calibrated_sculk_sensor` |
+| `axon:dystrybutor` | dystrybutor paliwa z licznikiem i pistoletem (2 kratki) | `damaged_anvil` |
+| `axon:rozdzielnia` | szafa elektryczna z licznikami | `sticky_piston` |
+| `axon:frytkownica` | frytkownica gastronomiczna z koszykami | `vault` |
+| `axon:kanistry` | sterta kanistrów | `respawn_anchor` |
+| `axon:wozek` | porzucony wózek sklepowy | `lodestone` |
+
+Dopisanie do gotowego zipa bez pełnej przebudowy: `zrodla/dodaj_sklep.py`, podgląd: `zrodla/preview_sklep.py`. Gotowe pliki w `modele/`, podglądy `podglady/sklep.png` (przód) i `podglady/sklep-tyl.png`.
+
+![Meble do nowych struktur](podglady/sklep.png)
+
 ## Wgranie na serwer
 
 Repo musi być **publiczne**, inaczej gracze nie pobiorą paczki. W `plugins/QualityArmory/config.yml`:
