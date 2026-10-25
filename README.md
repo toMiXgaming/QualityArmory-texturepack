@@ -111,6 +111,19 @@ Dopisanie do gotowego zipa bez pełnej przebudowy: `zrodla/dodaj_sklep.py`, podg
 
 ![Meble do nowych struktur](podglady/sklep.png)
 
+### Auta i telewizor do blokowiska
+
+`zrodla/gen_auta.py` robi porzucone auta stawiane z sekcji `modele:` pliku struktury oraz telewizor jako mebel:
+
+- `axon:auto_sedan` – srebrny sedan: uchylona maska nad pustą komorą silnika, pajęczyna na przedniej szybie, flak, jedno koło ukradzione (stoi na pustaku), drzwi pasażera z innego, czerwonego auta.
+- `axon:auto_sedan_spalony` – ten sam model, wypalony: rdza, sadza, bez szyb.
+- `axon:auto_kombi` – zielone kombi z relingami, otwarte drzwi kierowcy, dwa flaki, oderwany zderzak.
+- `axon:telewizor` – telewizor z kineskopem i anteną „królicze uszy”, rozbity ekran. Mebel jednej kratki (przód na południe), w strukturze blok `loom` (`meble.bloki` w configu AXON-Structure).
+
+Auta mają 2 × 4 kratki, plugin rysuje je ze skalą 2, a środek modelu leży 0,75 kratki nad gruntem w środku obrysu: w `.axs` przy obrocie 0 (przód na północ) to `x0 + 1, y + 0.75, z0 + 2`, przy obrocie 90 `x0 + 2, y + 0.75, z0 + 1`. Kolizję dają bariery w obrysie w dwóch warstwach. Dopisanie do gotowego zipa: `zrodla/dodaj_auta.py`, podgląd: `zrodla/preview_auta.py`, gotowe pliki w `modele/`, podgląd `podglady/auta.png`.
+
+![Auta i telewizor](podglady/auta.png)
+
 ## Wgranie na serwer
 
 Repo musi być **publiczne**, inaczej gracze nie pobiorą paczki. W `plugins/QualityArmory/config.yml`:
@@ -152,4 +165,4 @@ Do sprawdzenia w grze: celowanie M4A1-S po poprawce 3 i celowanie Makarova.
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
 - `zrodla/` – generator broni (`gen.py`) i reaktora (`gen_reactor.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
-Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-m4a1s skiny-remmington skiny-makarov && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
