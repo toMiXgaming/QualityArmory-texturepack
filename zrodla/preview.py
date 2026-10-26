@@ -1,16 +1,29 @@
 #!/usr/bin/env python3
 """Preview renders: side, 3/4, first person (hip), ADS (off-hand), GUI slot, third person,
 plus a comparison sheet against QualityArmory's original model."""
-import json, os, sys
+import json, math, os, sys
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from render import *
+import gen
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 QA = '/tmp/qa/pack'
-S_OF = {'ak47': 1, 'm4a1s': 1, 'remmington': -1, 'makarov': 1}
-TITLE = {'ak47': 'AK-47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington 870', 'makarov': 'Makarov PM'}
+TITLE = {'ak47': 'AK-47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington 870', 'makarov': 'Makarov PM',
+         'awp': 'AWP (L96A1)', 'mac10': 'MAC-10', 'm16': 'M16A2', 'sks': 'SKS-45',
+         'barrett': 'Barrett M82A1', 'deagle': 'Desert Eagle', 'enfield': 'Lee-Enfield No.4',
+         'sg553': 'SG 553', 'skorpion': 'Skorpion vz.61', 'dragunov': 'Dragunov SVD',
+         'rpg': 'RPG-7', 'aa12': 'AA-12', 'ump': 'UMP-45', 'asval': 'AS Val'}
+_RIGHT = {}
+
+
+def right_yaw(name):
+    """Camera yaw that looks at the gun's right side (frame comes from gen.py's builder)."""
+    if name not in _RIGHT:
+        r = gen.BUILDERS[name]().right_mc()
+        _RIGHT[name] = math.degrees(math.atan2(-r[0], r[2]))
+    return _RIGHT[name]
 SKY = ((126, 168, 214), (196, 214, 226))
 
 
@@ -38,8 +51,7 @@ def load(name, which):
 
 
 def side_view(q, name, W, H, left=False, yaw_off=0, pitch=0, bg=(38, 42, 50), margin=0.05):
-    s = S_OF[name]
-    base = 180 if s == 1 else 0           # camera on the gun's right side
+    base = right_yaw(name)                # camera on the gun's right side
     if left:
         base += 180
     R = ortho_view(base + yaw_off, pitch)
@@ -143,7 +155,7 @@ def skins_compare(base):
     out = []
     for which, name, lab in rows:
         m, q = load(name, which)
-        S_OF.setdefault(name, S_OF[base])
+        _RIGHT.setdefault(name, right_yaw(base))
         sv = label(side_view(q, name, 560, H), lab, 17)
         tq = side_view(q, name, 400, H, left=True, yaw_off=-32, pitch=18)
         fp = fp_view(m, q, 409, H)

@@ -1,6 +1,8 @@
 {
   "pack": {
     "pack_format": 46,
-    "description": "AXON: nowe modele broni (AK47, M4A1-S, Remington, Makarov) na bazie QualityGuns 2.1.9"
+    "min_format": 46,
+    "max_format": 75,
+    "description": "AXON: nowe modele broni (AK47, M4A1-S, Remington, Makarov, AWP, MAC10, M16, SKS) na bazie QualityGuns 2.1.9. Wersje 1.21.4-1.21.11"
   }
 }
