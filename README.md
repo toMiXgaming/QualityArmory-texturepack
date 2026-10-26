@@ -19,6 +19,10 @@ Zmienione pliki względem oryginału:
 - `assets/minecraft/atlases/blocks.json` – dodane źródło `axon/` (bez tego tekstury byłyby fioletowo-czarne).
 - `pack.mcmeta` – opis zaczyna się od „AXON”, żeby w grze było widać, która paczka jest wczytana.
 
+## Wersja 1.21.11
+
+`QualityArmory-21-axon-1.21.11.zip` to ta sama paczka bez shaderów `assets/minecraft/shaders/core` i z `pack.mcmeta` w formacie 1.21.11 (`min_format`/`max_format` 75, bez `pack_format`). Shadery AxonMap (chowanie HUD i mapa na cały ekran) są w starym formacie JSON z `#version 150`, który od 1.21.6 jest nieobsługiwany i powoduje błąd wczytywania, więc w tej wersji ich nie ma. Na 1.21.11 wymagają przepisania na nowy format shaderów. Zwykła paczka `QualityArmory-21-axon.zip` jest przeznaczona na 1.21.4-1.21.5.
+
 ## Skiny premium
 
 Skin używa tego samego modelu co bazowa broń (te same elementy i pozycje, także celowanie), różni się tylko teksturą. Generuje je `gen.py` (słownik `SKINS`; AK ma własne malowania, reszta broni wspólne motywy z `generic_skin`), a `build_pack.py` dopisuje je do `assets/minecraft/items/crossbow.json`. Numery idą blokami po dziesięć na broń (AK 101–, M4A1-S 111–, Remington 121–, Makarov 131–), bo oryginalne numery QA kończą się na 85.
