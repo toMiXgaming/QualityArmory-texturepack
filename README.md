@@ -21,7 +21,7 @@ Zmienione pliki względem oryginału:
 
 ## Wersja 1.21.11
 
-`QualityArmory-21-axon-1.21.11.zip` to ta sama paczka bez shaderów `assets/minecraft/shaders/core` i z `pack.mcmeta` w formacie 1.21.11 (`min_format`/`max_format` 75, bez `pack_format`). Shadery AxonMap (chowanie HUD i mapa na cały ekran) są w starym formacie JSON z `#version 150`, który od 1.21.6 jest nieobsługiwany i powoduje błąd wczytywania, więc w tej wersji ich nie ma. Na 1.21.11 wymagają przepisania na nowy format shaderów. Zwykła paczka `QualityArmory-21-axon.zip` jest przeznaczona na 1.21.4-1.21.5.
+`QualityArmory-21-axon-1.21.11.zip` to ta sama paczka bez shaderów `assets/minecraft/shaders/core` i bez starego `items/crossbow_arrow.json` (bez klucza `model`) i z `pack.mcmeta` w formacie 1.21.11 (`min_format`/`max_format` 75, bez `pack_format`). Shadery AxonMap (chowanie HUD i mapa na cały ekran) są w starym formacie JSON z `#version 150`, który od 1.21.6 jest nieobsługiwany i powoduje błąd wczytywania, więc w tej wersji ich nie ma. Na 1.21.11 wymagają przepisania na nowy format shaderów. Zwykła paczka `QualityArmory-21-axon.zip` jest przeznaczona na 1.21.4-1.21.5.
 
 ## Skiny premium
 
