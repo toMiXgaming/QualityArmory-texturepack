@@ -191,6 +191,13 @@ public class StarlightNMSHandler extends VanillaNMSHandler {
         return false;
     }
 
+    private void removeQueuedLight(Map<ChunkPos, Set<LightPos>> map, ChunkPos chunkPos, BlockPos position) {
+        Set<LightPos> points = map.get(chunkPos);
+        if (points != null) {
+            points.removeIf(lp -> lp.blockPos.equals(position));
+        }
+    }
+
     private void queueLight(Map<ChunkPos, Set<LightPos>> map, ChunkPos chunkPos, BlockPos position, int level) {
         map.computeIfAbsent(chunkPos, k -> ConcurrentHashMap.newKeySet()).add(new LightPos(position, level));
     }
@@ -214,7 +221,12 @@ public class StarlightNMSHandler extends VanillaNMSHandler {
                     && isLightingSupported(world, LightFlag.SKY_LIGHTING);
             if (finalLightLevel == 0) {
                 if (block || sky) {
-                    getStarInterface(lightEngine).blockChange(position);
+                    // drop a pending (not yet applied) light at this position, otherwise it would re-appear later
+                    removeQueuedLight(blockQueueMap, chunkPos, position);
+                    removeQueuedLight(skyQueueMap, chunkPos, position);
+                    StarLightInterface starLightInterface = getStarInterface(lightEngine);
+                    starLightInterface.blockChange(position);
+                    starLightInterface.propagateChanges();
                 }
             } else {
                 if (block) {
@@ -244,7 +256,8 @@ public class StarlightNMSHandler extends VanillaNMSHandler {
         }
 
         // Do not recalculate if no changes!
-        if (!lightEngine.hasLightWork() && blockQueueMap.isEmpty() && skyQueueMap.isEmpty()) {
+        if (!lightEngine.hasLightWork() && !getStarInterface(lightEngine).hasUpdates() && blockQueueMap.isEmpty()
+                && skyQueueMap.isEmpty()) {
             return ResultCode.RECALCULATE_NO_CHANGES;
         }
 
