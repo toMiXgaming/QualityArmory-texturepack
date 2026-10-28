@@ -1,0 +1,12 @@
+invalid: false
+name: awp_galaktyka
+displayname: '&6AWP &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 144
+material: CROSSBOW
+baseGun: awp
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

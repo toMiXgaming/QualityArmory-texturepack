@@ -1,0 +1,12 @@
+invalid: false
+name: m16_holo
+displayname: '&6M16 &e[Holo]'
+lore:
+- '&7Skin premium AXON'
+id: 157
+material: CROSSBOW
+baseGun: m16
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

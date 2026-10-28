@@ -1,0 +1,12 @@
+invalid: false
+name: m16_lawa
+displayname: '&6M16 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 153
+material: CROSSBOW
+baseGun: m16
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

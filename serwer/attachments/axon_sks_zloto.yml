@@ -1,0 +1,12 @@
+invalid: false
+name: sks_zloto
+displayname: '&6SKS &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 171
+material: CROSSBOW
+baseGun: sks
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

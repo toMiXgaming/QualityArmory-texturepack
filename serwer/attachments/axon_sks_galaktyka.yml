@@ -1,0 +1,12 @@
+invalid: false
+name: sks_galaktyka
+displayname: '&6SKS &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 174
+material: CROSSBOW
+baseGun: sks
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
