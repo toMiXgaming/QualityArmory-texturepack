@@ -224,9 +224,28 @@ public class StarlightNMSHandler extends VanillaNMSHandler {
                     // drop a pending (not yet applied) light at this position, otherwise it would re-appear later
                     removeQueuedLight(blockQueueMap, chunkPos, position);
                     removeQueuedLight(skyQueueMap, chunkPos, position);
+                    // Starlight's own blockChange() is processed asynchronously, which left clients with stale
+                    // light data. Recheck the block right now on the main thread instead.
                     StarLightInterface starLightInterface = getStarInterface(lightEngine);
-                    starLightInterface.blockChange(position);
-                    starLightInterface.propagateChanges();
+                    Set<BlockPos> changed = java.util.Collections.singleton(position);
+                    if (block) {
+                        BlockStarLightEngine bsle = starLightInterface.getBlockLightEngine();
+                        try {
+                            bsle.blocksChangedInChunk(worldServer.getChunkSource(), chunkPos.x, chunkPos.z, changed,
+                                    null);
+                        } finally {
+                            starLightInterface.releaseBlockLightEngine(bsle);
+                        }
+                    }
+                    if (sky) {
+                        SkyStarLightEngine ssle = starLightInterface.getSkyLightEngine();
+                        try {
+                            ssle.blocksChangedInChunk(worldServer.getChunkSource(), chunkPos.x, chunkPos.z, changed,
+                                    null);
+                        } finally {
+                            starLightInterface.releaseSkyLightEngine(ssle);
+                        }
+                    }
                 }
             } else {
                 if (block) {
