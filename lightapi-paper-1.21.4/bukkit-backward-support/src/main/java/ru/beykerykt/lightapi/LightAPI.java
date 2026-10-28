@@ -76,6 +76,26 @@ public class LightAPI extends JavaPlugin {
         return null;
     }
 
+    private static void debugCall(String what, World world, int x, int y, int z, int level, boolean async) {
+        org.bukkit.plugin.Plugin plugin = Bukkit.getPluginManager().getPlugin("LightAPI");
+        if (!(plugin instanceof ru.beykerykt.minecraft.lightapi.bukkit.BukkitPlugin)) {
+            return;
+        }
+        StackTraceElement[] st = Thread.currentThread().getStackTrace();
+        StringBuilder caller = new StringBuilder();
+        for (int i = 3; i < st.length && caller.length() < 400; i++) {
+            if (!st[i].getClassName().startsWith("ru.beykerykt")) {
+                caller.append(st[i]).append(" <- ");
+                if (caller.length() > 150) {
+                    break;
+                }
+            }
+        }
+        ((ru.beykerykt.minecraft.lightapi.bukkit.BukkitPlugin) plugin).getPlatformImpl().debug(
+                "[legacy] " + what + " " + world.getName() + " " + x + "," + y + "," + z + " level=" + level
+                        + " async=" + async + " thread=" + Thread.currentThread().getName() + " caller=" + caller);
+    }
+
     @Deprecated
     public static boolean createLight(Location location, int lightlevel, boolean async) {
         return createLight(location.getWorld(), location.getBlockX(), location.getBlockY(), location.getBlockZ(),
@@ -217,6 +237,7 @@ public class LightAPI extends JavaPlugin {
         } else if (lightType == ru.beykerykt.lightapi.LightType.SKY) {
             flags |= LightFlag.SKY_LIGHTING;
         }
+        debugCall("createLight", world, x, y, z, lightlevel, async);
         final SetLightEvent event = new SetLightEvent(world, x, y, z, lightlevel, async);
         Bukkit.getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
@@ -264,6 +285,7 @@ public class LightAPI extends JavaPlugin {
         } else if (lightType == ru.beykerykt.lightapi.LightType.SKY) {
             flags |= LightFlag.SKY_LIGHTING;
         }
+        debugCall("deleteLight", world, x, y, z, 0, async);
         final DeleteLightEvent event = new DeleteLightEvent(world, x, y, z, async);
         Bukkit.getPluginManager().callEvent(event);
 
