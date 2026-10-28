@@ -1524,8 +1524,8 @@ def build_sks():
     B('rs_block', (20.6, 21.6), (1.45, 1.75), 0.5, 'blued')
     B('rs_leaf', (21.1, 23.1), (1.65, 1.82), 0.48, 'blued')
     B('rs_slider', (21.6, 22.2), (1.6, 1.95), 0.56, 'parts')
-    B('rs_notch_l', (22.75, 23.1), (1.82, 2.25), (-0.48, -0.1), 'blued')
-    B('rs_notch_r', (22.75, 23.1), (1.82, 2.25), (0.1, 0.48), 'blued')
+    B('rs_notch_l', (22.75, 23.1), (1.82, 2.25), (-0.48, -0.22), 'blued')
+    B('rs_notch_r', (22.75, 23.1), (1.82, 2.25), (0.22, 0.48), 'blued')
     # --- receiver, bolt carrier, receiver cover
     B('receiver', (22.5, 31.6), (-0.95, 0.75), 0.82, 'blued')
     B('cover', (23.1, 31.8), (0.75, 1.25), 0.72, 'blued')
@@ -1604,8 +1604,9 @@ def build_mac10():
     B('rs_r', (12.5, 12.75), (1.42, 2.3), (0.32, 0.5), 'black')
     B('rs_top', (12.5, 12.75), (2.18, 2.3), (-0.32, 0.32), 'black')
     # cocking knob on top (slot runs along the receiver)
-    B('knob', (3.3, 4.2), (1.25, 1.95), 0.32, 'parts')
-    B('knob_cap', (3.4, 4.1), (1.95, 2.1), 0.26, 'parts')
+    # kept below the sight line (sl) so the handle never sits in the sight picture
+    B('knob', (3.3, 4.2), (1.25, 1.5), 0.32, 'parts')
+    B('knob_cap', (3.4, 4.1), (1.5, 1.62), 0.26, 'parts')
     # strap bracket under the front, ejection port right, safety
     B('strap_lug', (1.7, 2.9), (-2.7, -2.0), 0.36, 'black')
     B('strap', (1.55, 3.05), (-2.6, -2.35), (-0.5, 0.5), 'band')
