@@ -1,0 +1,12 @@
+invalid: false
+name: sks_polar
+displayname: '&6SKS &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 175
+material: CROSSBOW
+baseGun: sks
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

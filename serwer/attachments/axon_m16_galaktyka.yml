@@ -1,0 +1,12 @@
+invalid: false
+name: m16_galaktyka
+displayname: '&6M16 &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 154
+material: CROSSBOW
+baseGun: m16
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

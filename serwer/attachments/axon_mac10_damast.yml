@@ -1,0 +1,12 @@
+invalid: false
+name: mac10_damast
+displayname: '&6MAC-10 &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 166
+material: CROSSBOW
+baseGun: mac10
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

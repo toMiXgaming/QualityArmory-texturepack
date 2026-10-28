@@ -1,0 +1,12 @@
+invalid: false
+name: sks_neon
+displayname: '&6SKS &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 172
+material: CROSSBOW
+baseGun: sks
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

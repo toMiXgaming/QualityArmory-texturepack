@@ -1,0 +1,12 @@
+invalid: false
+name: sks_damast
+displayname: '&6SKS &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 176
+material: CROSSBOW
+baseGun: sks
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

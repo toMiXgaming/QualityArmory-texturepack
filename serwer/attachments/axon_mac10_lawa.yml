@@ -1,0 +1,12 @@
+invalid: false
+name: mac10_lawa
+displayname: '&6MAC-10 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 163
+material: CROSSBOW
+baseGun: mac10
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: mac10_holo
+displayname: '&6MAC-10 &e[Holo]'
+lore:
+- '&7Skin premium AXON'
+id: 167
+material: CROSSBOW
+baseGun: mac10
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

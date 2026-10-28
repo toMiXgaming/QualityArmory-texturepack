@@ -1,0 +1,12 @@
+invalid: false
+name: sks_lawa
+displayname: '&6SKS &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 173
+material: CROSSBOW
+baseGun: sks
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: m16_zloto
+displayname: '&6M16 &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 151
+material: CROSSBOW
+baseGun: m16
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

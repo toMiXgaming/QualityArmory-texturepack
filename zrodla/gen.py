@@ -1260,7 +1260,8 @@ def generic_skin(theme, sc=1.0):
 def _gun_skins(base, first, sc, themes):
     names = {'zloto': 'Złoto', 'neon': 'Neon', 'lawa': 'Lawa', 'galaktyka': 'Galaktyka',
              'polar': 'Polar', 'damast': 'Damast', 'holo': 'Holo'}
-    title = {'ak47': 'AK47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington', 'makarov': 'Makarov'}[base]
+    title = {'ak47': 'AK47', 'm4a1s': 'M4A1-S', 'remmington': 'Remington', 'makarov': 'Makarov',
+             'awp': 'AWP', 'm16': 'M16', 'mac10': 'MAC-10', 'sks': 'SKS'}[base]
     return {'%s_%s' % (base, t): (base, generic_skin(t, sc), first + i, '%s [%s]' % (title, names[t]))
             for i, t in enumerate(themes)}
 
@@ -1274,12 +1275,17 @@ SKINS = {
     'ak47_lawa': ('ak47', skin_lawa, 105, 'AK47 [Lawa]'),
     'ak47_galaktyka': ('ak47', skin_galaktyka, 106, 'AK47 [Galaktyka]'),
 }
-# custom_model_data blocks of ten per gun: AK 101-, M4 111-, Remington 121-, Makarov 131-
+# custom_model_data blocks of ten per gun: AK 101-, M4 111-, Remington 121-, Makarov 131-,
+# AWP 141-, M16 151-, MAC-10 161-, SKS 171-
 # every gun has the same seven themes
 SKINS.update(_gun_skins('ak47', 107, 1.0, ('holo',)))
 SKINS.update(_gun_skins('m4a1s', 111, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'polar', 'damast', 'holo')))
 SKINS.update(_gun_skins('remmington', 121, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 SKINS.update(_gun_skins('makarov', 131, 0.35, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+SKINS.update(_gun_skins('awp', 141, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+SKINS.update(_gun_skins('m16', 151, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+SKINS.update(_gun_skins('mac10', 161, 0.35, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+SKINS.update(_gun_skins('sks', 171, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 
 def build_awp():
     L = 56.0

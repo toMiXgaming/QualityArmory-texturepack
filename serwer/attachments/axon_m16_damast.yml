@@ -1,0 +1,12 @@
+invalid: false
+name: m16_damast
+displayname: '&6M16 &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 156
+material: CROSSBOW
+baseGun: m16
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

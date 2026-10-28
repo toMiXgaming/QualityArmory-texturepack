@@ -1,0 +1,12 @@
+invalid: false
+name: awp_zloto
+displayname: '&6AWP &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 141
+material: CROSSBOW
+baseGun: awp
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

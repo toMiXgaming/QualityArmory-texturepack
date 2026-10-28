@@ -1,0 +1,12 @@
+invalid: false
+name: mac10_neon
+displayname: '&6MAC-10 &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 162
+material: CROSSBOW
+baseGun: mac10
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
