@@ -1,0 +1,12 @@
+invalid: false
+name: spas_galaktyka
+displayname: '&6SPAS-12 &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 274
+material: CROSSBOW
+baseGun: spas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

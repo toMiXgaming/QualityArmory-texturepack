@@ -1,0 +1,12 @@
+invalid: false
+name: famas_zloto
+displayname: '&6FAMAS &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 241
+material: CROSSBOW
+baseGun: famas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

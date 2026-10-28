@@ -1,0 +1,12 @@
+invalid: false
+name: uzi_neon
+displayname: '&6Uzi &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 222
+material: CROSSBOW
+baseGun: uzi
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

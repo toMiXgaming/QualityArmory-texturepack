@@ -1,0 +1,12 @@
+invalid: false
+name: deagle_polar
+displayname: '&6Desert Eagle &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 186
+material: CROSSBOW
+baseGun: deagle
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

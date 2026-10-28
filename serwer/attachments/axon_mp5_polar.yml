@@ -1,0 +1,12 @@
+invalid: false
+name: mp5_polar
+displayname: '&6MP5 &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 216
+material: CROSSBOW
+baseGun: mp5
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

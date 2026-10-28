@@ -1,0 +1,12 @@
+invalid: false
+name: p30_neon
+displayname: '&6P30 &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 202
+material: CROSSBOW
+baseGun: p30
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

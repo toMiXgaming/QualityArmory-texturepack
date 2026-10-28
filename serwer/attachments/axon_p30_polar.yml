@@ -1,0 +1,12 @@
+invalid: false
+name: p30_polar
+displayname: '&6P30 &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 206
+material: CROSSBOW
+baseGun: p30
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

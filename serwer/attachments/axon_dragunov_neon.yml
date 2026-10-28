@@ -1,0 +1,12 @@
+invalid: false
+name: dragunov_neon
+displayname: '&6Dragunov &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 252
+material: CROSSBOW
+baseGun: dragunov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

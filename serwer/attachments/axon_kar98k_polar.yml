@@ -1,0 +1,12 @@
+invalid: false
+name: kar98k_polar
+displayname: '&6Kar98k &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 266
+material: CROSSBOW
+baseGun: kar98k
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

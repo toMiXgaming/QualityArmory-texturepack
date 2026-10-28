@@ -1,0 +1,12 @@
+invalid: false
+name: uzi_holo
+displayname: '&6Uzi &e[Holo]'
+lore:
+- '&7Skin premium AXON'
+id: 227
+material: CROSSBOW
+baseGun: uzi
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

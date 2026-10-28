@@ -1,0 +1,12 @@
+invalid: false
+name: kar98k_galaktyka
+displayname: '&6Kar98k &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 264
+material: CROSSBOW
+baseGun: kar98k
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

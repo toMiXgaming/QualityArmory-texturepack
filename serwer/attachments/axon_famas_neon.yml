@@ -1,0 +1,12 @@
+invalid: false
+name: famas_neon
+displayname: '&6FAMAS &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 242
+material: CROSSBOW
+baseGun: famas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

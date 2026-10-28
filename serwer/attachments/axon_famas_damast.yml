@@ -1,0 +1,12 @@
+invalid: false
+name: famas_damast
+displayname: '&6FAMAS &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 245
+material: CROSSBOW
+baseGun: famas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

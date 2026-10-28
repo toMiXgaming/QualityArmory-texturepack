@@ -1,0 +1,12 @@
+invalid: false
+name: deagle_damast
+displayname: '&6Desert Eagle &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 185
+material: CROSSBOW
+baseGun: deagle
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

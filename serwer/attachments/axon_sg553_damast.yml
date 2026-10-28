@@ -1,0 +1,12 @@
+invalid: false
+name: sg553_damast
+displayname: '&6SG553 &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 235
+material: CROSSBOW
+baseGun: sg553
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

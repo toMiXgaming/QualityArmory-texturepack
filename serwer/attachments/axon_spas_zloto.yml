@@ -1,0 +1,12 @@
+invalid: false
+name: spas_zloto
+displayname: '&6SPAS-12 &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 271
+material: CROSSBOW
+baseGun: spas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

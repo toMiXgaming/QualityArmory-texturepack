@@ -1,0 +1,12 @@
+invalid: false
+name: spas_lawa
+displayname: '&6SPAS-12 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 273
+material: CROSSBOW
+baseGun: spas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: dragunov_galaktyka
+displayname: '&6Dragunov &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 254
+material: CROSSBOW
+baseGun: dragunov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

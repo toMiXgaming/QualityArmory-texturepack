@@ -1,0 +1,12 @@
+invalid: false
+name: famas_galaktyka
+displayname: '&6FAMAS &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 244
+material: CROSSBOW
+baseGun: famas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

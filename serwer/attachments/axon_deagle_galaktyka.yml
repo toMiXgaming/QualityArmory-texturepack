@@ -1,0 +1,12 @@
+invalid: false
+name: deagle_galaktyka
+displayname: '&6Desert Eagle &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 184
+material: CROSSBOW
+baseGun: deagle
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

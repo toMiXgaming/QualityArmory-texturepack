@@ -1,0 +1,12 @@
+invalid: false
+name: mp5_neon
+displayname: '&6MP5 &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 212
+material: CROSSBOW
+baseGun: mp5
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: mp5_lawa
+displayname: '&6MP5 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 213
+material: CROSSBOW
+baseGun: mp5
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
