@@ -257,12 +257,9 @@ public class StarlightNMSHandler extends VanillaNMSHandler {
             }
         });
 
-        Map<ChunkPos, Set<LightPos>> targetMap = FlagUtils.isFlagSet(flags, LightFlag.SKY_LIGHTING) ? skyQueueMap
-                : blockQueueMap;
-        if (lightEngine.hasLightWork() || targetMap.containsKey(chunkPos)) {
-            return ResultCode.SUCCESS;
-        }
-        return ResultCode.FAILED;
+        // The scheduler only recalculates and sends chunks to players after SUCCESS. A removal is applied right
+        // away (nothing is left in Starlight's queue to detect), so FAILED here left clients with stale light.
+        return ResultCode.SUCCESS;
     }
 
     @Override
