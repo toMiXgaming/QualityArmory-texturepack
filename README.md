@@ -174,8 +174,10 @@ Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.p
 | Narzędzia vanilla | drewniane i kamienne: siekiera, kilof, łopata, motyka | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
 | Bloki vanilla | stół rzemieślniczy, piec (zwykły i zapalony), ognisko (zapalone i zgaszone), beczka (zamknięta i otwarta), skrzynia pojedyncza i podwójna | nadpisane modele bloków i tekstura `entity/chest`, u wszystkich |
 | Stanowiska | `warsztat_t1`, `warsztat_t2`, `warsztat_t3` (każdy też z `_zuzycie1`, `_zuzycie2`, `_zuzycie3`), `piec_hutniczy`, `piec_hutniczy_on`, `recykler`, `recykler_kolo`, `stol_badan` | wyświetlacz przedmiotu, jedna kratka, przód na południe |
-| Pojemniki | `beczka`, `beczka_paliwa`, `beczka_rdza`, `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa` (2 kratki), `skrzynia_elitarna`, `spadochron` | wyświetlacz przedmiotu, przód na południe |
+| Pojemniki | `beczka`, `beczka_paliwa`, `beczka_rdza` (każda też jako `_rozbita`), `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa` (2 kratki), `skrzynia_elitarna`, `spadochron` | wyświetlacz przedmiotu, przód na południe |
 | Wraki | `wrak_fiat_126p`, `wrak_polonez`, `wrak_zuk`, `wrak_nysa`, `wrak_star_266`, `wrak_autosan`, `wrak_ursus`, `wrak_wsk` | rekwizyt z sekcji `modele:` struktury, przód na północ |
+
+Beczki przy drogach działają jak w Rust: gracz je niszczy, wtedy plugin podmienia model na `<beczka>_rozbita` (wgnieciony dół, wieko na ziemi, łup w środku), prawy klik otwiera łup, a po czasie beczka odnawia się w tym samym miejscu.
 
 Skrzynia zrzutu to dalej `axon:zrzut` z `gen_zrzut.py`. `spadochron` to rozłożona czasza do zawieszenia nad nią w czasie spadania.
 
