@@ -2388,7 +2388,9 @@ def build_kar98k():
 
     g.sight = dict(rear=(22.6, sl), front=(1.1, sl))
     # like the SKS: eye behind the rear notch, 2.5deg cant
-    g.ads = dict(cam=(31.6, sl), front=(1.1, sl), roll=2.5, scale=(0.72, 1.15, 1.0))
+    # eye a few units behind the rear notch; the gun is drawn ~2.8x bigger around the eye so the
+    # receiver and the notch stay beyond the near plane (at 1x they were cut off)
+    g.ads = dict(cam=(27.5, sl), front=(1.1, sl), roll=2.5, scale=(2.0, 3.2, 2.78))
     g.grip = (34.0, -1.2)
     return g
 
@@ -2401,7 +2403,9 @@ def build_spas():
     # --- barrel with a perforated heat shield, magazine tube, clamp
     C('barrel', (0.0, 26.2), 0.0, 0.36, 'black')
     B('shield', (0.8, 21.0), (-0.05, 0.6), 0.48, 'black')
-    B('fs_post', (0.8, 1.2), (0.6, 1.0), 0.08, 'parts')
+    sl = 2.0
+    B('fs_base', (0.6, 1.5), (0.6, 1.3), 0.18, 'black')
+    B('fs_post', (0.9, 1.2), (1.3, sl), 0.1, 'parts')
     C('magcap', (0.0, 0.6), -0.95, 0.48, 'black')
     C('magtube', (0.6, 31.0), -0.95, 0.42, 'black')
     B('clamp', (1.4, 2.0), (-1.5, 0.45), 0.5, 'black')
@@ -2419,12 +2423,16 @@ def build_spas():
         v0 = -1.6 - 0.95 * i
         B('grip_%d' % i, (31.8 + sh, 33.5 + sh), (v0 - 0.95, v0), 0.62, 'polymer')
     B('safety', (32.0, 32.6), (-1.5, -1.2), (-0.8, -0.72), 'parts')
-    # --- stock folded over the top, with the arm hook
-    B('stock_hinge', (36.8, 38.0), (0.9, 1.8), 0.45, 'black')
-    B('stock_bar', (23.6, 37.4), (1.25, 1.65), 0.3, 'black')
-    B('butt', (22.9, 23.6), (0.8, 2.4), 0.6, 'black')
-    B('hook', (21.9, 22.9), (2.0, 2.4), 0.3, 'black')
-    B('hook_tip', (21.9, 22.3), (1.4, 2.0), 0.3, 'black')
+    # --- rear notch on the receiver top
+    B('rs_base', (33.2, 34.6), (1.1, sl - 0.2), 0.32, 'black')
+    B('rs_l', (33.6, 34.2), (sl - 0.2, sl + 0.12), (-0.32, -0.12), 'black')
+    B('rs_r', (33.6, 34.2), (sl - 0.2, sl + 0.12), (0.12, 0.32), 'black')
+    # --- stock folded along the left side (keeps the sight line clear), with the arm hook
+    B('stock_hinge', (36.8, 38.0), (-0.2, 0.7), (-1.15, -0.72), 'black')
+    B('stock_bar', (23.6, 37.4), (0.05, 0.45), (-1.02, -0.74), 'black')
+    B('butt', (22.9, 23.6), (-1.0, 0.9), (-1.2, -0.72), 'black')
+    B('hook', (21.9, 22.9), (-1.0, -0.6), (-1.2, -0.84), 'black')
+    B('hook_tip', (21.9, 22.3), (-0.6, 0.0), (-1.2, -0.84), 'black')
 
     D = g.dec
     D(oval('F', 0, 0, 0.3, 0.3, els=['barrel_a', 'barrel_b'], col=(6, 6, 7)))
@@ -2449,16 +2457,16 @@ def build_spas():
         ctx.col[mm & (A > 30.4)] = np.array([186, 146, 64], float)
     D(recess('R', (27.4, 31.0), (-0.6, 0.85), els=['receiver'], inner=shell_inner))
     D(recess('B', (27.0, 31.5), (-0.4, 0.4), els=['receiver']))
-    D(text('L', 'AXON', 27.2, 0.6, els=['receiver'], col=(150, 152, 156), snap=True))
+    D(text('L', 'AXON', 27.2, -0.05, els=['receiver'], col=(150, 152, 156), snap=True))
     for (a, b) in ((26.6, -1.2), (34.6, -1.2)):
         D(rivet('RL', a, b, 0.14, els=['receiver']))
     D(hatch('RL', els=['grip_*'], period=0.3, mul=0.75, b=(-5.2, -1.8)))
     D(stripes('F', 'b', 0.35, 0.14, els=['grip_*'], mul=0.7))
     D(stripes('RL', 'a', 0.6, 0.2, a=(24.2, 37.0), els=['stock_bar'], mul=0.7))
 
-    g.sight = dict(rear=(36.5, 1.65), front=(1.0, 1.0))
-    # like the Remington: no true sights, the eye looks along the top of the gun
-    g.ads = dict(cam=(56.0, 2.8), front=(1.0, 1.0))
+    g.sight = dict(rear=(33.6, sl), front=(1.05, sl))
+    # eye behind the rear notch, front post on the crosshair, 2.5deg cant
+    g.ads = dict(cam=(39.0, sl), front=(1.05, sl), roll=2.5, sf=3.5)
     g.grip = (33.0, -3.0)
     return g
 

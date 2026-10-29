@@ -170,9 +170,9 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 - AWP: celowanie przez lunetę. Luneta jest pustą rurą z krzyżem w środku, a przy celowaniu broń jest skrócona wzdłuż (skala 0,3) i poszerzona (2,2), żeby przez rurę było widać świat z krzyżem na środku ekranu (QA też skraca AWP przy celowaniu).
 - AWP, MAC-10 i SKS leżą w modelach QA wzdłuż osi Z, nie X; `gen.py` obsługuje to przez `ax='z'` w ramce broni.
 - Desert Eagle, SW1911 i P30: oko za szczerbinką, przechył 2,5°, muszka z białymi kropkami na krzyżyku.
-- MP5 i SG 553: oko za bębenkowym przeziernikiem, muszka w pierścieniu. Uzi, FAMAS (szczerbinka w rączce) i Kar98k (szczerbinka V): oko za tylnym celownikiem, przechył 2,5°. Uzi, FAMAS, Dragunov i Kar98k leżą w modelach QA wzdłuż osi Z.
+- MP5 i SG 553: oko za bębenkowym przeziernikiem, muszka w pierścieniu. Uzi, FAMAS (szczerbinka w rączce) i Kar98k (szczerbinka V): oko za tylnym celownikiem, przechył 2,5°. Kar98k przy celowaniu jest rysowany ok. 2,8 raza większy wokół oka, bo w skali QA komora i szczerbinka były bliżej oka niż przednia płaszczyzna kamery i gra je ucinała (obraz wygląda tak samo, tylko nic nie jest ucięte). Uzi, FAMAS, Dragunov i Kar98k leżą w modelach QA wzdłuż osi Z.
 - Dragunov: celowanie przez lunetę PSO z siatką „szewronów”, tak jak AWP (broń skrócona wzdłuż, rura z krzyżem na środku ekranu).
-- SPAS-12: jak Remington, bez prawdziwego celowania (broń trochę dalej od oka).
+- SPAS-12: szczerbinka na komorze i muszka na osłonie lufy, oko za szczerbinką, przechył 2,5°, broń przy celowaniu 3,5 raza większa (z tego samego powodu co Kar98k). Kolba złożona wzdłuż lewego boku, żeby nie zasłaniała celownika.
 
 ## Historia
 
@@ -186,7 +186,9 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 6. AWP (zielona kolba z otworem na kciuk, złożony bipod, luneta z krzyżem), MAC-10 (złożona kolba drutowa, nasada kurkowa na górze), M16A2 (rączka z przeziernikiem A2, okrągłe łoże z żeberkami), SKS-45 (złożony bagnet pod lufą, stały magazynek, drewniana kolba z opadem).
 
 7. Skiny premium AWP, M16, MAC-10 i SKS (141–177).
-8. Dziesięć nowych broni: Desert Eagle (stal nierdzewna, gumowa okładzina), SW1911 (oksydowany z drewnianymi okładzinami), P30 (polimer), MP5 (muszka w pierścieniu, kolba A2), Uzi, SG 553 (pomarańczowy magazynek, ażurowa kolba), FAMAS F1 (rączka z celownikami, złożony bipod), Dragunov SVD (luneta PSO, kolba z otworem na kciuk), Kar98k, SPAS-12 (osłona z otworami, kolba złożona nad komorą), każda z 7 skinami (181–277). Jedna paczka na wszystkie wersje 1.21.x.
+8. Dziesięć nowych broni: Desert Eagle (stal nierdzewna, gumowa okładzina), SW1911 (oksydowany z drewnianymi okładzinami), P30 (polimer), MP5 (muszka w pierścieniu, kolba A2), Uzi, SG 553 (pomarańczowy magazynek, ażurowa kolba), FAMAS F1 (rączka z celownikami, złożony bipod), Dragunov SVD (luneta PSO, kolba z otworem na kciuk), Kar98k, SPAS-12 (osłona z otworami, kolba złożona wzdłuż boku), każda z 7 skinami (181–277). Jedna paczka na wszystkie wersje 1.21.x.
+
+9. Poprawione celowanie Kar98k (ucięta komora) i SPAS-12 (prawdziwa szczerbinka i muszka zamiast widoku z daleka).
 
 Do sprawdzenia w grze: celowanie broni z punktu 8 (zwłaszcza widok przez lunetę Dragunova).
 
