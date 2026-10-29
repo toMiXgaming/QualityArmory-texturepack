@@ -1,0 +1,12 @@
+invalid: false
+name: famas_lawa
+displayname: '&6FAMAS &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 243
+material: CROSSBOW
+baseGun: famas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

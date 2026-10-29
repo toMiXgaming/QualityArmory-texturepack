@@ -1,0 +1,12 @@
+invalid: false
+name: uzi_polar
+displayname: '&6Uzi &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 226
+material: CROSSBOW
+baseGun: uzi
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

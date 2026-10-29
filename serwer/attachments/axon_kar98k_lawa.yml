@@ -1,0 +1,12 @@
+invalid: false
+name: kar98k_lawa
+displayname: '&6Kar98k &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 263
+material: CROSSBOW
+baseGun: kar98k
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

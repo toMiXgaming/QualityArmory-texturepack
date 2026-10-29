@@ -1,0 +1,12 @@
+invalid: false
+name: uzi_lawa
+displayname: '&6Uzi &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 223
+material: CROSSBOW
+baseGun: uzi
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

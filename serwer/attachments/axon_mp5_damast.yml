@@ -1,0 +1,12 @@
+invalid: false
+name: mp5_damast
+displayname: '&6MP5 &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 215
+material: CROSSBOW
+baseGun: mp5
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

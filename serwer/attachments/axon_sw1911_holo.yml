@@ -1,0 +1,12 @@
+invalid: false
+name: sw1911_holo
+displayname: '&6SW1911 &e[Holo]'
+lore:
+- '&7Skin premium AXON'
+id: 197
+material: CROSSBOW
+baseGun: sw1911
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

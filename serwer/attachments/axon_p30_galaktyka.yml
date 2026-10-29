@@ -1,0 +1,12 @@
+invalid: false
+name: p30_galaktyka
+displayname: '&6P30 &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 204
+material: CROSSBOW
+baseGun: p30
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

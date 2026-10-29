@@ -1,0 +1,12 @@
+invalid: false
+name: dragunov_polar
+displayname: '&6Dragunov &e[Polar]'
+lore:
+- '&7Skin premium AXON'
+id: 256
+material: CROSSBOW
+baseGun: dragunov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

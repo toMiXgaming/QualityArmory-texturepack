@@ -1,0 +1,12 @@
+invalid: false
+name: mp5_zloto
+displayname: '&6MP5 &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 211
+material: CROSSBOW
+baseGun: mp5
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: spas_neon
+displayname: '&6SPAS-12 &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 272
+material: CROSSBOW
+baseGun: spas
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: uzi_damast
+displayname: '&6Uzi &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 225
+material: CROSSBOW
+baseGun: uzi
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

@@ -1,0 +1,12 @@
+invalid: false
+name: deagle_lawa
+displayname: '&6Desert Eagle &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 183
+material: CROSSBOW
+baseGun: deagle
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

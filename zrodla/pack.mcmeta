@@ -1,8 +1,16 @@
 {
   "pack": {
-    "pack_format": 46,
-    "min_format": 46,
+    "pack_format": 34,
+    "supported_formats": [34, 75],
+    "min_format": 34,
     "max_format": 75,
-    "description": "AXON: nowe modele broni (AK47, M4A1-S, Remington, Makarov, AWP, MAC10, M16, SKS) na bazie QualityGuns 2.1.9. Wersje 1.21.4-1.21.11"
+    "description": "AXON: 18 broni AXON ze skinami premium na bazie QualityGuns 2.1.9. Minecraft 1.21-1.21.11"
+  },
+  "overlays": {
+    "entries": [
+      {"formats": [34, 45], "min_format": 34, "max_format": 45, "directory": "axon_1_21_0"},
+      {"formats": [34, 41], "min_format": 34, "max_format": 41, "directory": "axon_shadery_1_21_0"},
+      {"formats": [42, 55], "min_format": 42, "max_format": 55, "directory": "axon_shadery"}
+    ]
   }
 }

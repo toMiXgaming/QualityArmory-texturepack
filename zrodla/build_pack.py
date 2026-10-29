@@ -2,7 +2,14 @@
 """Builds QualityArmory-21-axon.zip = full copy of QA's 1.21.4 pack (QA21.zip) with only
 the AXON gun models (GUNS) replaced, the AXON textures added under
 assets/qualityarmory/textures/axon/, and an 'axon' directory source added to the blocks
-atlas (QA's atlas file only lists 'all/', so new texture folders must be registered)."""
+atlas (QA's atlas file only lists 'all/', so new texture folders must be registered).
+
+One zip for every 1.21.x (pack.mcmeta lists formats 34-75 and the overlays):
+- axon_1_21_0 (1.21-1.21.3): those versions do not read assets/*/items/, so the
+  custom_model_data entries are written again as old-style "overrides" on the vanilla
+  item models (legacy_1_21_0/), and axon:<name> gets a models/item/ model for item_model.
+- axon_shadery (1.21.2-1.21.5) and axon_shadery_1_21_0 (1.21-1.21.1): the AxonMap core
+  shaders. 1.21.6+ uses a different shader format, so there they are left out."""
 import hashlib, io, json, os, sys, zipfile
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -11,9 +18,41 @@ from gen import SKINS
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = sys.argv[1] if len(sys.argv) > 1 else '/tmp/qa/QA21.zip'
 DST = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, 'QualityArmory-21-axon.zip')
-GUNS = ['ak47', 'm4a1s', 'remmington', 'makarov', 'awp', 'mac10', 'm16', 'sks'] + list(SKINS)
+GUNS = ['ak47', 'm4a1s', 'remmington', 'makarov', 'awp', 'mac10', 'm16', 'sks',
+        'deagle', 'sw1911', 'p30', 'mp5', 'uzi', 'sg553', 'famas', 'dragunov', 'kar98k', 'spas'] + list(SKINS)
 ITEMS = 'assets/minecraft/items/crossbow.json'
 ATLAS = 'assets/minecraft/atlases/blocks.json'
+DROP = ('assets/minecraft/shaders/',   # base pack shaders from an older build: now in overlays only
+        'assets/minecraft/items/crossbow_arrow.json')   # a stray model file in QA's items/ (load error on 1.21.4+)
+LEGACY = 'axon_1_21_0/'
+
+
+def legacy_models(zin, repl):
+    """1.21-1.21.3 versions of every items/*.json of the pack (see the module docstring)."""
+    def read(fn):
+        return repl[fn] if fn in repl else zin.read(fn)
+    out = {}
+    items = sorted(set(n for n in zin.namelist() + list(repl) if '/items/' in n and n.endswith('.json')))
+    for fn in items:
+        ns, name = fn.split('/')[1], fn.split('/')[-1][:-5]
+        m = json.loads(read(fn)).get('model')
+        if m is None:
+            continue
+        kind = m['type'].split(':')[-1]
+        if kind == 'model':        # axon:<name> on the item_model component (1.21.2-1.21.3)
+            out['%sassets/%s/models/item/%s.json' % (LEGACY, ns, name)] = json.dumps(
+                {'parent': m['model']}, indent=2).encode()
+            continue
+        if kind != 'range_dispatch' or m['property'].split(':')[-1] != 'custom_model_data':
+            raise SystemExit('%s: no 1.21.0 form for %s' % (fn, kind))
+        base = json.load(open(os.path.join(HERE, 'legacy_1_21_0', name + '.json')))
+        ov = base.setdefault('overrides', [])
+        for e in sorted(m['entries'], key=lambda e: e['threshold']):   # the last match wins
+            if e['model']['type'].split(':')[-1] != 'model':
+                raise SystemExit('%s: entry %s is not a plain model' % (fn, e['threshold']))
+            ov.append({'predicate': {'custom_model_data': e['threshold']}, 'model': e['model']['model']})
+        out['%sassets/%s/models/item/%s.json' % (LEGACY, ns, name)] = json.dumps(base, indent=2).encode()
+    return out
 
 
 def validate(model, tex_png, name, need):
@@ -82,7 +121,11 @@ def main():
     repl[ITEMS] = json.dumps(items, indent=2).encode()
     shaders = os.path.join(HERE, 'shadery')   # AxonMap: full screen map shader (rendertype_text)
     for fn in sorted(os.listdir(shaders)):
-        repl['assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
+        data = open(os.path.join(shaders, fn), 'rb').read()
+        repl['axon_shadery/assets/minecraft/shaders/core/' + fn] = data
+        # 1.21-1.21.1: shader names and #moj_import paths without a namespace
+        old = data.replace(b'"minecraft:core/', b'"').replace(b'<minecraft:', b'<')
+        repl['axon_shadery_1_21_0/assets/minecraft/shaders/core/' + fn] = old
     from dodaj_reaktor import reactor_files   # reaktor AxonPlot (gen_reactor.py)
     repl.update(reactor_files())
     # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut
@@ -95,12 +138,15 @@ def main():
                          (name + '.png', 'assets/axon/textures/item/%s.png' % name),
                          (name + '_item.json', 'assets/axon/items/%s.json' % name)):
             repl[dst] = open(os.path.join(HERE, 'build', src), 'rb').read()
+    repl.update(legacy_models(zin, repl))
     mc = os.path.join(HERE, 'pack.mcmeta')   # owner-edited description, carried over
     if os.path.exists(mc):
         repl['pack.mcmeta'] = open(mc, 'rb').read()
     names = zin.namelist()
     with zipfile.ZipFile(DST, 'w', zipfile.ZIP_DEFLATED) as zout:
         for info in zin.infolist():
+            if info.filename.startswith(DROP):
+                continue
             data = repl.pop(info.filename, None)
             if data is None:
                 data = zin.read(info.filename)

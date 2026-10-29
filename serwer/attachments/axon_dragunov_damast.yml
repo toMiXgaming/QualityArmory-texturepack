@@ -1,0 +1,12 @@
+invalid: false
+name: dragunov_damast
+displayname: '&6Dragunov &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 255
+material: CROSSBOW
+baseGun: dragunov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

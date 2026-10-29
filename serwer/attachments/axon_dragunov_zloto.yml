@@ -1,0 +1,12 @@
+invalid: false
+name: dragunov_zloto
+displayname: '&6Dragunov &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 251
+material: CROSSBOW
+baseGun: dragunov
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
