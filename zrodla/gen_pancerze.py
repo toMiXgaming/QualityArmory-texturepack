@@ -7,7 +7,7 @@ x=8 i z=8, przód gracza to strona north (z mniejsze). Dzięki temu plugin stawi
 elementy w tym samym punkcie (wyświetlacz przedmiotu na graczu) i każdy ląduje na swoim
 miejscu. Jednostka modelu = 1 piksel skóry gracza.
 
-Zestawy: cien, lis, legion, bastion, ranger, ghillie oraz prowizoryczne: zlomiarz, lowca, mechanik (strój liściasty dla snajperów).
+Zestawy: cien, lis, legion, bastion, ranger, ghillie oraz prowizoryczne: zlomiarz, lowca (strój liściasty dla snajperów).
 Elementy: helm, kamizelka, spodnie, buty, rekawice.
 
 Zapisuje build/<nazwa>.json, build/<nazwa>.png, build/<nazwa>_item.json.
@@ -69,11 +69,6 @@ PALETY = {
               'plate': ((96, 66, 42), 'leather'), 'strap': ((44, 34, 26), 'leather'), 'glow': ((90, 90, 90), 'cloth'),
               'metal': ((100, 98, 92), 'rust'), 'cloth2': ((84, 90, 64), 'canvas'), 'lens': ((70, 60, 40), 'lens'),
               'emblem': ((90, 80, 56), 'patch'), 'mesh': ((120, 112, 90), 'duct'), 'extra': ((60, 46, 32), 'leather')},
-    # Mechanik: kombinezon roboczy, skórzany fartuch spawacza i kask z przyłbicą
-    'mechanik': {'main': ((152, 90, 46), 'denim'), 'dark': ((82, 60, 40), 'leather'), 'accent': ((196, 170, 60), 'paint'),
-                 'plate': ((98, 100, 102), 'rust'), 'strap': ((36, 30, 26), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
-                 'metal': ((120, 122, 124), 'plate'), 'cloth2': ((90, 96, 104), 'canvas'), 'lens': ((50, 70, 50), 'lens'),
-                 'emblem': ((110, 100, 80), 'patch'), 'mesh': ((140, 142, 140), 'duct'), 'extra': ((36, 36, 38), 'rubber')},
     'ghillie': {'main': ((70, 78, 44), 'cloth'), 'dark': ((40, 46, 28), 'cloth'), 'accent': ((120, 100, 60), 'cloth'),
                 'plate': ((56, 60, 40), 'plate'), 'strap': ((50, 42, 30), 'strap'), 'glow': ((200, 200, 120), 'glow'),
                 'metal': ((100, 100, 90), 'plate'), 'cloth2': ((96, 88, 54), 'cloth'), 'lens': ((60, 70, 40), 'lens'),
@@ -774,50 +769,6 @@ def lowca_kamizelka():
     return e
 
 
-def mechanik_helm():
-    """Kask budowlany z przyłbicą spawalniczą podniesioną na czoło; twarz odkryta."""
-    return [box([3.3, 28.4, 3.3], [12.7, 29.6, 12.7], 'cloth2'),
-            box([3.7, 29.6, 3.7], [12.3, 30.8, 12.3], 'cloth2'),
-            box([4.3, 30.8, 4.3], [11.7, 31.8, 11.7], 'cloth2'),
-            box([5.4, 31.8, 5.4], [10.6, 32.3, 10.6], 'cloth2'),
-            box([3.0, 28.0, 1.8], [13.0, 28.8, 3.4], 'cloth2'),
-            box([3.4, 27.0, 7.0], [12.6, 28.6, 13.0], 'cloth2'),
-            box([3.0, 29.4, 0.6], [13.0, 33.6, 2.0], 'plate'),                    # przyłbica spawalnicza podniesiona
-            box([3.0, 33.2, 0.6], [13.0, 34.0, 4.4], 'plate'),
-            box([4.2, 29.8, 0.2], [11.8, 32.6, 0.7], 'lens', skip=('south',)),    # ciemne szkło
-            box([2.6, 30.8, 2.0], [3.2, 32.4, 4.2], 'metal'),                     # zawiasy
-            box([12.8, 30.8, 2.0], [13.4, 32.4, 4.2], 'metal'),
-            box([3.9, 29.2, 2.8], [12.1, 29.9, 3.4], 'strap'),
-            box([3.6, 24.8, 11.4], [12.4, 27.4, 12.8], 'main'),                   # chusta/bandana na karku
-            box([4.4, 22.2, 4.6], [11.6, 24.4, 11.4], 'main', skip=('up',))]
-
-
-def mechanik_kamizelka():
-    """Skórzany fartuch spawacza z kieszenią na narzędzia i pasem z młotkiem i kluczem."""
-    e = [box([4.4, 9.4, 4.8], [11.6, 22.6, 5.5], 'dark', skip=('south',)),            # fartuch do ud
-         box([4.0, 12.6, 4.5], [12.0, 14.2, 5.6], 'plate', skip=('south',)),
-         box([4.6, 22.2, 5.0], [6.2, 24.8, 10.6], 'dark'),                           # szelki
-         box([9.8, 22.2, 5.0], [11.4, 24.8, 10.6], 'dark'),
-         box([5.0, 22.8, 4.6], [6.0, 23.6, 5.2], 'metal'),
-         box([10.0, 22.8, 4.6], [11.0, 23.6, 5.2], 'metal'),
-         box([4.6, 18.0, 4.2], [8.2, 21.6, 4.9], 'extra', skip=('south',)),          # kieszeń piersiowa
-         box([4.6, 20.6, 4.0], [8.2, 21.8, 4.4], 'dark', skip=('south',)),
-         box([5.0, 21.6, 3.8], [5.6, 23.4, 4.4], 'metal', skip=('south',)),          # śrubokręty
-         box([5.8, 21.6, 3.8], [6.4, 23.0, 4.4], 'accent', skip=('south',)),
-         box([6.6, 21.6, 3.8], [7.2, 23.2, 4.4], 'strap', skip=('south',)),
-         box([8.8, 15.0, 4.2], [11.4, 18.8, 4.9], 'dark', skip=('south',)),          # druga kieszeń
-         box([3.6, 11.8, 5.0], [12.4, 12.8, 11.0], 'strap'),                         # pas narzędziowy
-         box([7.4, 11.8, 4.8], [8.6, 12.8, 5.2], 'metal', skip=('south',)),
-         box([10.6, 8.0, 4.4], [11.4, 12.0, 5.0], 'strap', skip=('south',)),         # młotek
-         box([10.2, 7.4, 4.2], [11.8, 8.4, 5.0], 'metal', skip=('south',)),
-         box([4.6, 7.0, 4.4], [5.2, 12.0, 5.0], 'metal', skip=('south',)),           # klucz płaski
-         box([4.3, 6.4, 4.3], [5.5, 7.4, 5.1], 'metal', skip=('south',)),
-         box([4.2, 12.6, 5.2], [11.8, 22.8, 10.8], 'main')]                          # kombinezon pod fartuchem
-    e += molle(5.0, 11.0, 14.6, 17.0, 4.5)[:2]
-    e += [box([5.0, 12.8, 10.8], [11.0, 14.0, 11.2], 'strap', skip=('north',))]
-    return e
-
-
 # ------------------------------------------------------- GHILLIE (snajper)
 def sample_surface(rnd, f, t, faces=('north', 'south', 'east', 'west', 'up')):
     dx, dy, dz = t[0] - f[0], t[1] - f[1], t[2] - f[2]
@@ -956,12 +907,6 @@ ZESTAWY = {
         'spodnie': lambda: pants('main', 'dark', kneepad='plate', holster=True),
         'buty': lambda: boots_base('dark', 'strap', high=6.2),
         'rekawice': lambda: gloves_base('dark', 'main', cuff=3.0)},
-    'mechanik': {
-        'helm': mechanik_helm, 'kamizelka': mechanik_kamizelka,
-        'bluza': lambda: sleeves('main', 'dark', pad='dark', patch='cloth2'),
-        'spodnie': lambda: pants('main', 'dark', kneepad='extra', holster=False),
-        'buty': lambda: boots_base('dark', 'strap', high=5.0),
-        'rekawice': lambda: gloves_base('dark', 'cloth2', cuff=3.0)},
     'ghillie': {'helm': ghillie_helm, 'kamizelka': ghillie_kamizelka, 'spodnie': ghillie_spodnie,
                 'buty': ghillie_buty, 'rekawice': ghillie_rekawice},
 }
