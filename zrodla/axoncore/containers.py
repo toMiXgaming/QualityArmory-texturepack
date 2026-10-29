@@ -1,57 +1,11 @@
 """Pojemniki z łupem (ItemDisplay nad blokiem-nośnikiem): beczki, skrzynie, apteczka, wojskowa, elitarna, spadochron.
 Budowane przodem na północ; gen_axoncore.py obraca je przodem na południe jak meble."""
 from .stations import Station
+from .barrels import MODELS as BARRELS
 
 C = {}
 
-def drum(body, hoop, top, cap=True, band=None):
-    m = Station()
-    m.part((2, 0, 1), (14, 15, 15), body, up=top, down='steel_dark')
-    m.part((1, 0, 2), (15, 15, 14), body, up=top, down='steel_dark')
-    for y in (0, 4.5, 10, 14.2):
-        m.part((1.6, y, 0.6), (14.4, y + 0.8, 15.4), hoop)
-        m.part((0.6, y, 1.6), (15.4, y + 0.8, 14.4), hoop)
-    if band:
-        m.part((1.7, 6, 0.7), (14.3, 9, 15.3), band)
-        m.part((0.7, 6, 1.7), (15.3, 9, 14.3), band)
-    if cap:
-        m.part((10, 15, 10), (12, 15.6, 12), 'steel_dark')
-        m.part((4, 15, 4), (5.5, 15.4, 5.5), 'steel_dark')
-    return m
-
-C['beczka'] = drum('blue_chipped', 'steel_dark', 'steel')
-C['beczka_paliwa'] = drum('red_paint', 'steel_dark', 'black', band='yellow_paint')
-C['beczka_rdza'] = drum('rust_heavy', 'rust', 'rust')
-
-def rozbita(body, hoop, band=None):
-    """Beczka po zniszczeniu: wgnieciony dół z poszarpanym brzegiem, wieko na ziemi, łup w środku."""
-    m = Station()
-    m.part((2, 0, 1), (14, 7, 15), body, up='black', down='steel_dark')
-    m.part((1, 0, 2), (15, 7, 14), body, up='black', down='steel_dark')
-    for x0, x1, h in ((2, 5, 10), (5, 8, 8.5), (8, 11, 11), (11, 14, 9)):           # poszarpany brzeg, przód
-        m.part((x0, 7, 1), (x1, h, 2), body)
-    for x0, x1, h in ((2, 6, 8.5), (6, 10, 10.5), (10, 14, 8)):                     # tył
-        m.part((x0, 7, 14), (x1, h, 15), body)
-    for z0, z1, h in ((2, 7, 9.5), (7, 11, 7.8), (11, 14, 10)):                     # boki
-        m.part((1, 7, z0), (2, h, z1), body)
-        m.part((14, 7, z0), (15, h + 0.8 if h < 9 else h - 1.5, z1), body)
-    m.part((1.6, 3.5, 0.6), (14.4, 4.5, 15.4), hoop)                                # obręcz
-    m.part((0.6, 3.5, 1.6), (15.4, 4.5, 14.4), hoop)
-    if band:
-        m.part((1.7, 5, 0.7), (14.3, 7, 15.3), band)
-    m.part((3, 6.5, 3), (13, 7.2, 13), 'black')                                    # wnętrze
-    m.part((4, 7, 5), (8, 9, 8), 'rust')                                            # łup: złom, puszka, szmata
-    m.part((8.5, 7, 7), (11, 10, 9.5), 'steel', up='steel_light')
-    m.part((5, 7, 9), (9, 7.8, 12), 'cloth')
-    m.part((-3, 0, 6), (8, 1, 17), 'steel', up=body if body != 'red_paint' else 'black',
-           rot={'angle': 22.5, 'axis': 'z', 'origin': [-3, 0, 11]})                # wieko oparte o beczkę
-    m.part((13, 0, -2), (16, 1.2, 1), body)                                         # odłamki
-    m.part((15.5, 0, 9), (18, 0.8, 11), hoop)
-    return m
-
-C['beczka_rozbita'] = rozbita('blue_chipped', 'steel_dark')
-C['beczka_paliwa_rozbita'] = rozbita('red_paint', 'steel_dark', band='yellow_paint')
-C['beczka_rdza_rozbita'] = rozbita('rust_heavy', 'rust')
+C.update(BARRELS)   # beczki i ich wersje rozbite mają własny model i tekstury (barrels.py)
 
 def skrzynia():
     m = Station()
