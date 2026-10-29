@@ -7,7 +7,7 @@ x=8 i z=8, przód gracza to strona north (z mniejsze). Dzięki temu plugin stawi
 elementy w tym samym punkcie (wyświetlacz przedmiotu na graczu) i każdy ląduje na swoim
 miejscu. Jednostka modelu = 1 piksel skóry gracza.
 
-Zestawy: cien, lis, legion, bastion, ranger, ghillie oraz prowizoryczne: zlomiarz, lowca (strój liściasty dla snajperów).
+Zestawy: cien, lis, legion, bastion, ranger, ghillie oraz prowizoryczne: zlomiarz, lowca, tulacz (startowy) (strój liściasty dla snajperów).
 Elementy: helm, kamizelka, spodnie, buty, rekawice.
 
 Zapisuje build/<nazwa>.json, build/<nazwa>.png, build/<nazwa>_item.json.
@@ -69,6 +69,11 @@ PALETY = {
               'plate': ((96, 66, 42), 'leather'), 'strap': ((44, 34, 26), 'leather'), 'glow': ((90, 90, 90), 'cloth'),
               'metal': ((100, 98, 92), 'rust'), 'cloth2': ((84, 90, 64), 'canvas'), 'lens': ((70, 60, 40), 'lens'),
               'emblem': ((90, 80, 56), 'patch'), 'mesh': ((120, 112, 90), 'duct'), 'extra': ((60, 46, 32), 'leather')},
+    # Tułacz: najtańszy zestaw startowy; stara bluza, karton i taśma
+    'tulacz': {'main': ((86, 90, 82), 'cloth'), 'dark': ((58, 54, 48), 'cloth'), 'accent': ((112, 54, 48), 'knit'),
+               'plate': ((156, 122, 82), 'cardboard'), 'strap': ((140, 124, 92), 'rope'), 'glow': ((90, 90, 90), 'cloth'),
+               'metal': ((112, 112, 110), 'rust'), 'cloth2': ((112, 112, 108), 'cloth'), 'lens': ((60, 60, 56), 'lens'),
+               'emblem': ((100, 96, 86), 'patch'), 'mesh': ((150, 152, 150), 'duct'), 'extra': ((176, 172, 160), 'rubber')},
     'ghillie': {'main': ((70, 78, 44), 'cloth'), 'dark': ((40, 46, 28), 'cloth'), 'accent': ((120, 100, 60), 'cloth'),
                 'plate': ((56, 60, 40), 'plate'), 'strap': ((50, 42, 30), 'strap'), 'glow': ((200, 200, 120), 'glow'),
                 'metal': ((100, 100, 90), 'plate'), 'cloth2': ((96, 88, 54), 'cloth'), 'lens': ((60, 70, 40), 'lens'),
@@ -125,7 +130,7 @@ def refine(t, kind, rnd, base):
     for y in range(S):
         for x in range(S):
             mul(x, y, 1 + rnd.uniform(-0.05, 0.05))
-            if kind in ('cloth', 'ripstop', 'strap', 'denim', 'canvas', 'leather') or kind.startswith('camo'):
+            if kind in ('cloth', 'ripstop', 'strap', 'denim', 'canvas', 'leather', 'knit') or kind.startswith('camo'):
                 mul(x, y, 1.06 if (x + y) % 2 == 0 else 0.95)           # splot
                 if kind == 'ripstop' and (x % 8 == 0 or y % 8 == 0):
                     mul(x, y, 1.12)
@@ -204,6 +209,12 @@ def tile16(base, kind, rnd, accent=None):
                 n += 8 if y % 3 == 0 else -3
             elif kind == 'paint':
                 n += rnd.randint(-3, 3)
+            elif kind == 'cardboard':                  # tektura falista
+                n += 6 if x % 3 == 0 else -2
+            elif kind == 'knit':                       # dzianina: rządki oczek
+                n += 8 if (x + (y // 2) * 2) % 4 in (0, 1) and y % 2 == 0 else -4
+            elif kind == 'rope':                       # sznurek skręcany
+                n += 9 if (x + y) % 4 == 0 else -3
             elif kind == 'rust':
                 n = rnd.randint(-5, 5)
             shade(x, y, n)
@@ -218,6 +229,11 @@ def tile16(base, kind, rnd, accent=None):
         d.rectangle([0, 0, 15, 15], outline=dk(0.55))
         for p in ((2, 2), (13, 2), (2, 13), (13, 13)):
             px[p] = (170, 168, 160, 255)
+    if kind == 'cardboard':                              # nadruk i przetarcia na kartonie
+        d.line([(3, 4), (9, 4)], fill=dk(0.6))
+        d.line([(3, 6), (7, 6)], fill=dk(0.6))
+        for _ in range(6):
+            px[rnd.randint(1, 14), rnd.randint(1, 14)] = dk(0.75)
     if kind == 'paint':                                  # odpryski lakieru
         for _ in range(10):
             px[rnd.randint(1, 14), rnd.randint(1, 14)] = (70, 60, 40, 255)
@@ -769,6 +785,37 @@ def lowca_kamizelka():
     return e
 
 
+def tulacz_helm():
+    """Wełniana czapka z wywiniętym brzegiem i cerą; twarz odkryta."""
+    return [box([3.4, 29.6, 3.4], [12.6, 31.0, 12.6], 'accent'),
+            box([3.8, 31.0, 3.8], [12.2, 32.0, 12.2], 'accent'),
+            box([4.6, 32.0, 4.6], [11.4, 32.6, 11.4], 'accent'),
+            box([3.2, 28.4, 3.2], [12.8, 29.8, 12.8], 'accent'),                  # wywinięty brzeg
+            box([3.4, 25.2, 7.0], [12.6, 28.6, 12.6], 'accent'),                  # tył naciągnięty na uszy
+            box([9.0, 30.2, 3.2], [10.6, 31.4, 3.5], 'cloth2', skip=('south',)),  # łata na dziurze
+            box([3.1, 30.0, 8.0], [3.3, 31.2, 9.6], 'dark', skip=('east',))]
+
+
+def tulacz_kamizelka():
+    """Stara bluza z kapturem, kawałki kartonu przyklejone taśmą i przewiązane sznurkiem."""
+    e = [box([3.7, 12.4, 5.5], [12.3, 23.6, 10.5], 'main'),                       # bluza
+         box([4.2, 20.8, 10.4], [11.8, 24.4, 12.2], 'main'),                      # opuszczony kaptur
+         box([5.0, 21.4, 12.1], [11.0, 23.8, 12.5], 'dark', skip=('north',)),
+         box([5.0, 13.0, 5.2], [11.0, 16.2, 5.55], 'dark', skip=('south',)),      # kieszeń kangurka
+         box([6.6, 20.6, 5.2], [6.9, 23.0, 5.5], 'strap', skip=('south',)),       # sznurki kaptura
+         box([9.1, 20.0, 5.2], [9.4, 23.0, 5.5], 'strap', skip=('south',)),
+         box([4.4, 16.0, 4.9], [11.2, 21.8, 5.5], 'plate', skip=('south',)),      # karton na piersi
+         rotated([8.6, 18.4, 4.75], [11.6, 22.2, 5.15], 'plate', 'z', -22.5, skip=('south',)),  # drugi kawałek krzywo
+         box([4.4, 14.6, 10.5], [11.6, 21.8, 11.1], 'plate', skip=('north',)),    # karton na plecach
+         box([3.6, 16.8, 4.75], [12.4, 17.6, 11.25], 'mesh'),                     # taśma dookoła
+         box([3.6, 20.4, 4.75], [12.4, 21.2, 11.25], 'mesh'),
+         rotated([5.0, 15.0, 4.3], [5.5, 24.6, 4.6], 'strap', 'z', 22.5),          # sznurek przez ramię
+         box([4.6, 23.6, 4.8], [6.0, 24.3, 11.2], 'strap'),
+         box([9.6, 14.2, 4.6], [11.0, 15.6, 5.0], 'metal', skip=('south',)),      # wieczko od puszki
+         box([3.6, 12.0, 5.3], [12.4, 12.8, 10.7], 'strap')]                       # sznurek zamiast paska
+    return e
+
+
 # ------------------------------------------------------- GHILLIE (snajper)
 def sample_surface(rnd, f, t, faces=('north', 'south', 'east', 'west', 'up')):
     dx, dy, dz = t[0] - f[0], t[1] - f[1], t[2] - f[2]
@@ -907,6 +954,14 @@ ZESTAWY = {
         'spodnie': lambda: pants('main', 'dark', kneepad='plate', holster=True),
         'buty': lambda: boots_base('dark', 'strap', high=6.2),
         'rekawice': lambda: gloves_base('dark', 'main', cuff=3.0)},
+    'tulacz': {
+        'helm': tulacz_helm, 'kamizelka': tulacz_kamizelka,
+        'bluza': lambda: sleeves('main', 'dark', pad='plate', patch='cloth2', cuff='main'),
+        'spodnie': lambda: pants('cloth2', 'dark', kneepad='plate', belt='strap', cargo=False)
+        + both([box([3.6, 3.8, 5.1], [8.1, 4.4, 10.4], 'mesh'), box([3.6, 5.2, 5.1], [8.1, 5.8, 10.4], 'mesh')]),
+        'buty': lambda: boots_base('cloth2', 'dark', high=3.0, sole='extra')
+        + both([box([3.6, 1.2, 4.1], [8.1, 1.9, 10.4], 'mesh')]),
+        'rekawice': lambda: gloves_base('accent', 'accent', cuff=2.0)},
     'ghillie': {'helm': ghillie_helm, 'kamizelka': ghillie_kamizelka, 'spodnie': ghillie_spodnie,
                 'buty': ghillie_buty, 'rekawice': ghillie_rekawice},
 }
