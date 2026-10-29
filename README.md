@@ -43,6 +43,23 @@ Od 1.21.6 shadery mają inny format, więc tam paczka ich nie dodaje (mapa AxonM
 
 Paczka była wczytana w prawdziwym kliencie 1.21.1, 1.21.3, 1.21.5 i 1.21.11 (bez błędów modeli i shaderów; na 1.21.1 i 1.21.3 sprawdzone, że nakładka z `overrides` się wczytuje). `QualityArmory-21-axon-1.21.11.zip` to teraz kopia tej samej paczki, zostawiona, żeby stare linki działały.
 
+## Amunicja
+
+Dziesięć typów amunicji z paczki QualityArmory (przedmiot `phantom_membrane`, `custom_model_data` 1–10) ma nowe modele 3D. Jeden przedmiot to jedna sztuka (liczbę pokazuje licznik w slocie). Numery i nazwy w pluginie zostają bez zmian, więc nic nie trzeba przestawiać w konfiguracji. Generuje je `zrodla/gen_ammo.py` (podgląd: `preview_ammo.py`), `build_pack.py` podmienia modele `qualityarmory:ammo/*`, a `dodaj_ammo.py` dopisuje je do gotowego zipa. Tekstury 128×128 leżą w `textures/axon/ammo_<nazwa>.png`.
+
+| custom_model_data | Model | Opis |
+|---|---|---|
+| 1 | `ammo9mm` | nabój 9 mm |
+| 2 | `ammo556` | nabój 5.56 |
+| 3 | `ammo762` | nabój 7.62 |
+| 4 | `ammoshotgun` | nabój śrutowy |
+| 5 | `ammorpg` | rakieta RPG |
+| 6 | `ammomusketball` | kula ołowiana z papierem |
+| 7 | `ammo50cal` | nabój .50 cal |
+| 8 | `ammo40m` | granat 40 mm |
+| 9 | `ammomininuke` | mini-nuke z pasem ostrzegawczym |
+| 10 | `ammofusion` | ogniwo fuzyjne (świecący rdzeń) |
+
 ## Skiny premium
 
 Skin używa tego samego modelu co bazowa broń (te same elementy i pozycje, także celowanie), różni się tylko teksturą. Generuje je `gen.py` (słownik `SKINS`; AK ma własne malowania, reszta broni wspólne motywy z `generic_skin`), a `build_pack.py` dopisuje je do `assets/minecraft/items/crossbow.json`. Numery idą blokami po dziesięć na broń, bo oryginalne numery QA kończą się na 85.
