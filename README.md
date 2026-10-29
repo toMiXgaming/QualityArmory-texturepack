@@ -177,6 +177,8 @@ Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.p
 | Pojemniki | `beczka`, `beczka_paliwa`, `beczka_rdza` (każda też jako `_rozbita`), `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa` (2 kratki), `skrzynia_elitarna`, `spadochron` | wyświetlacz przedmiotu, przód na południe |
 | Wraki | `wrak_fiat_126p`, `wrak_polonez`, `wrak_zuk`, `wrak_nysa`, `wrak_star_266`, `wrak_autosan`, `wrak_ursus`, `wrak_wsk` | rekwizyt z sekcji `modele:` struktury, przód na północ |
 
+Beczki (`zrodla/axoncore/barrels.py`) mają własny model i tekstury 128×128 (`axon:item/beczka`, `beczka_paliwa`, `beczka_rdza`), wspólne dla wersji rozbitych i dla podmienionej beczki z Minecrafta. Korpus to pięć stykających się brył bez nakładających się ścian, więc wieko nie migocze. Podgląd: `podglady/axoncore-beczki.png`.
+
 Beczki przy drogach działają jak w Rust: gracz je niszczy, wtedy plugin podmienia model na `<beczka>_rozbita` (wgnieciony dół, wieko na ziemi, łup w środku), prawy klik otwiera łup, a po czasie beczka odnawia się w tym samym miejscu.
 
 Skrzynia zrzutu to dalej `axon:zrzut` z `gen_zrzut.py`. `spadochron` to rozłożona czasza do zawieszenia nad nią w czasie spadania.

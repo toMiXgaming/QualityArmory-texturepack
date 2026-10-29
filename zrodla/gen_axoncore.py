@@ -21,6 +21,7 @@ from axoncore.chest import TEX as CHEST
 from axoncore.stations import S
 from axoncore.containers import C
 from axoncore.vehicles import V
+from axoncore.barrels import TEX as BARREL_TEX
 
 ATLAS_PNG = 'assets/axon/textures/block/axoncore_atlas.png'
 
@@ -73,6 +74,8 @@ def pliki():
     for key, img in CHEST.items():
         ns, path = key.split(':')
         files['assets/%s/textures/%s.png' % (ns, path)] = _png(img)
+    for name, img in BARREL_TEX.items():   # tekstury beczek 128×128 (barrels.py)
+        files['assets/axon/textures/item/%s.png' % name] = _png(img)
     for name, m in MODELE_3D.items():
         _przedmiot(files, name, m.json())
     return files

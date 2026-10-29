@@ -1,5 +1,6 @@
 """Bloki podmieniane globalnie (nadpisują modele vanilla)."""
 from .model import Model
+from .barrels import barrel
 
 BLOCK_DISPLAY = None  # bloki dziedziczą wyświetlanie z block/block przez "parent"
 B = {}
@@ -62,17 +63,10 @@ def campfire(lit):
 B['minecraft:block/campfire'] = campfire(True)
 B['minecraft:block/campfire_off'] = campfire(False)
 
-# --- beczka: blaszana, niebieska emalia z odpryskami, dwie obręcze
-def barrel(open_):
-    m = block()
-    m.box((2, 0, 1), (14, 16, 15), 'blue_chipped', up='steel' if not open_ else 'black', down='steel_dark')
-    m.box((1, 0, 2), (15, 16, 14), 'blue_chipped', up='steel' if not open_ else 'black', down='steel_dark')
-    for y in (3.5, 11.5):
-        m.box((1.6, y, 0.6), (14.4, y + 1, 15.4), 'steel_dark')
-        m.box((0.6, y, 1.6), (15.4, y + 1, 14.4), 'steel_dark')
-    if not open_:
-        m.box((10, 16, 10), (12, 16.6, 12), 'steel_dark')                 # korek
-        m.box((3, 16, 3), (13, 16.2, 4), 'rust')
+# --- beczka: ten sam model i tekstura co axon:beczka (barrels.py), otwarta pokazuje wnętrze
+def _vanilla_barrel(open_):
+    m = barrel('beczka', open_)
+    m.display = None
     return m
-B['minecraft:block/barrel'] = barrel(False)
-B['minecraft:block/barrel_open'] = barrel(True)
+B['minecraft:block/barrel'] = _vanilla_barrel(False)
+B['minecraft:block/barrel_open'] = _vanilla_barrel(True)
