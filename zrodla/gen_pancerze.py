@@ -26,28 +26,38 @@ REG = ['main', 'dark', 'accent', 'plate', 'strap', 'glow', 'metal', 'cloth2',
        'leafA', 'leafB', 'leafC', 'bark', 'lens', 'emblem', 'mesh', 'extra']
 RI = {n: i for i, n in enumerate(REG)}
 
-# nazwa -> (kolor, wzór)
+# Kamuflaże: lista kolorów od tła do plam
+MULTICAM = [(150, 134, 104), (126, 130, 92), (104, 92, 66), (82, 92, 64), (172, 156, 124)]
+WOODLAND = [(88, 98, 58), (54, 62, 38), (96, 72, 44), (26, 28, 20)]
+
+# nazwa -> (kolor, wzór); wzór 'camo:<nazwa>' to kamuflaż z listy CAMO
+CAMO = {'multicam': MULTICAM, 'woodland': WOODLAND}
 PALETY = {
-    'cien': {'main': ((38, 40, 44), 'cloth'), 'dark': ((22, 23, 26), 'cloth'), 'accent': ((226, 112, 32), 'cloth'),
-             'plate': ((58, 60, 66), 'plate'), 'strap': ((30, 31, 34), 'strap'), 'glow': ((255, 140, 40), 'glow'),
-             'metal': ((92, 94, 100), 'plate'), 'cloth2': ((50, 52, 58), 'cloth'), 'lens': ((226, 112, 32), 'lens'),
-             'emblem': ((226, 112, 32), 'emblem'), 'mesh': ((20, 20, 22), 'mesh'), 'extra': ((70, 72, 78), 'cloth')},
-    'lis': {'main': ((92, 100, 62), 'camo'), 'dark': ((52, 58, 38), 'camo'), 'accent': ((196, 170, 110), 'cloth'),
-            'plate': ((74, 78, 56), 'plate'), 'strap': ((60, 52, 38), 'strap'), 'glow': ((200, 200, 120), 'glow'),
-            'metal': ((110, 108, 98), 'plate'), 'cloth2': ((130, 118, 84), 'camo'), 'lens': ((190, 150, 70), 'lens'),
-            'emblem': ((196, 170, 110), 'emblem'), 'mesh': ((60, 56, 40), 'mesh'), 'extra': ((70, 62, 44), 'cloth')},
-    'legion': {'main': ((84, 88, 60), 'cloth'), 'dark': ((48, 50, 36), 'cloth'), 'accent': ((196, 160, 70), 'cloth'),
-               'plate': ((64, 68, 52), 'plate'), 'strap': ((40, 38, 30), 'strap'), 'glow': ((120, 255, 140), 'glow'),
-               'metal': ((120, 122, 118), 'plate'), 'cloth2': ((150, 130, 90), 'cloth'), 'lens': ((60, 200, 120), 'lens'),
-               'emblem': ((170, 150, 90), 'emblem'), 'mesh': ((30, 30, 24), 'mesh'), 'extra': ((100, 96, 70), 'cloth')},
-    'bastion': {'main': ((120, 104, 74), 'cloth'), 'dark': ((54, 50, 40), 'cloth'), 'accent': ((150, 130, 90), 'cloth'),
-                'plate': ((66, 68, 66), 'plate'), 'strap': ((36, 34, 28), 'strap'), 'glow': ((200, 200, 120), 'glow'),
-                'metal': ((96, 98, 96), 'plate'), 'cloth2': ((100, 88, 62), 'cloth'), 'lens': ((60, 60, 60), 'lens'),
-                'emblem': ((150, 130, 90), 'emblem'), 'mesh': ((30, 30, 28), 'mesh'), 'extra': ((80, 72, 54), 'cloth')},
-    'ranger': {'main': ((38, 52, 84), 'cloth'), 'dark': ((24, 32, 54), 'cloth'), 'accent': ((190, 196, 204), 'cloth'),
-               'plate': ((52, 62, 84), 'plate'), 'strap': ((20, 22, 28), 'strap'), 'glow': ((230, 230, 120), 'glow'),
-               'metal': ((200, 180, 90), 'plate'), 'cloth2': ((110, 120, 140), 'cloth'), 'lens': ((60, 90, 150), 'lens'),
-               'emblem': ((200, 180, 90), 'emblem'), 'mesh': ((16, 20, 30), 'mesh'), 'extra': ((70, 80, 100), 'cloth')},
+    # Cień: czerń i grafit, zero kolorów (lekka grupa specjalna)
+    'cien': {'main': ((40, 42, 44), 'ripstop'), 'dark': ((24, 25, 27), 'ripstop'), 'accent': ((60, 62, 60), 'ripstop'),
+             'plate': ((46, 48, 50), 'plate'), 'strap': ((28, 29, 30), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
+             'metal': ((84, 86, 88), 'plate'), 'cloth2': ((52, 54, 56), 'ripstop'), 'lens': ((40, 42, 46), 'lens'),
+             'emblem': ((60, 60, 58), 'patch'), 'mesh': ((18, 18, 20), 'mesh'), 'extra': ((70, 72, 72), 'ripstop')},
+    # Lis: zwiad w kamuflażu woodland
+    'lis': {'main': ((0, 0, 0), 'camo:woodland'), 'dark': ((46, 52, 34), 'ripstop'), 'accent': ((120, 104, 70), 'cloth'),
+            'plate': ((60, 64, 46), 'plate'), 'strap': ((46, 40, 30), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
+            'metal': ((96, 94, 86), 'plate'), 'cloth2': ((92, 80, 54), 'ripstop'), 'lens': ((70, 60, 40), 'lens'),
+            'emblem': ((60, 64, 46), 'patch'), 'mesh': ((40, 40, 30), 'mesh'), 'extra': ((70, 62, 44), 'cloth')},
+    # Legion: piechota w MultiCam
+    'legion': {'main': ((0, 0, 0), 'camo:multicam'), 'dark': ((74, 70, 54), 'ripstop'), 'accent': ((150, 134, 104), 'cloth'),
+               'plate': ((92, 86, 66), 'plate'), 'strap': ((52, 48, 38), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
+               'metal': ((70, 72, 72), 'plate'), 'cloth2': ((112, 106, 80), 'ripstop'), 'lens': ((30, 60, 46), 'lens'),
+               'emblem': ((90, 86, 66), 'patch'), 'mesh': ((40, 38, 30), 'mesh'), 'extra': ((100, 96, 70), 'cloth')},
+    # Bastion: ciężka ochrona, coyote i matowe płyty
+    'bastion': {'main': ((116, 98, 70), 'ripstop'), 'dark': ((58, 52, 40), 'ripstop'), 'accent': ((140, 122, 90), 'cloth'),
+                'plate': ((62, 64, 64), 'plate'), 'strap': ((38, 34, 28), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
+                'metal': ((90, 92, 92), 'plate'), 'cloth2': ((98, 84, 60), 'ripstop'), 'lens': ((40, 42, 42), 'lens'),
+                'emblem': ((100, 86, 62), 'patch'), 'mesh': ((30, 28, 24), 'mesh'), 'extra': ((76, 68, 50), 'cloth')},
+    # Ranger: służba mundurowa, granat
+    'ranger': {'main': ((34, 44, 66), 'ripstop'), 'dark': ((22, 28, 42), 'ripstop'), 'accent': ((170, 174, 180), 'cloth'),
+               'plate': ((44, 52, 70), 'plate'), 'strap': ((18, 20, 26), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
+               'metal': ((150, 150, 146), 'plate'), 'cloth2': ((46, 56, 78), 'ripstop'), 'lens': ((50, 70, 100), 'lens'),
+               'emblem': ((172, 176, 182), 'patch'), 'mesh': ((16, 18, 26), 'mesh'), 'extra': ((60, 68, 88), 'cloth')},
     'ghillie': {'main': ((70, 78, 44), 'cloth'), 'dark': ((40, 46, 28), 'cloth'), 'accent': ((120, 100, 60), 'cloth'),
                 'plate': ((56, 60, 40), 'plate'), 'strap': ((50, 42, 30), 'strap'), 'glow': ((200, 200, 120), 'glow'),
                 'metal': ((100, 100, 90), 'plate'), 'cloth2': ((96, 88, 54), 'cloth'), 'lens': ((60, 70, 40), 'lens'),
@@ -61,44 +71,73 @@ def clamp(c):
     return tuple(max(0, min(255, int(v))) for v in c)
 
 
+def _smooth_noise(rnd, n=16, cell=4):
+    """Gładki szum 0..1 na siatce n x n (dwuliniowa interpolacja losowych węzłów)."""
+    g = [[rnd.random() for _ in range(n // cell + 2)] for _ in range(n // cell + 2)]
+    out = [[0.0] * n for _ in range(n)]
+    for y in range(n):
+        for x in range(n):
+            gx, gy = x / cell, y / cell
+            x0, y0 = int(gx), int(gy)
+            fx, fy = gx - x0, gy - y0
+            a = g[y0][x0] * (1 - fx) + g[y0][x0 + 1] * fx
+            b = g[y0 + 1][x0] * (1 - fx) + g[y0 + 1][x0 + 1] * fx
+            out[y][x] = a * (1 - fy) + b * fy
+    return out
+
+
+def camo_tile(cols, rnd):
+    t = Image.new('RGBA', (16, 16), cols[0] + (255,))
+    px = t.load()
+    layers = [_smooth_noise(rnd, 16, 5) for _ in range(len(cols) - 1)]
+    for y in range(16):
+        for x in range(16):
+            c = cols[0]
+            for i, lay in enumerate(layers):
+                if lay[y][x] > 0.58 + 0.04 * i:
+                    c = cols[i + 1]
+            k = rnd.randint(-5, 5)
+            px[x, y] = clamp((c[0] + k, c[1] + k, c[2] + k)) + (255,)
+    return t
+
+
 def tile(base, kind, rnd, accent=None):
     """Obszar 16x16 z wzorem."""
+    if kind.startswith('camo:'):
+        return camo_tile(CAMO[kind[5:]], rnd)
     t = Image.new('RGBA', (16, 16), base + (255,))
     px = t.load()
     d = ImageDraw.Draw(t)
+
+    def dk(f):
+        return clamp([base[0] * f, base[1] * f, base[2] * f]) + (255,)
 
     def shade(x, y, k):
         px[x, y] = clamp([base[0] + k, base[1] + k, base[2] + k]) + (255,)
 
     for y in range(16):
         for x in range(16):
-            n = rnd.randint(-5, 5)
+            n = rnd.randint(-4, 4)
             if kind in ('cloth', 'strap'):
                 n += 4 if (x + y) % 4 == 0 else 0     # splot tkaniny
                 n -= 3 if (x % 2 == 0 and y % 2 == 0) else 0
-            elif kind == 'camo':
-                n = rnd.randint(-4, 4)
-            elif kind == 'carbon':
-                n += 6 if ((x // 2 + y // 2) % 2 == 0) else -4
+            elif kind == 'ripstop':                    # siatka rip-stop co 4 piksele + splot
+                n += 7 if (x % 4 == 0 or y % 4 == 0) else 0
+                n += 2 if (x + y) % 2 == 0 else -2
             elif kind == 'plate':
-                n = rnd.randint(-4, 4) + (3 if y % 5 == 0 else 0)  # szczotkowany metal
+                n = rnd.randint(-4, 4) + (3 if y % 5 == 0 else 0)
             shade(x, y, n)
-    if kind == 'camo':
-        for _ in range(7):
-            cx, cy, r = rnd.randint(0, 15), rnd.randint(0, 15), rnd.randint(2, 4)
-            k = rnd.choice((-26, -18, 20, 28))
-            for y in range(16):
-                for x in range(16):
-                    if (x - cx) ** 2 + (y - cy) ** 2 <= r * r + rnd.randint(-1, 2):
-                        shade(x, y, k + rnd.randint(-3, 3))
-    if kind == 'plate':
-        d.rectangle([0, 0, 15, 15], outline=clamp([base[0] * 0.6, base[1] * 0.6, base[2] * 0.6]) + (255,))
-        d.line([(1, 1), (14, 1)], fill=clamp([base[0] * 1.3 + 12, base[1] * 1.3 + 12, base[2] * 1.3 + 12]) + (255,))
+    if kind in ('plate',):
+        d.rectangle([0, 0, 15, 15], outline=dk(0.6))
+        d.line([(1, 1), (14, 1)], fill=dk(1.3))
         for p in ((2, 2), (13, 2), (2, 13), (13, 13)):
-            px[p] = clamp([base[0] * 1.5 + 30, base[1] * 1.5 + 30, base[2] * 1.5 + 30]) + (255,)
+            px[p] = dk(1.5)
     if kind == 'strap':
-        d.line([(0, 7), (15, 7)], fill=clamp([base[0] * 0.6, base[1] * 0.6, base[2] * 0.6]) + (255,))
-        d.line([(0, 9), (15, 9)], fill=clamp([base[0] * 0.6, base[1] * 0.6, base[2] * 0.6]) + (255,))
+        d.line([(0, 7), (15, 7)], fill=dk(0.6))
+        d.line([(0, 9), (15, 9)], fill=dk(0.6))
+    if kind in ('ripstop', 'cloth'):
+        d.line([(0, 15), (15, 15)], fill=dk(0.8))      # szew
+        d.line([(15, 0), (15, 15)], fill=dk(0.8))
     if kind == 'mesh':
         for y in range(16):
             for x in range(16):
@@ -108,44 +147,43 @@ def tile(base, kind, rnd, accent=None):
         for y in range(16):
             k = 1.0 - abs(y - 8) / 12.0
             for x in range(16):
-                px[x, y] = clamp([base[0] * (0.6 + 0.5 * k) + 20, base[1] * (0.6 + 0.5 * k) + 20,
-                                  base[2] * (0.6 + 0.5 * k) + 20]) + (255,)
-    if kind == 'lens':
+                px[x, y] = clamp([base[0] * (0.6 + 0.5 * k) + 20] * 3) + (255,)
+    if kind == 'lens':                                 # przydymione szkło z delikatnym odbiciem
         for y in range(16):
             for x in range(16):
-                k = 0.45 + 0.7 * (y / 15.0)
+                k = 0.55 + 0.5 * (y / 15.0)
                 px[x, y] = clamp([base[0] * k, base[1] * k, base[2] * k]) + (255,)
-        d.line([(2, 2), (7, 2)], fill=(255, 255, 255, 255))
-        d.line([(2, 3), (4, 3)], fill=(255, 255, 255, 255))
+        d.line([(2, 2), (6, 2)], fill=clamp([base[0] + 70, base[1] + 70, base[2] + 70]) + (255,))
         d.rectangle([0, 0, 15, 15], outline=(10, 10, 12, 255))
+    if kind == 'patch':                                # naszywka na rzep: ciemne tło, ramka, napis jako kreski
+        d.rectangle([0, 0, 15, 15], fill=(26, 26, 24, 255))
+        d.rectangle([1, 1, 14, 14], outline=dk(0.9))
+        for y in (5, 8, 11):
+            d.line([(3, y), (12, y)], fill=dk(0.75))
     if kind == 'emblem':
         d.rectangle([0, 0, 15, 15], fill=(18, 18, 20, 255))
-        d.polygon([(8, 2), (14, 13), (10, 13), (8, 8), (6, 13), (2, 13)], fill=base + (255,))  # litera A
+        d.polygon([(8, 2), (14, 13), (10, 13), (8, 8), (6, 13), (2, 13)], fill=base + (255,))
         d.line([(5, 11), (11, 11)], fill=base + (255,))
     if kind == 'leaf':
         for y in range(16):
             for x in range(16):
                 shade(x, y, rnd.randint(-10, 10))
-        d.line([(0, 8), (15, 8)], fill=clamp([base[0] * 0.65, base[1] * 0.65, base[2] * 0.65]) + (255,))
+        d.line([(0, 8), (15, 8)], fill=dk(0.65))
         for x in range(2, 15, 3):
-            d.line([(x, 8), (x + 2, 3)], fill=clamp([base[0] * 0.75, base[1] * 0.75, base[2] * 0.75]) + (255,))
-            d.line([(x, 8), (x + 2, 13)], fill=clamp([base[0] * 0.75, base[1] * 0.75, base[2] * 0.75]) + (255,))
+            d.line([(x, 8), (x + 2, 3)], fill=dk(0.75))
+            d.line([(x, 8), (x + 2, 13)], fill=dk(0.75))
     if kind == 'bark':
         for x in range(0, 16, 3):
-            d.line([(x, 0), (x + rnd.randint(-1, 1), 15)], fill=clamp([base[0] * 0.6, base[1] * 0.6, base[2] * 0.6]) + (255,))
+            d.line([(x, 0), (x + rnd.randint(-1, 1), 15)], fill=dk(0.6))
     return t
 
 
 def texture(name):
-    rnd = random.Random(hash(name) & 0xFFFF)
-    rnd.seed(sum(map(ord, name)) * 31)
+    rnd = random.Random(sum(map(ord, name)) * 31)
     pal = PALETY[name]
     im = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
     for i, rn in enumerate(REG):
-        if rn not in pal:
-            base, kind = (120, 120, 120), 'cloth'
-        else:
-            base, kind = pal[rn]
+        base, kind = pal.get(rn, ((120, 120, 120), 'cloth'))
         im.paste(tile(base, kind, rnd), ((i % 4) * 16, (i // 4) * 16))
     return im
 
@@ -196,238 +234,311 @@ HX = (4, 12)         # głowa x
 TZ = (6, 10)         # tułów z
 
 
-def pants_base(pal_main, pal_dark, pocket=True, knee='plate', kneesize=1.0, belt='strap', stripe=None):
-    el = []
-    # prawa noga (x 4..8) + lustro
-    leg = [box([3.75, 0.6, 5.75], [8.0, 12.4, 10.25], pal_main)]
-    el.append(box([3.6, 11.0, 5.6], [8.1, 12.6, 10.4], belt))          # pas przy biodrach
-    if pocket:
-        leg.append(box([3.35, 6.0, 6.4], [3.75, 9.4, 9.6], pal_dark))  # kieszeń cargo z boku
-        leg.append(box([3.3, 9.0, 6.3], [3.8, 9.5, 9.7], 'strap'))     # klapka
-    leg.append(box([4.2, 3.4, 5.4], [7.6, 5.6, 5.75], knee, skip=('south',)))  # nakolannik
-    leg.append(box([4.4, 3.7, 5.2], [7.4, 5.3, 5.4], 'metal', skip=('south',)))
-    leg.append(box([3.7, 0.6, 5.7], [8.05, 1.6, 10.3], pal_dark))      # mankiet
+# Elementy gracza w ramie gracza (przód = north = z mniejsze)
+# głowa x 4..12, y 24..32, z 4..12; tułów x 4..12, y 12..24, z 6..10 (wartości przed przesunięciem YSHIFT)
+
+
+def molle(x0, x1, y0, y1, z, back=False, reg='strap'):
+    """Pasy PALS (rzędy taśm) na przodzie albo na tyle plecaka/kamizelki."""
+    out = []
+    y = y0
+    while y + 0.35 <= y1:
+        if back:
+            out.append(box([x0, y, z], [x1, y + 0.35, z + 0.18], reg, skip=('north',)))
+        else:
+            out.append(box([x0, y, z - 0.18], [x1, y + 0.35, z], reg, skip=('south',)))
+        y += 0.9
+    return out
+
+
+def pouch(x, y, w, h, zf=4.7, depth=0.8, reg='dark', flap=True, buckle=True):
+    """Ładownica przednia na kamizelce: korpus, klapa i klamra."""
+    out = [box([x, y, zf - depth], [x + w, y + h, zf], reg, skip=('south',))]
+    if flap:
+        out.append(box([x - 0.05, y + h * 0.62, zf - depth - 0.2], [x + w + 0.05, y + h + 0.05, zf - depth + 0.02], reg, skip=('south',)))
+        if buckle:
+            out.append(box([x + w / 2 - 0.3, y + h * 0.55, zf - depth - 0.3], [x + w / 2 + 0.3, y + h * 0.78, zf - depth - 0.15], 'metal', skip=('south',)))
+    return out
+
+
+def plate_carrier(main='main', trim='dark', plates=True, side_plates=False, cummer=True, drag=True):
+    """Nosidło płyt: worek na płytę przód i tył, ramiona, kołnierz i pas boczny z taśmami PALS."""
+    e = [box([3.7, 12.6, 5.2], [12.3, 23.0, 10.8], trim),                       # korpus pod spodem
+         box([4.2, 14.0, 4.6], [11.8, 22.4, 5.3], main, skip=('south',)),       # worek na płytę (przód)
+         box([4.2, 14.0, 10.7], [11.8, 22.4, 11.4], main, skip=('north',)),     # worek na płytę (tył)
+         box([4.0, 22.2, 5.1], [6.6, 24.6, 10.9], main),                        # ramiona
+         box([9.4, 22.2, 5.1], [12.0, 24.6, 10.9], main),
+         box([4.0, 24.2, 5.2], [6.6, 24.9, 10.8], trim),                        # wyściółka na barkach
+         box([9.4, 24.2, 5.2], [12.0, 24.9, 10.8], trim),
+         box([5.6, 23.6, 5.8], [10.4, 24.9, 10.4], trim, skip=('up',)),         # miękki kołnierz
+         box([3.7, 12.2, 5.2], [12.3, 14.0, 10.8], trim)]                       # dolna krawędź
+    if cummer:
+        e += [box([3.5, 14.0, 5.0], [4.4, 18.6, 11.0], trim),                    # pas boczny (cummerbund)
+              box([11.6, 14.0, 5.0], [12.5, 18.6, 11.0], trim),
+              box([3.4, 14.4, 6.0], [3.7, 18.0, 10.0], 'strap'),                 # rzep pasa
+              box([12.3, 14.4, 6.0], [12.6, 18.0, 10.0], 'strap')]
+    if plates:
+        e += [box([4.8, 14.6, 4.45], [11.2, 21.8, 4.62], 'plate', skip=('south',)),   # zarys płyty pod tkaniną
+              box([4.8, 14.6, 11.38], [11.2, 21.8, 11.5], 'plate', skip=('north',))]
+    if side_plates:
+        e += [box([3.0, 14.6, 6.4], [3.5, 19.8, 9.6], 'plate'),
+              box([12.5, 14.6, 6.4], [13.0, 19.8, 9.6], 'plate')]
+    e += molle(4.4, 11.6, 14.4, 22.0, 4.62)
+    e += molle(4.4, 11.6, 14.4, 22.0, 11.38, back=True)
+    if drag:
+        e += [box([6.8, 22.0, 11.38], [9.2, 22.4, 11.7], 'strap', skip=('north',)),   # uchwyt do ewakuacji
+              box([6.8, 22.0, 11.6], [9.2, 23.6, 11.8], 'strap', skip=('north',))]
+    for x in (4.9, 10.7):                                                        # klamry ramion
+        e.append(box([x, 22.0, 4.5], [x + 0.6, 22.8, 4.7], 'metal', skip=('south',)))
+    return e
+
+
+def shoulder_pads(reg='main', trim='dark', size=1.0):
+    pad = [box([2.4, 22.4, 5.4], [4.2, 24.4, 10.6], reg), box([2.2, 21.4, 5.6], [3.2, 23.4, 10.4], trim)]
+    return both([p for p in pad]) if size else []
+
+
+def pants(main, dark, kneepad='plate', belt='strap', holster=False, cargo=True, stripe=None):
+    """Spodnie bojowe: kieszenie cargo z klapkami, szwy, nakolanniki z paskami, pas z klamrą, blouse do butów."""
+    leg = [box([3.75, 0.9, 5.75], [8.0, 12.4, 10.25], main),
+           box([3.7, 0.4, 5.7], [8.05, 1.9, 10.3], dark),                       # ściągacz nad butem
+           box([7.7, 1.9, 5.8], [8.1, 11.6, 10.2], dark, skip=('west',)),       # szew wewnętrzny
+           box([5.4, 2.4, 5.6], [6.6, 11.2, 5.75], dark, skip=('south',)),      # szew centralny przód
+           box([4.1, 3.2, 5.3], [7.7, 5.9, 5.8], kneepad, skip=('south',)),     # nakolannik
+           box([4.4, 3.5, 5.15], [7.4, 5.6, 5.3], 'plate', skip=('south',)),
+           box([3.8, 3.9, 5.3], [8.0, 4.3, 10.3], 'strap'),                     # pasek nakolannika
+           box([3.8, 5.2, 5.3], [8.0, 5.6, 10.3], 'strap')]
+    if cargo:
+        leg += [box([3.3, 6.4, 6.4], [3.75, 9.6, 9.6], dark),                   # kieszeń cargo
+                box([3.25, 8.8, 6.3], [3.8, 9.8, 9.7], dark),                   # klapka
+                box([3.2, 8.9, 7.7], [3.35, 9.3, 8.3], 'metal'),                # guzik
+                box([3.35, 6.6, 6.6], [3.5, 7.0, 9.4], 'strap')]                # ściągacz kieszeni
+    if holster:
+        leg += [box([3.2, 5.6, 6.2], [3.7, 9.6, 9.6], 'strap'),
+                box([3.0, 8.8, 6.2], [3.4, 9.8, 9.6], 'dark')]
     if stripe:
-        leg.append(box([5.0, 1.8, 5.65], [6.8, 11.0, 5.78], stripe, skip=('south', 'up', 'down')))
-    return both(leg) + [box([3.6, 11.0, 5.6], [12.4, 12.6, 10.4], belt)]
+        leg.append(box([5.0, 2.0, 5.65], [6.8, 11.0, 5.78], stripe, skip=('south', 'up', 'down')))
+    out = both(leg)
+    out += [box([3.6, 11.2, 5.6], [12.4, 12.7, 10.4], belt),                    # pas
+            box([7.4, 11.4, 5.4], [8.6, 12.5, 5.6], 'metal', skip=('south',)),  # klamra
+            box([3.6, 12.5, 5.6], [12.4, 12.9, 10.4], dark)]                    # pasek na szlufki
+    for x in (4.2, 5.8, 10.2, 11.8):
+        out.append(box([x, 11.2, 5.5], [x + 0.5, 12.7, 5.7], dark, skip=('south',)))   # szlufki
+    return out
 
 
 def boots_base(main, dark, high=5.0, plate=None, sole='dark'):
-    b = [box([3.7, 0.0, 4.2], [8.0, 0.9, 10.3], sole),                 # podeszwa z bieżnikiem
-         box([3.8, 0.9, 4.4], [7.95, high, 10.2], main),               # cholewka
-         box([4.0, 0.9, 3.9], [7.8, 3.0, 4.5], dark),                  # nosek
-         box([3.7, high - 0.8, 5.6], [8.1, high + 0.3, 10.4], dark),   # kołnierz
+    b = [box([3.7, 0.0, 4.2], [8.0, 0.9, 10.3], sole),                          # podeszwa z bieżnikiem
+         box([3.8, 0.9, 4.4], [7.95, high, 10.2], main),                        # cholewka
+         box([4.0, 0.9, 3.9], [7.8, 3.0, 4.5], dark),                           # nosek
+         box([3.7, high - 0.8, 5.6], [8.1, high + 0.3, 10.4], dark),            # kołnierz
+         box([3.7, 0.9, 5.0], [8.0, 1.5, 10.3], dark),                          # rant
          box([4.3, 1.0, 4.4], [7.5, 2.0, 4.6], 'strap', skip=('south',))]
-    for z in (5.4, 6.8, 8.2):                                          # sznurowanie
+    for z in (5.4, 6.8, 8.2):                                                   # sznurowanie
         b.append(box([5.4, 3.0 + (z - 5.4) * 0.3, 4.3], [6.6, 3.3 + (z - 5.4) * 0.3, 4.6], 'strap'))
+    for i in range(4):                                                          # haczyki
+        b.append(box([4.6, 2.2 + i * 0.9, 4.2], [4.9, 2.5 + i * 0.9, 4.45], 'metal'))
+        b.append(box([7.1, 2.2 + i * 0.9, 4.2], [7.4, 2.5 + i * 0.9, 4.45], 'metal'))
     if plate:
-        b.append(box([3.6, 1.0, 8.4], [8.1, 3.4, 10.5], plate))        # ochrona pięty
+        b.append(box([3.6, 1.0, 8.4], [8.1, 3.4, 10.5], plate))
     return both(b)
 
 
 def gloves_base(main, dark, plate=None, cuff=3.0):
-    # dłonie na dole rąk (x 0..4 prawa), dłoń y ok. 11..14, mankiet wyżej
-    g = [box([0.0, 12.0, 6.0], [4.0, 15.0, 10.0], main),                # dłoń
-         box([-0.15, 14.4, 5.85], [4.15, 14.4 + cuff * 0.5, 10.15], dark),  # mankiet
-         box([0.2, 11.4, 6.3], [3.8, 12.0, 9.7], dark)]                # kłykcie od dołu
-    for i in range(4):                                                  # palce
+    g = [box([0.0, 12.0, 6.0], [4.0, 15.0, 10.0], main),                        # dłoń
+         box([-0.15, 14.4, 5.85], [4.15, 14.4 + cuff * 0.5, 10.15], dark),      # mankiet
+         box([0.2, 11.4, 6.3], [3.8, 12.0, 9.7], dark)]                          # kłykcie od dołu
+    for i in range(4):                                                          # palce
         g.append(box([0.2 + i * 0.9, 11.0, 5.7], [0.9 + i * 0.9, 12.2, 6.2], main))
     if plate:
-        g.append(box([0.4, 12.3, 5.5], [3.6, 14.2, 6.0], plate, skip=('south',)))  # osłona kłykci
+        g.append(box([0.4, 12.3, 5.5], [3.6, 14.2, 6.0], plate, skip=('south',)))
     g.append(box([3.6, 12.0, 6.3], [4.15, 14.0, 9.7], dark))
     return both(g)
 
 
 def head_open(reg, hi, lo=24.4, thick=0.0):
-    """Czasza i boki/tył hełmu bez zakrywania twarzy: przód (z<6) poniżej czoła zostaje odsłonięty,
-    żeby było widać skórkę gracza."""
+    """Czasza i boki/tył hełmu bez zakrywania twarzy (przód poniżej czoła odsłonięty)."""
     return [box([3.5 - thick, 29.2, 3.5 - thick], [12.5 + thick, hi, 12.5 + thick], reg),
             box([3.5 - thick, lo, 6.0], [12.5 + thick, 29.4, 12.5 + thick], reg)]
 
 
-# ----------------------------------------------------------- CIEŃ (lekki)
+def combat_helmet(shell='main', cover=True, rails=True, nvg=True, ear='plate', strap='strap'):
+    """Hełm balistyczny typu FAST/ACH: czasza, pokrowiec, szyny, mocowanie NVG, nauszniki i podbródek."""
+    e = [box([3.4, 28.2, 3.4], [12.6, 31.6, 12.6], shell),                       # czasza
+         box([4.2, 31.4, 4.2], [11.8, 32.4, 11.8], shell),                       # wierzch
+         box([3.2, 27.6, 6.0], [12.8, 29.0, 12.8], shell),                       # tył/boki w dół
+         box([3.6, 24.6, 10.4], [12.4, 27.8, 12.6], shell),                      # osłona karku
+         box([3.0, 28.4, 3.0], [13.0, 29.0, 13.0], 'dark', skip=()),             # krawędź / opaska
+         box([3.6, 29.0, 2.9], [12.4, 29.5, 3.5], strap)]                        # pas przedni nad czołem
+    if cover:
+        e += [box([3.6, 29.6, 3.6], [12.4, 31.8, 5.0], 'dark'),                  # kamuflażowa siatka na czole
+              box([4.4, 32.2, 4.4], [11.6, 32.7, 11.6], 'cloth2')]
+    if rails:
+        e += [box([3.0, 28.4, 6.0], [3.4, 30.4, 9.0], 'metal'),                  # szyny boczne
+              box([12.6, 28.4, 6.0], [13.0, 30.4, 9.0], 'metal'),
+              box([2.8, 29.0, 6.6], [3.1, 29.6, 8.4], 'dark'),
+              box([12.9, 29.0, 6.6], [13.2, 29.6, 8.4], 'dark')]
+    if nvg:
+        e += [box([6.6, 30.4, 2.4], [9.4, 32.0, 3.6], 'metal'),                  # mocowanie NVG (shroud)
+              box([7.2, 30.8, 1.4], [8.8, 31.8, 2.5], 'dark'),
+              box([7.5, 31.0, 1.1], [8.5, 31.6, 1.5], 'lens')]
+    e += [box([3.0, 25.2, 6.2], [3.6, 28.6, 9.8], ear),                          # nauszniki komunikacyjne
+          box([12.4, 25.2, 6.2], [13.0, 28.6, 9.8], ear),
+          box([3.2, 25.6, 4.0], [3.5, 29.0, 4.4], strap),                        # pasek podbródkowy
+          box([12.5, 25.6, 4.0], [12.8, 29.0, 4.4], strap),
+          box([3.9, 24.0, 4.0], [12.1, 24.3, 4.4], strap),
+          box([7.2, 23.9, 3.8], [8.8, 24.4, 4.4], 'metal')]                      # klamra pod brodą
+    return e
+
+
+# ------------------------------------------------------------- CIEŃ (lekka grupa specjalna)
 def cien_helm():
-    e = [box([3.5, 24.0, 3.5], [12.5, 32.6, 12.5], 'main'),             # kaptur
-         box([3.6, 24.0, 3.3], [12.4, 28.0, 4.6], 'dark', skip=('south',)),  # chusta na twarz
-         box([3.5, 28.0, 3.3], [12.5, 29.6, 4.0], 'strap'),              # opaska pod gogle
-         box([4.0, 28.3, 3.0], [7.6, 30.9, 3.7], 'lens'),                # szkło gogli
-         box([8.4, 28.3, 3.0], [12.0, 30.9, 3.7], 'lens'),
-         box([3.8, 28.0, 2.9], [12.2, 28.5, 3.8], 'metal'),              # oprawa dolna
-         box([3.8, 30.7, 2.9], [12.2, 31.2, 3.8], 'metal'),
-         box([7.6, 28.2, 2.9], [8.4, 31.0, 3.8], 'metal'),               # mostek
-         box([3.1, 28.0, 4.0], [3.5, 31.0, 11.8], 'strap'),              # pasek gogli z boku
-         box([12.5, 28.0, 4.0], [12.9, 31.0, 11.8], 'strap'),
-         box([3.4, 24.3, 11.0], [12.6, 29.0, 13.0], 'dark'),             # płat kaptura na karku
-         box([5.0, 32.4, 5.0], [11.0, 32.9, 11.0], 'cloth2'),            # szew
-         box([7.4, 30.9, 3.0], [8.6, 32.7, 3.5], 'accent'),              # pomarańczowy znacznik
-         box([3.8, 25.0, 3.0], [12.2, 25.6, 3.4], 'mesh', skip=('south',))]  # siatka wentylacyjna
+    """Czapka patrolowa, zestaw słuchawkowy z mikrofonem i chusta na szyi (twarz odkryta)."""
+    e = [box([3.6, 29.4, 3.6], [12.4, 31.6, 12.4], 'main'),                      # denko czapki
+         box([4.2, 31.5, 4.2], [11.8, 32.1, 11.8], 'main'),
+         box([3.5, 28.4, 3.5], [12.5, 29.6, 12.5], 'dark'),                      # otok
+         box([3.5, 24.6, 10.8], [12.5, 28.6, 12.7], 'dark'),                     # kaptur z tyłu
+         box([4.0, 29.4, 0.9], [12.0, 30.0, 3.6], 'dark'),                       # daszek
+         box([4.4, 29.2, 0.7], [11.6, 29.5, 3.6], 'strap'),
+         box([6.6, 29.8, 3.2], [9.4, 31.0, 3.7], 'emblem', skip=('south',)),     # naszywka rzep
+         box([2.6, 25.6, 6.0], [3.5, 29.0, 10.0], 'metal'),                      # nauszniki słuchawek
+         box([12.5, 25.6, 6.0], [13.4, 29.0, 10.0], 'metal'),
+         box([2.3, 26.2, 6.6], [2.7, 28.4, 9.4], 'dark'),
+         box([13.3, 26.2, 6.6], [13.7, 28.4, 9.4], 'dark'),
+         box([3.2, 31.4, 5.5], [12.8, 32.0, 6.3], 'strap'),                      # pałąk
+         box([3.6, 24.4, 4.0], [3.9, 26.4, 5.6], 'strap'),                       # mikrofon na wysięgniku
+         box([3.9, 24.4, 3.1], [5.2, 24.9, 4.0], 'strap'),
+         box([4.8, 24.0, 2.6], [5.8, 25.1, 3.2], 'dark'),
+         box([3.6, 21.6, 4.6], [12.4, 24.2, 11.4], 'cloth2', skip=('up',))]      # chusta na szyi
     return e
 
 
 def cien_kamizelka():
-    e = [box([3.6, 12.6, 5.6], [12.4, 24.0, 10.4], 'main'),
-         box([3.5, 12.2, 5.5], [12.5, 13.4, 10.5], 'dark'),              # dolny pas
-         box([4.0, 22.8, 5.4], [6.2, 24.8, 10.6], 'strap'),              # szelki na ramionach
-         box([9.8, 22.8, 5.4], [12.0, 24.8, 10.6], 'strap'),
-         box([7.0, 15.0, 5.0], [9.0, 22.5, 5.6], 'dark', skip=('south',)),  # zamek
-         box([3.4, 20.5, 6.3], [4.0, 23.5, 9.7], 'plate'),               # ochraniacze barków
-         box([12.0, 20.5, 6.3], [12.6, 23.5, 9.7], 'plate')]
-    for x0 in (4.0, 6.9, 9.8):                                           # magazynki z przodu
-        e.append(box([x0, 14.0, 4.7], [x0 + 2.2, 17.4, 5.6], 'dark', skip=('south',)))
-        e.append(box([x0 + 0.1, 17.0, 4.6], [x0 + 2.1, 17.6, 5.7], 'strap', skip=('south',)))
-        e.append(box([x0 + 0.9, 16.3, 4.4], [x0 + 1.3, 17.0, 4.7], 'accent', skip=('south',)))
-    e += [box([4.4, 19.2, 4.8], [7.0, 21.6, 5.6], 'dark', skip=('south',)),   # kieszeń piersiowa
-          box([9.0, 19.2, 4.8], [11.6, 21.6, 5.6], 'dark', skip=('south',)),
-          box([4.8, 20.8, 4.6], [6.6, 21.4, 4.9], 'accent', skip=('south',)),
-          box([4.6, 12.0, 10.4], [11.4, 21.0, 11.2], 'dark'),            # panel pleców
-          box([6.5, 16.0, 11.1], [9.5, 18.0, 11.5], 'emblem', skip=('south',))]
+    e = plate_carrier('main', 'dark', plates=True, drag=True)
+    e += pouch(4.6, 14.6, 1.6, 3.0) + pouch(6.4, 14.6, 1.6, 3.0)                 # dwie ładownice na magazynki
+    e += pouch(8.2, 14.6, 1.6, 3.0) + pouch(10.0, 14.6, 1.6, 3.0)
+    e += pouch(4.8, 18.4, 2.4, 2.8, depth=0.6, reg='dark') + pouch(8.8, 18.4, 2.4, 2.8, depth=0.6, reg='dark')   # kieszenie na wyposażenie
+    e += [box([7.2, 18.6, 4.1], [8.8, 20.2, 4.5], 'emblem', skip=('south',))]
+    e += [box([2.6, 20.8, 5.6], [4.2, 24.0, 10.4], 'main'), box([11.8, 20.8, 5.6], [13.4, 24.0, 10.4], 'main')]
     return e
 
 
-# ------------------------------------------------------------ LIS (zwiad)
+# ------------------------------------------------------------ LIS (zwiad terenowy)
 def lis_helm():
-    return head_open('main', 31.4) + [
-            box([3.5, 30.6, 3.5], [12.5, 32.4, 12.5], 'dark'),
-            box([4.0, 29.8, 0.6], [12.0, 30.5, 3.7], 'dark'),            # daszek
-            box([4.4, 29.6, 0.4], [11.6, 29.9, 3.7], 'strap'),
-            box([5.0, 30.6, 3.0], [7.7, 32.0, 3.6], 'lens'),             # gogle podniesione na czapkę
-            box([8.3, 30.6, 3.0], [11.0, 32.0, 3.6], 'lens'),
-            box([4.8, 30.4, 2.9], [11.2, 30.8, 3.7], 'metal'),
-            box([3.4, 24.4, 6.0], [4.2, 28.4, 11.8], 'cloth2'),          # klapki na uszy
-            box([11.8, 24.4, 6.0], [12.6, 28.4, 11.8], 'cloth2'),
-            box([3.8, 24.2, 11.6], [12.2, 28.4, 12.8], 'cloth2'),        # osłona karku
-            box([7.2, 31.4, 2.8], [8.8, 32.0, 3.6], 'emblem', skip=('south',)),
-            box([6.0, 32.3, 5.0], [10.0, 32.8, 11.0], 'extra')]          # siatka kamuflażowa
+    """Kapelusz polowy (boonie) w kamuflażu woodland, twarz odkryta."""
+    return [box([3.5, 29.4, 3.5], [12.5, 31.8, 12.5], 'main'),                   # głowa kapelusza
+            box([4.2, 31.7, 4.2], [11.8, 32.3, 11.8], 'main'),
+            box([1.8, 29.0, 1.8], [14.2, 29.6, 14.2], 'main'),                   # rondo
+            box([1.2, 28.7, 1.2], [14.8, 29.2, 14.8], 'main', skip=('up', 'down')),   # opadające krawędzie ronda
+            box([3.4, 29.4, 3.4], [12.6, 30.2, 12.6], 'strap'),                  # taśma
+            box([6.6, 30.0, 3.3], [9.4, 31.2, 3.7], 'emblem', skip=('south',)),  # mała naszywka
+            box([3.6, 24.6, 11.2], [12.4, 29.0, 12.6], 'main'),                  # osłona karku (flap)
+            box([3.5, 24.6, 4.2], [4.0, 28.8, 4.6], 'strap'),                    # sznurek pod brodę
+            box([12.0, 24.6, 4.2], [12.5, 28.8, 4.6], 'strap'),
+            box([3.8, 24.2, 4.2], [12.2, 24.5, 4.6], 'strap')]
 
 
 def lis_kamizelka():
-    e = [box([3.6, 12.6, 5.6], [12.4, 24.0, 10.4], 'main'),
-         box([3.5, 20.6, 5.4], [12.5, 24.6, 10.6], 'cloth2'),
-         box([4.5, 12.0, 10.4], [11.5, 23.0, 14.6], 'dark'),             # plecak
-         box([5.0, 12.4, 14.6], [11.0, 19.0, 15.4], 'strap'),
-         box([4.8, 22.6, 11.5], [11.2, 25.4, 14.4], 'dark'),             # zwinięty koc na plecaku
-         box([5.2, 18.0, 15.2], [10.8, 22.0, 15.8], 'accent'),
-         box([3.0, 21.4, 6.0], [4.0, 23.6, 10.0], 'plate'),              # naramienniki
-         box([12.0, 21.4, 6.0], [13.0, 23.6, 10.0], 'plate'),
-         box([4.2, 13.4, 4.8], [7.6, 16.6, 5.6], 'dark', skip=('south',)),
-         box([8.4, 13.4, 4.8], [11.8, 16.6, 5.6], 'dark', skip=('south',)),
-         box([4.4, 19.0, 4.9], [7.4, 21.8, 5.6], 'cloth2', skip=('south',)),
-         box([8.6, 19.0, 4.9], [11.6, 21.8, 5.6], 'cloth2', skip=('south',)),
-         box([4.0, 16.4, 4.5], [12.0, 16.9, 5.7], 'strap', skip=('south',)),   # pas z karabinkami
-         box([5.0, 17.2, 4.4], [5.8, 18.4, 5.0], 'metal', skip=('south',)),
-         box([10.2, 17.2, 4.4], [11.0, 18.4, 5.0], 'metal', skip=('south',))]
-    for dz in (0.0, 1.6, 3.2, 4.8):                                      # kieszonki na plecaku
-        e.append(box([4.9 + dz * 0.2, 14.0 + dz * 0.4, 15.4], [6.0 + dz * 0.2, 17.0 + dz * 0.4, 15.9], 'extra'))
+    """Lekka kamizelka zwiadowcy (chest rig) i plecak patrolowy z zrolowaną karimatą."""
+    e = [box([3.8, 13.0, 5.4], [12.2, 23.4, 10.6], 'dark'),                      # kamizelka bazowa
+         box([4.1, 22.0, 5.2], [6.4, 24.6, 10.8], 'main'),                       # szelki
+         box([9.6, 22.0, 5.2], [11.9, 24.6, 10.8], 'main'),
+         box([4.2, 15.2, 4.7], [11.8, 21.6, 5.5], 'main', skip=('south',)),      # panel przedni
+         box([3.6, 13.0, 5.2], [12.4, 15.2, 10.8], 'dark')]                      # pas
+    e += molle(4.4, 11.6, 15.6, 21.2, 4.7)
+    e += pouch(4.4, 15.2, 1.7, 3.2, zf=4.7) + pouch(6.3, 15.2, 1.7, 3.2, zf=4.7)
+    e += pouch(8.2, 15.2, 1.7, 3.2, zf=4.7) + pouch(10.1, 15.2, 1.7, 3.2, zf=4.7)
+    e += pouch(4.8, 18.8, 2.6, 2.6, depth=0.6, zf=4.7) + pouch(8.6, 18.8, 2.6, 2.6, depth=0.6, zf=4.7)
+    e += [box([7.8, 21.0, 4.3], [8.2, 22.6, 4.6], 'strap', skip=('south',)),     # mikrofon radiowy
+          box([4.6, 12.4, 3.9], [7.0, 14.0, 5.5], 'dark', skip=('south',)),
+          box([4.6, 11.6, 10.4], [11.4, 22.8, 14.4], 'main'),                    # plecak
+          box([4.9, 12.4, 14.4], [11.1, 20.0, 15.1], 'dark'),                    # kieszeń główna
+          box([4.4, 21.8, 10.6], [11.6, 24.2, 14.2], 'cloth2'),                  # karimata zrolowana
+          box([4.4, 22.2, 14.0], [11.6, 23.8, 14.6], 'cloth2'),
+          box([5.2, 12.6, 14.3], [5.8, 21.8, 14.9], 'strap'),                    # pasy kompresyjne
+          box([10.2, 12.6, 14.3], [10.8, 21.8, 14.9], 'strap'),
+          box([6.8, 14.4, 15.0], [9.2, 16.2, 15.6], 'extra'),                    # kieszeń zewnętrzna
+          box([2.6, 14.0, 8.2], [3.8, 17.6, 10.6], 'dark'),                      # bidon z boku
+          box([2.8, 17.4, 8.6], [3.6, 18.2, 10.2], 'metal')]
     return e
 
 
-# ---------------------------------------------------------- LEGION (średni)
+# ---------------------------------------------------------- LEGION (piechota)
 def legion_helm():
-    return head_open('main', 31.8) + [
-            box([3.2, 28.0, 3.2], [12.8, 29.4, 12.8], 'plate'),          # krawędź hełmu
-            box([4.5, 31.6, 4.5], [11.5, 32.8, 11.5], 'main'),           # czasza
-            box([3.4, 28.2, 3.0], [12.6, 29.0, 4.0], 'dark'),            # opaska
-            box([3.3, 27.0, 5.0], [3.8, 30.6, 9.0], 'metal'),            # szyny boczne
-            box([12.2, 27.0, 5.0], [12.7, 30.6, 9.0], 'metal'),
-            box([6.6, 30.8, 2.4], [9.4, 32.2, 3.8], 'metal'),            # mocowanie noktowizora
-            box([7.0, 31.2, 1.2], [9.0, 32.0, 2.6], 'dark'),
-            box([4.2, 30.0, 0.8], [7.4, 31.8, 2.2], 'lens', skip=('south',)),   # noktowizor podniesiony
-            box([8.6, 30.0, 0.8], [11.8, 31.8, 2.2], 'lens', skip=('south',)),
-            box([4.0, 29.8, 0.7], [12.0, 30.2, 2.4], 'dark'),
-            box([3.8, 24.0, 11.4], [12.2, 28.0, 13.0], 'dark'),          # tylny płat
-            box([3.9, 24.4, 6.0], [4.6, 28.2, 10.0], 'cloth2'),          # nauszniki
-            box([11.4, 24.4, 6.0], [12.1, 28.2, 10.0], 'cloth2'),
-            box([6.6, 29.6, 2.9], [9.4, 30.6, 3.5], 'emblem', skip=('south',))]
+    e = combat_helmet('main', cover=True, rails=True, nvg=True, ear='plate')
+    e += [box([4.0, 28.8, 2.6], [12.0, 29.4, 3.0], 'strap')]
+    return e
 
 
 def legion_kamizelka():
-    e = [box([3.4, 12.6, 5.4], [12.6, 24.0, 10.6], 'main'),
-         box([3.9, 14.0, 4.6], [12.1, 22.6, 5.5], 'plate', skip=('south',)),   # płyta przednia
-         box([4.4, 14.6, 4.3], [11.6, 21.8, 4.7], 'metal', skip=('south',)),
-         box([4.0, 14.0, 10.5], [12.0, 22.6, 11.4], 'plate'),            # płyta tylna
-         box([2.6, 20.8, 5.8], [4.2, 24.4, 10.2], 'plate'),              # naramienniki
-         box([11.8, 20.8, 5.8], [13.4, 24.4, 10.2], 'plate'),
-         box([2.2, 19.0, 6.2], [3.4, 21.6, 9.8], 'dark'),
-         box([12.6, 19.0, 6.2], [13.8, 21.6, 9.8], 'dark'),
-         box([3.0, 12.8, 5.2], [4.0, 14.6, 10.8], 'cloth2'),             # boczne osłony brzucha
-         box([12.0, 12.8, 5.2], [13.0, 14.6, 10.8], 'cloth2'),
-         box([5.8, 23.6, 4.4], [10.2, 24.9, 11.0], 'dark'),              # kołnierz
-         box([4.4, 12.6, 4.6], [11.6, 14.2, 5.6], 'strap', skip=('south',))]
-    for x0 in (4.2, 6.2, 8.2, 10.2):                                     # molle: ładownice
-        e.append(box([x0, 14.4 - 0.6, 3.9], [x0 + 1.5, 16.8, 4.5], 'cloth2', skip=('south',)))
-        e.append(box([x0 + 0.2, 16.3, 3.8], [x0 + 1.3, 16.7, 4.6], 'accent', skip=('south',)))
-    e.append(box([5.5, 18.2, 3.9], [10.5, 20.8, 4.4], 'emblem', skip=('south',)))   # naszywka
+    e = plate_carrier('main', 'dark', plates=True, side_plates=False, drag=True)
+    e += shoulder_pads('main', 'dark')
+    for i, x in enumerate((4.5, 6.3, 8.1, 9.9)):                                  # cztery ładownice na magazynki M4
+        e += pouch(x, 14.6, 1.6, 3.4)
+    e += pouch(4.6, 18.4, 3.0, 3.0, depth=0.5, reg='dark') + pouch(8.4, 18.4, 3.0, 3.0, depth=0.5, reg='dark')   # panel administracyjny, kieszeń rzutowa
+    e += [box([5.2, 21.2, 4.2], [6.8, 22.4, 4.6], 'emblem', skip=('south',)),    # naszywki imienne i flagi
+          box([9.2, 21.2, 4.2], [10.8, 22.4, 4.6], 'emblem', skip=('south',)),
+          box([3.0, 15.4, 6.6], [3.5, 18.4, 9.4], 'dark'),                        # radiostacja przy boku
+          box([2.8, 18.2, 7.6], [3.1, 21.8, 7.8], 'strap')]                       # antena
+    e += both([box([3.0, 18.4, 7.0], [3.6, 20.0, 9.0], 'dark')])
     return e
 
 
-# ------------------------------------------------------- BASTION (ciężki)
+# ------------------------------------------------------- BASTION (ciężka ochrona)
 def bastion_helm():
-    return head_open('main', 32.0, thick=0.4) + [                        # ciężki hełm balistyczny, twarz odsłonięta
-            box([3.0, 28.4, 3.0], [13.0, 29.8, 13.0], 'plate'),
-            box([4.5, 31.8, 4.5], [11.5, 32.8, 11.5], 'main'),
-            box([2.6, 25.4, 5.6], [3.2, 29.0, 10.6], 'plate'),           # osłony uszu
-            box([12.8, 25.4, 5.6], [13.4, 29.0, 10.6], 'plate'),
-            box([2.2, 26.6, 6.6], [2.8, 28.0, 9.6], 'dark'),             # słuchawki komunikacyjne
-            box([13.2, 26.6, 6.6], [13.8, 28.0, 9.6], 'dark'),
-            box([7.0, 30.4, 2.6], [9.0, 31.8, 3.6], 'metal'),            # mocowanie
-            box([3.4, 24.0, 11.8], [12.6, 29.0, 14.0], 'plate'),         # osłona karku
-            box([3.6, 29.6, 2.9], [12.4, 30.4, 3.6], 'strap'),
-            box([6.4, 27.0, 11.9], [9.6, 29.0, 14.2], 'dark')]
+    e = combat_helmet('plate', cover=False, rails=True, nvg=True, ear='dark')
+    e += [box([2.6, 25.2, 5.6], [3.2, 29.0, 10.6], 'plate'),                      # pełne osłony uszu
+          box([12.8, 25.2, 5.6], [13.4, 29.0, 10.6], 'plate'),
+          box([3.2, 24.0, 12.0], [12.8, 28.4, 13.6], 'plate'),                    # rozszerzona osłona karku
+          box([3.4, 28.8, 3.0], [12.6, 29.4, 3.6], 'dark')]
+    return e
 
 
 def bastion_kamizelka():
-    e = [box([2.8, 12.2, 5.0], [13.2, 24.0, 11.0], 'main'),
-         box([3.4, 13.0, 4.0], [12.6, 23.0, 5.0], 'plate', skip=('south',)),
-         box([4.0, 14.0, 3.6], [12.0, 17.0, 4.1], 'metal', skip=('south',)),    # żebra
-         box([4.0, 18.0, 3.6], [12.0, 21.0, 4.1], 'metal', skip=('south',)),
-         box([6.4, 17.0, 3.4], [9.6, 18.0, 4.2], 'accent'),
-         box([3.4, 13.0, 11.0], [12.6, 23.0, 12.0], 'plate'),
-         box([1.6, 21.0, 5.0], [4.6, 25.2, 11.0], 'plate'),              # duże naramienniki
-         box([11.4, 21.0, 5.0], [14.4, 25.2, 11.0], 'plate'),
-         box([1.2, 19.4, 5.4], [3.6, 21.6, 10.6], 'metal'),
-         box([12.4, 19.4, 5.4], [14.8, 21.6, 10.6], 'metal'),
-         box([1.2, 22.4, 5.2], [3.0, 23.0, 10.8], 'accent'),
-         box([13.0, 22.4, 5.2], [14.8, 23.0, 10.8], 'accent'),
-         box([5.0, 23.4, 4.4], [11.0, 25.6, 11.6], 'dark'),              # kołnierz
-         box([3.6, 12.2, 4.4], [12.4, 14.2, 5.2], 'dark'),               # tasset
-         box([4.0, 10.8, 4.6], [7.6, 12.2, 5.4], 'plate', skip=('south',)),
-         box([8.4, 10.8, 4.6], [12.0, 12.2, 5.4], 'plate', skip=('south',))]
-    for x in (4.2, 11.4):
-        for y in (14.0, 18.5, 22.0):
-            e.append(box([x, y, 3.4], [x + 0.5, y + 0.5, 3.7], 'metal', skip=('south',)))
-    e.append(box([6.6, 19.4, 3.5], [9.4, 22.2, 4.0], 'emblem', skip=('south',)))
+    e = plate_carrier('main', 'dark', plates=True, side_plates=True, drag=True)
+    e += shoulder_pads('main', 'dark')
+    e += [box([5.0, 23.8, 3.8], [11.0, 25.6, 5.0], 'plate', skip=('south',)),     # osłona gardła
+          box([4.4, 10.4, 4.4], [11.6, 12.8, 5.4], 'main', skip=('south',)),      # osłona krocza
+          box([5.4, 9.6, 4.2], [10.6, 10.6, 5.2], 'dark', skip=('south',)),
+          box([2.4, 20.8, 5.0], [4.2, 24.8, 11.0], 'plate'),                      # ciężkie naramienniki
+          box([11.8, 20.8, 5.0], [13.6, 24.8, 11.0], 'plate')]
+    e += pouch(4.6, 14.6, 1.7, 3.4) + pouch(6.5, 14.6, 1.7, 3.4)
+    e += pouch(8.4, 14.6, 1.7, 3.4) + pouch(10.3, 14.6, 1.7, 3.4)
+    e += pouch(5.0, 18.4, 2.4, 2.8, depth=0.5) + pouch(8.6, 18.4, 2.4, 2.8, depth=0.5)
+    e += [box([5.4, 21.0, 4.2], [10.6, 21.9, 4.6], 'emblem', skip=('south',))]
     return e
 
 
-# --------------------------------------------------------- RANGER (służbowy)
+# --------------------------------------------------------- RANGER (służby mundurowe)
 def ranger_helm():
-    return head_open('main', 30.6) + [                                   # czapka garnizonowa, twarz odsłonięta
-            box([3.4, 29.8, 3.4], [12.6, 31.8, 12.6], 'dark'),
-            box([4.4, 31.6, 4.4], [11.6, 32.4, 11.6], 'main'),
-            box([4.0, 28.4, 0.8], [12.0, 29.4, 3.8], 'dark'),            # daszek
-            box([3.5, 29.0, 3.0], [12.5, 30.0, 4.0], 'accent'),          # otok
-            box([6.8, 29.4, 2.6], [9.2, 31.8, 3.6], 'metal'),            # odznaka
-            box([7.4, 30.0, 2.4], [8.6, 31.2, 2.8], 'emblem', skip=('south',)),
-            box([3.8, 24.2, 11.6], [12.2, 28.6, 12.6], 'dark')]
+    """Czapka służbowa (baseballówka patrolowa), twarz odkryta."""
+    return [box([3.6, 29.4, 3.6], [12.4, 31.6, 12.4], 'main'),
+            box([4.2, 31.5, 4.2], [11.8, 32.1, 11.8], 'main'),
+            box([3.5, 28.6, 3.5], [12.5, 29.6, 12.5], 'main'),
+            box([3.6, 25.0, 11.4], [12.4, 29.0, 12.6], 'dark'),                  # tył czapki
+            box([4.0, 29.4, 0.9], [12.0, 30.0, 3.6], 'dark'),                    # daszek
+            box([4.4, 29.2, 0.7], [11.6, 29.5, 3.6], 'strap'),
+            box([6.2, 29.8, 3.2], [9.8, 31.4, 3.7], 'emblem', skip=('south',)),  # tarcza na czole
+            box([7.2, 31.6, 3.6], [8.8, 31.9, 4.0], 'metal'),                    # guzik
+            box([3.6, 28.6, 12.2], [12.4, 29.4, 12.8], 'strap')]                 # regulacja z tyłu
 
 
 def ranger_kamizelka():
-    e = [box([3.6, 12.6, 5.6], [12.4, 24.0, 10.4], 'main'),
-         box([2.8, 12.6, 5.6], [13.2, 24.4, 10.4], 'cloth2', skip=('up', 'down')),  # jasna koszula
-         box([3.9, 13.0, 5.2], [12.1, 23.0, 5.7], 'dark'),               # kamizelka odblaskowa
-         box([4.0, 15.2, 4.9], [12.0, 16.6, 5.3], 'accent', skip=('south',)),    # odblaski
-         box([4.0, 19.2, 4.9], [12.0, 20.6, 5.3], 'accent', skip=('south',)),
-         box([3.6, 12.0, 5.4], [12.4, 13.6, 10.6], 'strap'),             # pas z kaburą
-         box([3.1, 12.2, 6.0], [3.6, 17.0, 9.0], 'dark'),                # kabura (prawy bok)
-         box([2.9, 15.8, 6.2], [3.3, 17.2, 8.8], 'strap'),
-         box([5.0, 12.0, 4.8], [7.0, 14.0, 5.6], 'dark', skip=('south',)),
-         box([9.0, 12.0, 4.8], [11.0, 14.0, 5.6], 'dark', skip=('south',)),
-         box([8.8, 20.6, 4.8], [11.2, 22.6, 5.5], 'metal', skip=('south',)),     # odznaka
-         box([9.4, 21.0, 4.6], [10.6, 22.2, 5.0], 'emblem', skip=('south',)),
-         box([4.4, 21.0, 4.8], [7.2, 22.0, 5.5], 'dark', skip=('south',)),       # krótkofalówka
-         box([5.4, 22.0, 4.6], [5.9, 24.4, 5.2], 'strap'),
-         box([5.4, 18.0, 10.4], [10.6, 22.0, 10.6], 'emblem', skip=('north',)),  # napis z tyłu
-         box([5.6, 14.0, 10.4], [10.4, 17.0, 10.6], 'accent', skip=('north',))]
+    e = plate_carrier('main', 'dark', plates=False, drag=False)
+    e += [box([4.6, 15.0, 4.2], [11.4, 19.4, 4.65], 'cloth2', skip=('south',)),   # panel z napisem
+          box([5.0, 16.4, 4.1], [11.0, 18.0, 4.3], 'accent', skip=('south',)),    # pasek odblaskowy
+          box([4.8, 20.4, 4.1], [7.0, 21.9, 4.6], 'emblem', skip=('south',)),     # numer służbowy
+          box([9.0, 20.4, 4.1], [11.2, 21.9, 4.6], 'metal', skip=('south',)),     # odznaka
+          box([3.4, 11.6, 5.1], [12.6, 12.9, 10.9], 'strap'),                     # pas służbowy
+          box([3.0, 11.6, 6.0], [3.6, 15.4, 9.4], 'dark'),                        # kabura
+          box([2.8, 14.6, 6.2], [3.4, 15.8, 9.2], 'strap'),
+          box([10.0, 11.0, 4.5], [12.2, 13.0, 5.4], 'dark', skip=('south',)),     # kajdanki
+          box([4.2, 10.8, 4.6], [6.4, 12.8, 5.4], 'dark', skip=('south',)),       # latarka
+          box([7.0, 20.6, 4.2], [7.5, 23.4, 4.6], 'strap', skip=('south',)),      # kabel krótkofalówki
+          box([6.2, 22.0, 4.0], [8.2, 24.0, 4.6], 'dark', skip=('south',)),       # krótkofalówka na ramieniu
+          box([5.4, 18.6, 11.6], [10.6, 21.0, 11.8], 'cloth2', skip=('north',)),  # napis z tyłu
+          box([5.4, 16.0, 11.6], [10.6, 18.0, 11.8], 'accent', skip=('north',))]
+    e += pouch(4.6, 12.8, 1.8, 2.2, depth=0.5) + pouch(9.6, 12.8, 1.8, 2.2, depth=0.5)
     return e
 
 
@@ -524,42 +635,38 @@ def ghillie_rekawice(rnd):
 
 
 # --------------------------------------------------------------- zestawy
-def _spodnie(main, dark, **kw):
-    return lambda rnd=None: pants_base(main, dark, **kw)
-
-
 ZESTAWY = {
     'cien': {
         'helm': cien_helm, 'kamizelka': cien_kamizelka,
-        'spodnie': lambda: pants_base('main', 'dark', pocket=True, knee='plate', stripe='accent'),
-        'buty': lambda: boots_base('dark', 'main', high=5.0, plate='plate'),
+        'spodnie': lambda: pants('main', 'dark', kneepad='dark', holster=True),
+        'buty': lambda: boots_base('dark', 'main', high=5.6, plate=None),
         'rekawice': lambda: gloves_base('dark', 'main', plate='plate', cuff=2.5)},
     'lis': {
         'helm': lis_helm, 'kamizelka': lis_kamizelka,
-        'spodnie': lambda: pants_base('main', 'dark', pocket=True, knee='cloth2'),
+        'spodnie': lambda: pants('main', 'dark', kneepad='dark'),
         'buty': lambda: boots_base('cloth2', 'dark', high=5.4),
         'rekawice': lambda: gloves_base('cloth2', 'dark', cuff=3.0)},
     'legion': {
         'helm': legion_helm, 'kamizelka': legion_kamizelka,
-        'spodnie': lambda: pants_base('main', 'dark', pocket=True, knee='plate', kneesize=1.3),
+        'spodnie': lambda: pants('main', 'dark', kneepad='plate'),
         'buty': lambda: boots_base('cloth2', 'dark', high=6.0, plate='plate'),
-        'rekawice': lambda: gloves_base('main', 'dark', plate='plate', cuff=3.0)},
+        'rekawice': lambda: gloves_base('cloth2', 'dark', plate='plate', cuff=3.0)},
     'bastion': {
         'helm': bastion_helm, 'kamizelka': bastion_kamizelka,
-        'spodnie': lambda: pants_base('dark', 'main', pocket=False, knee='plate', belt='metal')
-        + both([box([3.5, 6.2, 5.0], [8.2, 10.8, 5.7], 'plate', skip=('south',)),     # płyty na udach
-                box([3.5, 1.0, 5.0], [8.2, 3.2, 5.7], 'plate', skip=('south',)),      # golenie
-                box([3.4, 8.0, 5.8], [3.9, 10.5, 10.2], 'metal')]),
-        'buty': lambda: boots_base('main', 'dark', high=6.4, plate='plate'),
+        'spodnie': lambda: pants('main', 'dark', kneepad='plate', holster=False)
+        + both([box([3.5, 6.2, 5.0], [8.2, 10.8, 5.7], 'plate', skip=('south',)),
+                box([3.5, 1.2, 5.0], [8.2, 3.2, 5.7], 'plate', skip=('south',))]),
+        'buty': lambda: boots_base('dark', 'main', high=6.4, plate='plate'),
         'rekawice': lambda: gloves_base('dark', 'main', plate='plate', cuff=4.0)},
     'ranger': {
         'helm': ranger_helm, 'kamizelka': ranger_kamizelka,
-        'spodnie': lambda: pants_base('main', 'dark', pocket=True, knee='main', stripe='accent'),
+        'spodnie': lambda: pants('main', 'dark', kneepad='main', holster=False),
         'buty': lambda: boots_base('strap', 'dark', high=4.6),
         'rekawice': lambda: gloves_base('strap', 'dark', cuff=2.0)},
     'ghillie': {'helm': ghillie_helm, 'kamizelka': ghillie_kamizelka, 'spodnie': ghillie_spodnie,
                 'buty': ghillie_buty, 'rekawice': ghillie_rekawice},
 }
+
 PANCERZE = ['%s_%s' % (z, e) for z in ZESTAWY for e in ELEMENTY]
 
 

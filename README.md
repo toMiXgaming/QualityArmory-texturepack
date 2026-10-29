@@ -180,14 +180,14 @@ Sześć zestawów po pięć elementów (hełm, kamizelka, spodnie, buty, rękawi
 
 | Zestaw | Klasa | Wygląd | Elementy w modelu |
 |---|---|---|---|
-| `cien` | lekki | grafit i czerń, pomarańczowe akcenty | kaptur z goglami, kamizelka z magazynkami, spodnie z kieszeniami cargo, buty |
-| `lis` | lekki/średni | kamuflaż leśny | czapka z daszkiem, kamizelka z plecakiem i zwiniętym kocem |
-| `legion` | średni | oliwka i koyote | hełm z noktowizorem, kamizelka z płytami i MOLLE |
-| `bastion` | ciężki | coyote i matowe płyty | ciężki hełm balistyczny z nausznikami, naramienniki, osłona pachwiny, płyty na udach i goleniach |
-| `ranger` | służbowy | granat, odblaski | czapka z odznaką, kamizelka z kaburą i krótkofalówką |
+| `cien` | lekki | czerń i grafit, rip-stop | czapka patrolowa z zestawem słuchawkowym i chustą, nosidło płyt z ładownicami, spodnie z kaburą na udzie |
+| `lis` | lekki/średni | kamuflaż woodland | kapelusz polowy, lekka kamizelka z ładownicami, plecak z zrolowaną karimatą |
+| `legion` | średni | MultiCam | hełm balistyczny z szynami i mocowaniem noktowizora, nosidło płyt z taśmami PALS, ładownice, radio |
+| `bastion` | ciężki | coyote i matowe płyty | ciężki hełm balistyczny, płyty boczne, osłony gardła i krocza, duże naramienniki, płyty na udach i goleniach |
+| `ranger` | służby mundurowe | granat | czapka służbowa, kamizelka z napisem, odznaką, krótkofalówką, pas z kaburą i kajdankami |
 | `ghillie` | snajper | strój liściasty | kaptur, kurtka z rękawami, spodnie, buty i rękawice obsypane liśćmi i strzępami |
 
-Hełmy i czapki (poza `cien`, który ma kaptur z goglami) zostawiają twarz odkrytą, żeby było widać skórkę gracza. Wszystkie elementy leżą w jednej „ramie gracza” (stopy y=-4, głowa 20–28, środek x=8 i z=8, przód = north, 1 jednostka = 1 piksel skóry), więc plugin stawia pięć wyświetlaczy w tym samym punkcie i każdy element ląduje na swoim miejscu.
+Hełmy i czapki zostawiają twarz odkrytą, żeby było widać skórkę gracza. Wszystkie elementy leżą w jednej „ramie gracza” (stopy y=-4, głowa 20–28, środek x=8 i z=8, przód = north, 1 jednostka = 1 piksel skóry), więc plugin stawia pięć wyświetlaczy w tym samym punkcie i każdy element ląduje na swoim miejscu.
 
 Do sprawdzenia: Minecraft nie rysuje modeli 3D na pancerzu gracza, więc modele trzeba pokazać wyświetlaczami przedmiotu na graczu (jak zrzut w AXON-Structure) albo w menu/ekwipunku. Bonusy (prędkość, obrażenia) ustawia się po stronie serwera. Skala i przesunięcie na postaci mogą wymagać dostrojenia w grze.
 
