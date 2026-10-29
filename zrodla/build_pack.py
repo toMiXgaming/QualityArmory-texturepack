@@ -132,8 +132,9 @@ def main():
     # oraz rekwizyty z gen_rekwizyty.py (wrak Mi-8, łóżko), lokomotywa z gen_lokomotywa.py i meble z gen_meble.py i gen_sklep.py
     from gen_meble import MEBLE
     from gen_sklep import SKLEP
+    from gen_pancerze import PANCERZE   # zestawy pancerzy (gen_pancerze.py)
     from gen_auta import AUTA_I_TV   # auta i telewizor do blokowiska (gen_auta.py)
-    for name in ['zrzut', 'wrak_mi8', 'lozko', 'lokomotywa'] + MEBLE + SKLEP + AUTA_I_TV:
+    for name in ['zrzut', 'wrak_mi8', 'lozko', 'lokomotywa'] + MEBLE + SKLEP + AUTA_I_TV + PANCERZE:
         for src, dst in ((name + '.json', 'assets/axon/models/block/%s.json' % name),
                          (name + '.png', 'assets/axon/textures/item/%s.png' % name),
                          (name + '_item.json', 'assets/axon/items/%s.json' % name)):
