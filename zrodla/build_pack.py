@@ -104,6 +104,11 @@ def main():
         report[g] = n
         repl['assets/qualityarmory/models/gun/%s.json' % g] = mj
         repl['assets/qualityarmory/textures/axon/%s.png' % g] = png
+    from gen_ammo import NAZWY as AMMO   # amunicja (gen_ammo.py): podmiana modeli qualityarmory:ammo/*
+    for a in AMMO:
+        base = a.replace('ammo', 'ammo_', 1)
+        repl['assets/qualityarmory/models/ammo/%s.json' % a] = open(os.path.join(HERE, 'build', base + '.json'), 'rb').read()
+        repl['assets/qualityarmory/textures/axon/%s.png' % base] = open(os.path.join(HERE, 'build', base + '.png'), 'rb').read()
     atlas = json.loads(zin.read(ATLAS))
     if not any(s.get('source') == 'axon' for s in atlas['sources']):
         atlas['sources'].append({'type': 'directory', 'source': 'axon', 'prefix': 'axon/'})
