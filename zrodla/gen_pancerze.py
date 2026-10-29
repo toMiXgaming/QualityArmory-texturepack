@@ -7,7 +7,7 @@ x=8 i z=8, przód gracza to strona north (z mniejsze). Dzięki temu plugin stawi
 elementy w tym samym punkcie (wyświetlacz przedmiotu na graczu) i każdy ląduje na swoim
 miejscu. Jednostka modelu = 1 piksel skóry gracza.
 
-Zestawy: cien, lis, legion, bastion, widmo, ranger, ghillie (strój liściasty dla snajperów).
+Zestawy: cien, lis, legion, bastion, ranger, ghillie (strój liściasty dla snajperów).
 Elementy: helm, kamizelka, spodnie, buty, rekawice.
 
 Zapisuje build/<nazwa>.json, build/<nazwa>.png, build/<nazwa>_item.json.
@@ -39,15 +39,11 @@ PALETY = {
     'legion': {'main': ((84, 88, 60), 'cloth'), 'dark': ((48, 50, 36), 'cloth'), 'accent': ((196, 160, 70), 'cloth'),
                'plate': ((64, 68, 52), 'plate'), 'strap': ((40, 38, 30), 'strap'), 'glow': ((120, 255, 140), 'glow'),
                'metal': ((120, 122, 118), 'plate'), 'cloth2': ((150, 130, 90), 'cloth'), 'lens': ((60, 200, 120), 'lens'),
-               'emblem': ((220, 190, 90), 'emblem'), 'mesh': ((30, 30, 24), 'mesh'), 'extra': ((100, 96, 70), 'cloth')},
-    'bastion': {'main': ((92, 98, 106), 'plate'), 'dark': ((46, 50, 56), 'plate'), 'accent': ((214, 168, 40), 'plate'),
-                'plate': ((120, 126, 134), 'plate'), 'strap': ((34, 36, 40), 'strap'), 'glow': ((255, 90, 40), 'glow'),
-                'metal': ((150, 156, 164), 'plate'), 'cloth2': ((58, 62, 68), 'cloth'), 'lens': ((255, 90, 40), 'lens'),
-                'emblem': ((214, 168, 40), 'emblem'), 'mesh': ((30, 32, 36), 'mesh'), 'extra': ((70, 74, 82), 'plate')},
-    'widmo': {'main': ((20, 26, 48), 'carbon'), 'dark': ((10, 12, 24), 'carbon'), 'accent': ((40, 70, 130), 'carbon'),
-              'plate': ((30, 38, 66), 'plate'), 'strap': ((14, 16, 28), 'strap'), 'glow': ((60, 230, 255), 'glow'),
-              'metal': ((76, 88, 120), 'plate'), 'cloth2': ((26, 32, 58), 'carbon'), 'lens': ((60, 230, 255), 'lens'),
-              'emblem': ((60, 230, 255), 'emblem'), 'mesh': ((8, 10, 20), 'mesh'), 'extra': ((40, 48, 80), 'carbon')},
+               'emblem': ((170, 150, 90), 'emblem'), 'mesh': ((30, 30, 24), 'mesh'), 'extra': ((100, 96, 70), 'cloth')},
+    'bastion': {'main': ((120, 104, 74), 'cloth'), 'dark': ((54, 50, 40), 'cloth'), 'accent': ((150, 130, 90), 'cloth'),
+                'plate': ((66, 68, 66), 'plate'), 'strap': ((36, 34, 28), 'strap'), 'glow': ((200, 200, 120), 'glow'),
+                'metal': ((96, 98, 96), 'plate'), 'cloth2': ((100, 88, 62), 'cloth'), 'lens': ((60, 60, 60), 'lens'),
+                'emblem': ((150, 130, 90), 'emblem'), 'mesh': ((30, 30, 28), 'mesh'), 'extra': ((80, 72, 54), 'cloth')},
     'ranger': {'main': ((38, 52, 84), 'cloth'), 'dark': ((24, 32, 54), 'cloth'), 'accent': ((190, 196, 204), 'cloth'),
                'plate': ((52, 62, 84), 'plate'), 'strap': ((20, 22, 28), 'strap'), 'glow': ((230, 230, 120), 'glow'),
                'metal': ((200, 180, 90), 'plate'), 'cloth2': ((110, 120, 140), 'cloth'), 'lens': ((60, 90, 150), 'lens'),
@@ -242,6 +238,13 @@ def gloves_base(main, dark, plate=None, cuff=3.0):
     return both(g)
 
 
+def head_open(reg, hi, lo=24.4, thick=0.0):
+    """Czasza i boki/tył hełmu bez zakrywania twarzy: przód (z<6) poniżej czoła zostaje odsłonięty,
+    żeby było widać skórkę gracza."""
+    return [box([3.5 - thick, 29.2, 3.5 - thick], [12.5 + thick, hi, 12.5 + thick], reg),
+            box([3.5 - thick, lo, 6.0], [12.5 + thick, 29.4, 12.5 + thick], reg)]
+
+
 # ----------------------------------------------------------- CIEŃ (lekki)
 def cien_helm():
     e = [box([3.5, 24.0, 3.5], [12.5, 32.6, 12.5], 'main'),             # kaptur
@@ -283,16 +286,16 @@ def cien_kamizelka():
 
 # ------------------------------------------------------------ LIS (zwiad)
 def lis_helm():
-    return [box([3.6, 24.4, 3.6], [12.4, 31.4, 12.4], 'main'),           # czapka
+    return head_open('main', 31.4) + [
             box([3.5, 30.6, 3.5], [12.5, 32.4, 12.5], 'dark'),
             box([4.0, 29.8, 0.6], [12.0, 30.5, 3.7], 'dark'),            # daszek
             box([4.4, 29.6, 0.4], [11.6, 29.9, 3.7], 'strap'),
-            box([5.0, 27.0, 3.2], [7.7, 28.6, 3.8], 'lens'),             # gogle opuszczone na oczy
-            box([8.3, 27.0, 3.2], [11.0, 28.6, 3.8], 'lens'),
-            box([4.8, 26.8, 3.0], [11.2, 27.3, 3.9], 'metal'),
-            box([3.4, 24.0, 4.2], [4.2, 28.0, 11.8], 'cloth2'),          # klapki na uszy
-            box([11.8, 24.0, 4.2], [12.6, 28.0, 11.8], 'cloth2'),
-            box([3.8, 24.2, 11.6], [12.2, 28.0, 12.8], 'cloth2'),        # osłona karku
+            box([5.0, 30.6, 3.0], [7.7, 32.0, 3.6], 'lens'),             # gogle podniesione na czapkę
+            box([8.3, 30.6, 3.0], [11.0, 32.0, 3.6], 'lens'),
+            box([4.8, 30.4, 2.9], [11.2, 30.8, 3.7], 'metal'),
+            box([3.4, 24.4, 6.0], [4.2, 28.4, 11.8], 'cloth2'),          # klapki na uszy
+            box([11.8, 24.4, 6.0], [12.6, 28.4, 11.8], 'cloth2'),
+            box([3.8, 24.2, 11.6], [12.2, 28.4, 12.8], 'cloth2'),        # osłona karku
             box([7.2, 31.4, 2.8], [8.8, 32.0, 3.6], 'emblem', skip=('south',)),
             box([6.0, 32.3, 5.0], [10.0, 32.8, 11.0], 'extra')]          # siatka kamuflażowa
 
@@ -320,8 +323,8 @@ def lis_kamizelka():
 
 # ---------------------------------------------------------- LEGION (średni)
 def legion_helm():
-    return [box([3.5, 24.2, 3.5], [12.5, 31.8, 12.5], 'main'),           # hełm balistyczny
-            box([3.2, 24.6, 3.2], [12.8, 28.6, 12.8], 'plate'),          # krawędź
+    return head_open('main', 31.8) + [
+            box([3.2, 28.0, 3.2], [12.8, 29.4, 12.8], 'plate'),          # krawędź hełmu
             box([4.5, 31.6, 4.5], [11.5, 32.8, 11.5], 'main'),           # czasza
             box([3.4, 28.2, 3.0], [12.6, 29.0, 4.0], 'dark'),            # opaska
             box([3.3, 27.0, 5.0], [3.8, 30.6, 9.0], 'metal'),            # szyny boczne
@@ -332,9 +335,9 @@ def legion_helm():
             box([8.6, 30.0, 0.8], [11.8, 31.8, 2.2], 'lens', skip=('south',)),
             box([4.0, 29.8, 0.7], [12.0, 30.2, 2.4], 'dark'),
             box([3.8, 24.0, 11.4], [12.2, 28.0, 13.0], 'dark'),          # tylny płat
-            box([3.9, 24.4, 4.0], [4.6, 28.2, 9.0], 'cloth2'),           # nauszniki
-            box([11.4, 24.4, 4.0], [12.1, 28.2, 9.0], 'cloth2'),
-            box([6.6, 29.2, 2.9], [9.4, 30.2, 3.5], 'emblem', skip=('south',))]
+            box([3.9, 24.4, 6.0], [4.6, 28.2, 10.0], 'cloth2'),          # nauszniki
+            box([11.4, 24.4, 6.0], [12.1, 28.2, 10.0], 'cloth2'),
+            box([6.6, 29.6, 2.9], [9.4, 30.6, 3.5], 'emblem', skip=('south',))]
 
 
 def legion_kamizelka():
@@ -359,19 +362,17 @@ def legion_kamizelka():
 
 # ------------------------------------------------------- BASTION (ciężki)
 def bastion_helm():
-    return [box([3.0, 24.0, 3.0], [13.0, 32.2, 13.0], 'main'),           # masywny hełm
-            box([2.7, 24.4, 2.7], [13.3, 27.6, 13.3], 'plate'),
-            box([5.0, 32.0, 4.0], [11.0, 33.4, 12.0], 'dark'),           # grzebień
-            box([7.4, 33.0, 3.5], [8.6, 34.2, 12.5], 'accent'),
-            box([3.2, 27.0, 1.8], [12.8, 31.4, 3.0], 'dark'),            # przyłbica
-            box([3.9, 28.2, 1.4], [12.1, 30.6, 2.0], 'lens'),            # wąska szyba
-            box([3.0, 27.0, 1.2], [13.0, 27.6, 3.2], 'metal'),
-            box([3.0, 30.8, 1.2], [13.0, 31.6, 3.2], 'metal'),
-            box([3.2, 24.0, 1.6], [12.8, 27.0, 3.0], 'plate'),           # szczęka z kratką
-            box([5.0, 24.6, 1.2], [11.0, 26.6, 1.7], 'mesh', skip=('south',)),
-            box([2.4, 25.0, 5.0], [3.2, 30.0, 11.0], 'metal'),           # nity boczne
-            box([12.8, 25.0, 5.0], [13.6, 30.0, 11.0], 'metal'),
-            box([3.4, 24.0, 12.6], [12.6, 28.4, 14.0], 'plate')]         # osłona karku
+    return head_open('main', 32.0, thick=0.4) + [                        # ciężki hełm balistyczny, twarz odsłonięta
+            box([3.0, 28.4, 3.0], [13.0, 29.8, 13.0], 'plate'),
+            box([4.5, 31.8, 4.5], [11.5, 32.8, 11.5], 'main'),
+            box([2.6, 25.4, 5.6], [3.2, 29.0, 10.6], 'plate'),           # osłony uszu
+            box([12.8, 25.4, 5.6], [13.4, 29.0, 10.6], 'plate'),
+            box([2.2, 26.6, 6.6], [2.8, 28.0, 9.6], 'dark'),             # słuchawki komunikacyjne
+            box([13.2, 26.6, 6.6], [13.8, 28.0, 9.6], 'dark'),
+            box([7.0, 30.4, 2.6], [9.0, 31.8, 3.6], 'metal'),            # mocowanie
+            box([3.4, 24.0, 11.8], [12.6, 29.0, 14.0], 'plate'),         # osłona karku
+            box([3.6, 29.6, 2.9], [12.4, 30.4, 3.6], 'strap'),
+            box([6.4, 27.0, 11.9], [9.6, 29.0, 14.2], 'dark')]
 
 
 def bastion_kamizelka():
@@ -398,54 +399,15 @@ def bastion_kamizelka():
     return e
 
 
-# ---------------------------------------------------------- WIDMO (elitarny)
-def widmo_helm():
-    return [box([3.4, 24.0, 3.4], [12.6, 32.4, 12.6], 'main'),
-            box([3.0, 24.0, 2.6], [13.0, 29.2, 4.0], 'dark'),            # pełna maska
-            box([3.6, 27.4, 1.9], [12.4, 30.2, 2.7], 'lens'),            # wizjer pasmowy
-            box([7.6, 24.2, 1.6], [8.4, 27.2, 3.0], 'glow'),             # filtr świecący
-            box([4.0, 24.6, 1.8], [7.0, 26.4, 2.8], 'mesh', skip=('south',)),
-            box([9.0, 24.6, 1.8], [12.0, 26.4, 2.8], 'mesh', skip=('south',)),
-            box([7.4, 32.2, 4.0], [8.6, 33.4, 12.6], 'accent'),          # grzbiet
-            box([3.0, 29.8, 4.0], [3.5, 31.6, 11.0], 'glow'),            # świecące linie
-            box([12.5, 29.8, 4.0], [13.0, 31.6, 11.0], 'glow'),
-            box([2.8, 25.0, 9.0], [3.8, 28.0, 12.6], 'metal'),           # moduł komunikacji
-            box([12.2, 25.0, 9.0], [13.2, 28.0, 12.6], 'metal'),
-            box([3.8, 24.0, 12.4], [12.2, 28.6, 13.6], 'plate'),
-            box([2.6, 28.4, 8.6], [3.0, 31.0, 9.0], 'glow')]
-
-
-def widmo_kamizelka():
-    e = [box([3.8, 12.6, 5.8], [12.2, 24.0, 10.2], 'main'),
-         box([4.4, 14.0, 5.0], [11.6, 22.6, 5.9], 'plate', skip=('south',)),
-         box([7.5, 14.4, 4.7], [8.5, 22.2, 5.0], 'glow', skip=('south',)),     # linia świetlna
-         box([5.0, 21.4, 4.7], [11.0, 21.8, 5.0], 'glow', skip=('south',)),
-         box([5.0, 15.6, 4.7], [7.2, 16.0, 5.0], 'glow', skip=('south',)),
-         box([8.8, 15.6, 4.7], [11.0, 16.0, 5.0], 'glow', skip=('south',)),
-         box([4.2, 22.6, 5.4], [11.8, 24.6, 10.6], 'dark'),
-         box([2.8, 21.0, 5.6], [4.6, 24.0, 10.4], 'plate'),
-         box([11.4, 21.0, 5.6], [13.2, 24.0, 10.4], 'plate'),
-         box([2.4, 20.0, 6.0], [3.2, 22.6, 10.0], 'glow'),
-         box([12.8, 20.0, 6.0], [13.6, 22.6, 10.0], 'glow'),
-         box([5.4, 13.0, 10.2], [10.6, 22.0, 11.6], 'metal'),            # rdzeń zasilania z tyłu
-         box([7.2, 14.0, 11.5], [8.8, 21.0, 11.9], 'glow'),
-         box([3.6, 12.2, 5.6], [12.4, 13.8, 10.4], 'dark'),
-         box([4.8, 15.2, 4.8], [5.8, 19.6, 5.4], 'accent', skip=('south',)),
-         box([10.2, 15.2, 4.8], [11.2, 19.6, 5.4], 'accent', skip=('south',))]
-    return e
-
-
 # --------------------------------------------------------- RANGER (służbowy)
 def ranger_helm():
-    return [box([3.6, 24.4, 3.6], [12.4, 30.6, 12.4], 'main'),           # czapka garnizonowa
+    return head_open('main', 30.6) + [                                   # czapka garnizonowa, twarz odsłonięta
             box([3.4, 29.8, 3.4], [12.6, 31.8, 12.6], 'dark'),
             box([4.4, 31.6, 4.4], [11.6, 32.4, 11.6], 'main'),
             box([4.0, 28.4, 0.8], [12.0, 29.4, 3.8], 'dark'),            # daszek
             box([3.5, 29.0, 3.0], [12.5, 30.0, 4.0], 'accent'),          # otok
             box([6.8, 29.4, 2.6], [9.2, 31.8, 3.6], 'metal'),            # odznaka
             box([7.4, 30.0, 2.4], [8.6, 31.2, 2.8], 'emblem', skip=('south',)),
-            box([3.2, 27.0, 3.8], [3.8, 28.4, 5.0], 'metal'),            # guziki
-            box([12.2, 27.0, 3.8], [12.8, 28.4, 5.0], 'metal'),
             box([3.8, 24.2, 11.6], [12.2, 28.6, 12.6], 'dark')]
 
 
@@ -515,11 +477,12 @@ def leaves(rnd, f, t, count, faces=('north', 'south', 'east', 'west', 'up'), siz
 
 
 def ghillie_helm(rnd):
-    e = [box([3.4, 24.0, 3.4], [12.6, 32.4, 12.6], 'dark'),              # kaptur
-         box([4.2, 25.0, 2.8], [11.8, 28.6, 3.6], 'extra'),              # siatka na twarz
-         box([4.4, 28.8, 2.8], [11.6, 29.8, 3.6], 'dark')]
-    e += leaves(rnd, [3.0, 24.0, 3.0], [13.0, 33.0, 13.0], 112, size=1.0, hang=0.45)
-    e += leaves(rnd, [3.0, 29.0, 2.4], [13.0, 31.5, 3.0], 19, faces=('north',), size=0.9, hang=0.8)  # frędzle na czole
+    e = head_open('dark', 31.8, thick=0.3) + [
+        box([3.3, 24.4, 3.3], [12.7, 29.6, 6.0], 'dark', skip=('south', 'north', 'down'))]  # boki kaptura przy twarzy
+    e = e[:-1]
+    e += leaves(rnd, [3.0, 28.6, 3.0], [13.0, 32.4, 13.0], 90, size=1.0, hang=0.45)
+    e += leaves(rnd, [3.0, 24.4, 6.0], [13.0, 29.0, 13.0], 40, faces=('east', 'west', 'south'), size=1.0, hang=0.5)
+    e += leaves(rnd, [3.0, 29.0, 2.4], [13.0, 30.6, 3.0], 12, faces=('north',), size=0.8, hang=0.8)   # frędzle na czole
     return e
 
 
@@ -589,11 +552,6 @@ ZESTAWY = {
                 box([3.4, 8.0, 5.8], [3.9, 10.5, 10.2], 'metal')]),
         'buty': lambda: boots_base('main', 'dark', high=6.4, plate='plate'),
         'rekawice': lambda: gloves_base('dark', 'main', plate='plate', cuff=4.0)},
-    'widmo': {
-        'helm': widmo_helm, 'kamizelka': widmo_kamizelka,
-        'spodnie': lambda: pants_base('main', 'dark', pocket=False, knee='plate', stripe='glow'),
-        'buty': lambda: boots_base('main', 'dark', high=5.4, plate='plate', sole='glow'),
-        'rekawice': lambda: gloves_base('main', 'dark', plate='plate', cuff=3.0)},
     'ranger': {
         'helm': ranger_helm, 'kamizelka': ranger_kamizelka,
         'spodnie': lambda: pants_base('main', 'dark', pocket=True, knee='main', stripe='accent'),

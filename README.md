@@ -176,19 +176,18 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 
 ## Zestawy pancerzy (modele 3D)
 
-Siedem zestawów po pięć elementów (hełm, kamizelka, spodnie, buty, rękawice), każdy element to osobny model 3D z własną teksturą 64×64, generowany przez `zrodla/gen_pancerze.py` (podgląd: `zrodla/preview_pancerze.py`, pliki w `modele/<zestaw>_<element>.json`). Przedmioty mają postać `axon:<zestaw>_<element>` (komponent `item_model`, model `axon:block/<zestaw>_<element>`, tekstura `axon:item/<zestaw>_<element>`).
+Sześć zestawów po pięć elementów (hełm, kamizelka, spodnie, buty, rękawice), każdy element to osobny model 3D z własną teksturą 64×64, generowany przez `zrodla/gen_pancerze.py` (podgląd: `zrodla/preview_pancerze.py`, pliki w `modele/<zestaw>_<element>.json`). Przedmioty mają postać `axon:<zestaw>_<element>` (komponent `item_model`, model `axon:block/<zestaw>_<element>`, tekstura `axon:item/<zestaw>_<element>`).
 
 | Zestaw | Klasa | Wygląd | Elementy w modelu |
 |---|---|---|---|
 | `cien` | lekki | grafit i czerń, pomarańczowe akcenty | kaptur z goglami, kamizelka z magazynkami, spodnie z kieszeniami cargo, buty |
 | `lis` | lekki/średni | kamuflaż leśny | czapka z daszkiem, kamizelka z plecakiem i zwiniętym kocem |
 | `legion` | średni | oliwka i koyote | hełm z noktowizorem, kamizelka z płytami i MOLLE |
-| `bastion` | ciężki | stal, złote akcenty | hełm z przyłbicą, ciężkie naramienniki, płyty na udach i goleniach |
-| `widmo` | elitarny | karbon, świecące cyjanowe linie | pełna maska, rdzeń zasilania na plecach |
+| `bastion` | ciężki | coyote i matowe płyty | ciężki hełm balistyczny z nausznikami, naramienniki, osłona pachwiny, płyty na udach i goleniach |
 | `ranger` | służbowy | granat, odblaski | czapka z odznaką, kamizelka z kaburą i krótkofalówką |
 | `ghillie` | snajper | strój liściasty | kaptur, kurtka z rękawami, spodnie, buty i rękawice obsypane liśćmi i strzępami |
 
-Wszystkie elementy leżą w jednej „ramie gracza” (stopy y=-4, głowa 20–28, środek x=8 i z=8, przód = north, 1 jednostka = 1 piksel skóry), więc plugin stawia pięć wyświetlaczy w tym samym punkcie i każdy element ląduje na swoim miejscu.
+Hełmy i czapki (poza `cien`, który ma kaptur z goglami) zostawiają twarz odkrytą, żeby było widać skórkę gracza. Wszystkie elementy leżą w jednej „ramie gracza” (stopy y=-4, głowa 20–28, środek x=8 i z=8, przód = north, 1 jednostka = 1 piksel skóry), więc plugin stawia pięć wyświetlaczy w tym samym punkcie i każdy element ląduje na swoim miejscu.
 
 Do sprawdzenia: Minecraft nie rysuje modeli 3D na pancerzu gracza, więc modele trzeba pokazać wyświetlaczami przedmiotu na graczu (jak zrzut w AXON-Structure) albo w menu/ekwipunku. Bonusy (prędkość, obrażenia) ustawia się po stronie serwera. Skala i przesunięcie na postaci mogą wymagać dostrojenia w grze.
 
