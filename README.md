@@ -176,7 +176,7 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 
 ## Zestawy pancerzy (modele 3D)
 
-Sześć zestawów po pięć elementów (hełm, kamizelka, bluza z rękawami, spodnie, buty, rękawice; ghillie ma rękawy w kamizelce), każdy element to osobny model 3D z własną teksturą 64×64, generowany przez `zrodla/gen_pancerze.py` (podgląd: `zrodla/preview_pancerze.py`, pliki w `modele/<zestaw>_<element>.json`). Przedmioty mają postać `axon:<zestaw>_<element>` (komponent `item_model`, model `axon:block/<zestaw>_<element>`, tekstura `axon:item/<zestaw>_<element>`).
+Dziewięć zestawów po pięć elementów (hełm, kamizelka, bluza z rękawami, spodnie, buty, rękawice; ghillie ma rękawy w kamizelce), każdy element to osobny model 3D z własną teksturą 64×64, generowany przez `zrodla/gen_pancerze.py` (podgląd: `zrodla/preview_pancerze.py`, pliki w `modele/<zestaw>_<element>.json`). Przedmioty mają postać `axon:<zestaw>_<element>` (komponent `item_model`, model `axon:block/<zestaw>_<element>`, tekstura `axon:item/<zestaw>_<element>`).
 
 | Zestaw | Klasa | Wygląd | Elementy w modelu |
 |---|---|---|---|
@@ -185,6 +185,9 @@ Sześć zestawów po pięć elementów (hełm, kamizelka, bluza z rękawami, spo
 | `legion` | średni | MultiCam | hełm balistyczny z szynami i mocowaniem noktowizora, nosidło płyt z taśmami PALS, ładownice, radio |
 | `bastion` | ciężki | coyote i matowe płyty | ciężki hełm balistyczny, płyty boczne, osłony gardła i krocza, duże naramienniki, płyty na udach i goleniach |
 | `ranger` | służby mundurowe | granat | czapka służbowa, kamizelka z napisem, odznaką, krótkofalówką, pas z kaburą i kajdankami |
+| `zlomiarz` | prowizoryczny | dżins, skóra, rdza | kask budowlany z latarką, skórzana kamizelka z przynitowanymi blachami z karoserii, ramiona z opon |
+| `lowca` | prowizoryczny | brezent i skóra | kaptur z goglami spawalniczymi, kamizelka warstwowa z pasami na naboje, plecak z kocem i toporkiem |
+| `mechanik` | prowizoryczny | kombinezon roboczy | kask z podniesioną przyłbicą spawalniczą, skórzany fartuch z narzędziami |
 | `ghillie` | snajper | strój liściasty | kaptur, kurtka z rękawami, spodnie, buty i rękawice obsypane liśćmi i strzępami |
 
 Hełmy i czapki zostawiają twarz odkrytą, żeby było widać skórkę gracza. Wszystkie elementy leżą w jednej „ramie gracza” (stopy y=-4, głowa 20–28, środek x=8 i z=8, przód = north, 1 jednostka = 1 piksel skóry), więc plugin stawia pięć wyświetlaczy w tym samym punkcie i każdy element ląduje na swoim miejscu.
@@ -193,6 +196,7 @@ Do sprawdzenia: Minecraft nie rysuje modeli 3D na pancerzu gracza, więc modele 
 
 ![Zestawy pancerzy 1](podglady/pancerze-1.png)
 ![Zestawy pancerzy 2](podglady/pancerze-2.png)
+![Zestawy prowizoryczne](podglady/pancerze-3.png)
 
 ## Historia
 

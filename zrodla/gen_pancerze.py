@@ -7,7 +7,7 @@ x=8 i z=8, przód gracza to strona north (z mniejsze). Dzięki temu plugin stawi
 elementy w tym samym punkcie (wyświetlacz przedmiotu na graczu) i każdy ląduje na swoim
 miejscu. Jednostka modelu = 1 piksel skóry gracza.
 
-Zestawy: cien, lis, legion, bastion, ranger, ghillie (strój liściasty dla snajperów).
+Zestawy: cien, lis, legion, bastion, ranger, ghillie oraz prowizoryczne: zlomiarz, lowca, mechanik (strój liściasty dla snajperów).
 Elementy: helm, kamizelka, spodnie, buty, rekawice.
 
 Zapisuje build/<nazwa>.json, build/<nazwa>.png, build/<nazwa>_item.json.
@@ -58,6 +58,22 @@ PALETY = {
                'plate': ((44, 52, 70), 'plate'), 'strap': ((18, 20, 26), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
                'metal': ((150, 150, 146), 'plate'), 'cloth2': ((46, 56, 78), 'ripstop'), 'lens': ((50, 70, 100), 'lens'),
                'emblem': ((172, 176, 182), 'patch'), 'mesh': ((16, 18, 26), 'mesh'), 'extra': ((60, 68, 88), 'cloth')},
+    # --- prowizoryczne (dla biedniejszych graczy) ---
+    # Złomiarz: dżins, skóra, blachy z karoserii i opony
+    'zlomiarz': {'main': ((70, 84, 106), 'denim'), 'dark': ((76, 56, 38), 'leather'), 'accent': ((176, 142, 44), 'paint'),
+                 'plate': ((132, 80, 48), 'rust'), 'strap': ((40, 34, 28), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
+                 'metal': ((112, 112, 110), 'rust'), 'cloth2': ((118, 108, 78), 'canvas'), 'lens': ((60, 60, 56), 'lens'),
+                 'emblem': ((120, 110, 80), 'patch'), 'mesh': ((148, 150, 148), 'duct'), 'extra': ((30, 30, 32), 'rubber')},
+    # Łowca: brezent, skóra i zszywane łaty
+    'lowca': {'main': ((112, 100, 72), 'canvas'), 'dark': ((70, 50, 34), 'leather'), 'accent': ((142, 122, 90), 'canvas'),
+              'plate': ((96, 66, 42), 'leather'), 'strap': ((44, 34, 26), 'leather'), 'glow': ((90, 90, 90), 'cloth'),
+              'metal': ((100, 98, 92), 'rust'), 'cloth2': ((84, 90, 64), 'canvas'), 'lens': ((70, 60, 40), 'lens'),
+              'emblem': ((90, 80, 56), 'patch'), 'mesh': ((120, 112, 90), 'duct'), 'extra': ((60, 46, 32), 'leather')},
+    # Mechanik: kombinezon roboczy, skórzany fartuch spawacza i kask z przyłbicą
+    'mechanik': {'main': ((152, 90, 46), 'denim'), 'dark': ((82, 60, 40), 'leather'), 'accent': ((196, 170, 60), 'paint'),
+                 'plate': ((98, 100, 102), 'rust'), 'strap': ((36, 30, 26), 'strap'), 'glow': ((90, 90, 90), 'cloth'),
+                 'metal': ((120, 122, 124), 'plate'), 'cloth2': ((90, 96, 104), 'canvas'), 'lens': ((50, 70, 50), 'lens'),
+                 'emblem': ((110, 100, 80), 'patch'), 'mesh': ((140, 142, 140), 'duct'), 'extra': ((36, 36, 38), 'rubber')},
     'ghillie': {'main': ((70, 78, 44), 'cloth'), 'dark': ((40, 46, 28), 'cloth'), 'accent': ((120, 100, 60), 'cloth'),
                 'plate': ((56, 60, 40), 'plate'), 'strap': ((50, 42, 30), 'strap'), 'glow': ((200, 200, 120), 'glow'),
                 'metal': ((100, 100, 90), 'plate'), 'cloth2': ((96, 88, 54), 'cloth'), 'lens': ((60, 70, 40), 'lens'),
@@ -114,7 +130,7 @@ def refine(t, kind, rnd, base):
     for y in range(S):
         for x in range(S):
             mul(x, y, 1 + rnd.uniform(-0.05, 0.05))
-            if kind in ('cloth', 'ripstop', 'strap') or kind.startswith('camo'):
+            if kind in ('cloth', 'ripstop', 'strap', 'denim', 'canvas', 'leather') or kind.startswith('camo'):
                 mul(x, y, 1.06 if (x + y) % 2 == 0 else 0.95)           # splot
                 if kind == 'ripstop' and (x % 8 == 0 or y % 8 == 0):
                     mul(x, y, 1.12)
@@ -126,11 +142,11 @@ def refine(t, kind, rnd, base):
     for i in range(S):                                                    # faza krawędzi: jasna góra/lewo, ciemny dół/prawo
         mul(i, 0, 1.18); mul(0, i, 1.12); mul(i, S - 1, 0.7); mul(S - 1, i, 0.75)
         mul(i, 1, 1.07); mul(1, i, 1.05); mul(i, S - 2, 0.85); mul(S - 2, i, 0.88)
-    if kind in ('cloth', 'ripstop', 'strap') or kind.startswith('camo'):  # ścieg: przerywana linia
+    if kind in ('cloth', 'ripstop', 'strap', 'denim', 'canvas', 'leather') or kind.startswith('camo'):  # ścieg: przerywana linia
         for i in range(3, S - 3):
             if i % 4 < 2:
                 mul(i, 3, 0.8); mul(i, S - 4, 0.8); mul(3, i, 0.82); mul(S - 4, i, 0.82)
-    if kind == 'plate':                                                   # rysy i otarcia na płycie, nity z odblaskiem
+    if kind in ('plate', 'rust'):                                         # rysy i otarcia na płycie, nity z odblaskiem
         for _ in range(7):
             x, y = rnd.randint(3, 26), rnd.randint(3, 28)
             for k in range(rnd.randint(3, 7)):
@@ -142,7 +158,7 @@ def refine(t, kind, rnd, base):
             for dx in (0, 1):
                 for dy in (0, 1):
                     mul(x + dx, y + dy, 1.5 if (dx, dy) == (0, 0) else 0.75)
-    if kind in ('cloth', 'ripstop') and base[0] + base[1] + base[2] < 450:   # wyblakłe zagniecenia na tkaninie
+    if kind in ('cloth', 'ripstop', 'denim', 'canvas') and base[0] + base[1] + base[2] < 450:   # wyblakłe zagniecenia na tkaninie
         for _ in range(5):
             x, y = rnd.randint(2, 28), rnd.randint(2, 28)
             for k in range(rnd.randint(4, 9)):
@@ -181,7 +197,39 @@ def tile16(base, kind, rnd, accent=None):
                 n += 2 if (x + y) % 2 == 0 else -2
             elif kind == 'plate':
                 n = rnd.randint(-4, 4) + (3 if y % 5 == 0 else 0)
+            elif kind == 'denim':                      # skośny splot jeansu
+                n += 7 if (x + y) % 3 == 0 else -2
+            elif kind == 'canvas':                     # gruby brezent
+                n += 6 if ((x // 2 + y // 2) % 2 == 0) else -4
+            elif kind == 'leather':                    # skóra: plamy
+                n = rnd.randint(-3, 3) + (-6 if rnd.random() < 0.08 else 0)
+            elif kind == 'rubber':                     # opona: bieżnik
+                n += -9 if x % 4 == 0 else (5 if y % 6 == 0 else 0)
+            elif kind == 'duct':                       # taśma: srebrne żeberka
+                n += 8 if y % 3 == 0 else -3
+            elif kind == 'paint':
+                n += rnd.randint(-3, 3)
+            elif kind == 'rust':
+                n = rnd.randint(-5, 5)
             shade(x, y, n)
+    if kind == 'rust':                                   # blacha: rdza, resztki lakieru, nity
+        for _ in range(9):
+            cx, cy, r = rnd.randint(0, 15), rnd.randint(0, 15), rnd.randint(1, 3)
+            col = rnd.choice(((150, 72, 28), (110, 54, 24), (84, 42, 22), (170, 100, 50)))
+            for y in range(16):
+                for x in range(16):
+                    if (x - cx) ** 2 + (y - cy) ** 2 <= r * r:
+                        px[x, y] = col + (255,)
+        d.rectangle([0, 0, 15, 15], outline=dk(0.55))
+        for p in ((2, 2), (13, 2), (2, 13), (13, 13)):
+            px[p] = (170, 168, 160, 255)
+    if kind == 'paint':                                  # odpryski lakieru
+        for _ in range(10):
+            px[rnd.randint(1, 14), rnd.randint(1, 14)] = (70, 60, 40, 255)
+    if kind == 'leather':
+        for _ in range(4):                               # zagniecenia
+            y0 = rnd.randint(2, 13)
+            d.line([(0, y0), (15, y0 + rnd.randint(-1, 1))], fill=dk(0.7))
     if kind in ('plate',):
         d.rectangle([0, 0, 15, 15], outline=dk(0.6))
         d.line([(1, 1), (14, 1)], fill=dk(1.3))
@@ -627,6 +675,149 @@ def ranger_kamizelka():
     return e
 
 
+# ------------------------------------------------------------- PROWIZORYCZNE
+def patch_strip(x0, x1, y, z, reg='mesh', skip=('south',)):
+    """Pas taśmy naprawczej (duct tape) przez element."""
+    return box([x0, y, z - 0.12], [x1, y + 0.8, z], reg, skip=skip)
+
+
+def zlomiarz_helm():
+    """Kask budowlany z latarką czołową i taśmą; twarz odkryta."""
+    return [box([3.3, 28.4, 3.3], [12.7, 29.6, 12.7], 'accent'),
+            box([3.7, 29.6, 3.7], [12.3, 30.8, 12.3], 'accent'),
+            box([4.3, 30.8, 4.3], [11.7, 31.8, 11.7], 'accent'),
+            box([5.4, 31.8, 5.4], [10.6, 32.4, 10.6], 'accent'),
+            box([7.4, 31.4, 4.0], [8.6, 32.6, 12.0], 'accent'),                   # żeberko kasku
+            box([3.0, 28.0, 1.4], [13.0, 28.8, 3.4], 'accent'),                   # daszek
+            box([3.4, 27.0, 7.0], [12.6, 28.6, 13.0], 'accent'),                  # tył
+            box([3.9, 29.2, 2.8], [12.1, 29.9, 3.4], 'strap'),                    # opaska
+            box([6.8, 30.0, 2.2], [9.2, 31.4, 3.3], 'metal'),                     # latarka czołowa
+            box([7.2, 30.4, 1.7], [8.8, 31.0, 2.3], 'lens'),
+            box([9.6, 29.2, 2.6], [12.2, 32.6, 3.0], 'mesh'),                     # taśma przez kask
+            box([3.6, 24.6, 11.4], [12.4, 27.4, 12.8], 'cloth2'),                 # szmata na kark
+            box([3.4, 25.2, 4.2], [3.8, 28.4, 4.6], 'strap'),
+            box([12.2, 25.2, 4.2], [12.6, 28.4, 4.6], 'strap')]
+
+
+def zlomiarz_kamizelka():
+    """Skórzana kamizelka z przynitowanymi blachami z karoserii i barkami z opon."""
+    e = [box([3.8, 12.8, 5.3], [12.2, 23.4, 10.7], 'dark'),
+         box([4.0, 22.4, 5.2], [6.4, 24.4, 10.8], 'dark'),
+         box([9.6, 22.4, 5.2], [12.0, 24.4, 10.8], 'dark'),
+         box([4.4, 17.2, 4.6], [8.0, 22.4, 5.3], 'plate', skip=('south',)),       # blacha na piersi, lewa
+         box([8.2, 15.0, 4.55], [11.8, 21.6, 5.3], 'plate', skip=('south',)),     # prawa, większa
+         box([4.6, 13.6, 4.6], [9.4, 17.0, 5.2], 'metal', skip=('south',)),       # dolna, inny kawałek
+         rotated([9.4, 13.0, 4.5], [11.8, 15.4, 5.1], 'plate', 'z', 22.5, skip=('south',)),
+         box([4.4, 14.4, 10.7], [11.6, 22.0, 11.3], 'plate', skip=('north',)),    # blacha na plecach
+         box([4.6, 12.8, 11.2], [11.4, 14.8, 11.8], 'metal', skip=('north',)),
+         patch_strip(4.2, 11.8, 17.0, 4.62), patch_strip(4.2, 11.8, 21.2, 4.62),  # taśma łącząca blachy
+         box([2.0, 21.2, 5.0], [4.4, 25.4, 11.0], 'extra'),                       # opona na ramieniu (lewa)
+         box([2.4, 25.0, 5.6], [4.4, 25.8, 10.4], 'extra'),
+         box([11.6, 21.4, 5.0], [14.0, 25.0, 11.0], 'extra'),                     # prawa, węższa
+         box([2.2, 22.4, 4.8], [2.6, 24.4, 11.2], 'mesh'),                        # taśma na oponie
+         box([3.6, 12.2, 5.1], [12.4, 13.0, 10.9], 'strap'),                      # pas z klamrą
+         box([7.4, 12.2, 4.9], [8.6, 13.0, 5.2], 'metal', skip=('south',)),
+         box([5.6, 23.6, 5.8], [10.4, 24.8, 10.2], 'cloth2', skip=('up',))]       # szmata na szyi
+    for (x, y) in ((4.8, 21.6), (7.4, 21.6), (8.6, 20.6), (11.2, 20.6), (5.0, 14.2), (8.8, 14.2)):   # nity
+        e.append(box([x, y, 4.3], [x + 0.5, y + 0.5, 4.6], 'metal', skip=('south',)))
+    e += pouch(10.0, 12.9, 1.8, 2.0, zf=4.6, depth=0.5, reg='dark')
+    return e
+
+
+def lowca_helm():
+    """Kaptur z brezentu z szalikiem i goglami na czole; twarz odkryta."""
+    return [box([3.4, 29.0, 3.4], [12.6, 31.4, 12.6], 'main'),
+            box([4.0, 31.4, 4.0], [12.0, 32.2, 12.0], 'main'),
+            box([5.4, 32.0, 5.4], [10.6, 32.6, 10.6], 'accent'),
+            box([3.2, 24.2, 6.0], [12.8, 29.2, 12.8], 'main'),                    # kaptur po bokach i z tyłu
+            box([3.0, 25.0, 11.2], [13.0, 28.0, 13.4], 'accent'),                 # luźny tył
+            box([3.6, 24.8, 4.6], [4.4, 29.0, 6.2], 'main'),                      # brzegi kaptura przy twarzy
+            box([11.6, 24.8, 4.6], [12.4, 29.0, 6.2], 'main'),
+            box([4.0, 28.6, 3.0], [12.0, 29.6, 4.0], 'strap'),                    # opaska
+            box([4.6, 29.4, 2.4], [7.4, 30.8, 3.2], 'lens'),                      # gogle spawalnicze na czole
+            box([8.6, 29.4, 2.4], [11.4, 30.8, 3.2], 'lens'),
+            box([4.4, 29.2, 2.2], [11.6, 29.6, 3.1], 'metal'),
+            box([4.4, 21.8, 4.4], [11.6, 24.6, 11.4], 'accent', skip=('up',)),    # gruby szalik
+            box([4.0, 22.4, 3.8], [6.4, 24.0, 4.6], 'accent'),
+            box([3.0, 29.6, 6.0], [3.4, 31.4, 10.0], 'mesh')]                     # łata z taśmy
+
+
+def lowca_kamizelka():
+    """Skórzana kamizelka warstwowa z pasami na naboje, plecak ze zwiniętym kocem i toporkiem."""
+    e = [box([3.8, 12.8, 5.3], [12.2, 23.4, 10.7], 'dark'),
+         box([4.0, 22.4, 5.2], [6.6, 24.4, 10.8], 'dark'),
+         box([9.4, 22.4, 5.2], [12.0, 24.4, 10.8], 'dark'),
+         box([3.8, 18.6, 4.6], [12.2, 22.0, 5.3], 'plate', skip=('south',)),      # warstwy skóry (zakładki)
+         box([3.8, 15.2, 4.5], [12.2, 18.8, 5.3], 'extra', skip=('south',)),
+         box([3.8, 12.6, 4.4], [12.2, 15.4, 5.3], 'plate', skip=('south',)),
+         box([5.0, 23.0, 4.4], [11.0, 25.0, 11.4], 'accent', skip=('up',)),        # futrzany kołnierz
+         rotated([4.2, 15.6, 4.25], [5.0, 23.0, 4.55], 'strap', 'z', -22.5, skip=('south',)),    # pas na naboje na skos
+         rotated([11.0, 15.6, 4.25], [11.8, 23.0, 4.55], 'strap', 'z', 22.5, skip=('south',)),
+         box([2.4, 21.4, 5.0], [4.4, 24.8, 11.0], 'plate'),                        # naramienniki ze skóry
+         box([11.6, 21.4, 5.0], [13.6, 24.8, 11.0], 'plate'),
+         box([2.2, 24.4, 5.4], [4.2, 25.0, 10.6], 'strap'),
+         box([11.8, 24.4, 5.4], [13.8, 25.0, 10.6], 'strap'),
+         box([3.6, 12.2, 5.1], [12.4, 13.2, 10.9], 'strap'),                      # pas
+         box([7.4, 12.2, 4.8], [8.6, 13.2, 5.2], 'metal', skip=('south',)),
+         box([4.8, 11.0, 4.4], [6.4, 13.0, 5.4], 'dark', skip=('south',)),        # nóż w pochwie
+         box([4.9, 9.8, 4.6], [5.5, 11.2, 5.0], 'strap', skip=('south',)),
+         box([4.8, 11.6, 10.6], [11.2, 23.0, 14.2], 'accent'),                    # plecak/koc
+         box([4.4, 21.8, 10.8], [11.6, 24.4, 13.8], 'cloth2'),                    # zrolowany koc
+         box([4.4, 21.4, 13.6], [11.6, 24.0, 14.4], 'cloth2'),
+         box([5.6, 12.4, 14.0], [6.4, 22.0, 14.6], 'strap'),
+         box([9.6, 12.4, 14.0], [10.4, 22.0, 14.6], 'strap'),
+         box([7.4, 13.0, 14.2], [8.6, 21.0, 15.2], 'dark'),                       # trzon toporka
+         box([6.8, 19.6, 14.4], [9.2, 21.6, 15.4], 'metal')]                      # głowica
+    for x in (4.4, 5.4, 6.4, 8.6, 9.6, 10.6):                                      # naboje w pasach
+        e.append(box([x, 17.0 + (x - 4.4) * 0.25, 4.0], [x + 0.5, 18.4 + (x - 4.4) * 0.25, 4.3], 'accent', skip=('south',)))
+    e += pouch(4.6, 13.2, 1.8, 2.2, zf=4.5, depth=0.5, reg='extra') + pouch(9.2, 13.2, 1.8, 2.2, zf=4.5, depth=0.5, reg='extra')
+    return e
+
+
+def mechanik_helm():
+    """Kask budowlany z przyłbicą spawalniczą podniesioną na czoło; twarz odkryta."""
+    return [box([3.3, 28.4, 3.3], [12.7, 29.6, 12.7], 'cloth2'),
+            box([3.7, 29.6, 3.7], [12.3, 30.8, 12.3], 'cloth2'),
+            box([4.3, 30.8, 4.3], [11.7, 31.8, 11.7], 'cloth2'),
+            box([5.4, 31.8, 5.4], [10.6, 32.3, 10.6], 'cloth2'),
+            box([3.0, 28.0, 1.8], [13.0, 28.8, 3.4], 'cloth2'),
+            box([3.4, 27.0, 7.0], [12.6, 28.6, 13.0], 'cloth2'),
+            box([3.0, 29.4, 0.6], [13.0, 33.6, 2.0], 'plate'),                    # przyłbica spawalnicza podniesiona
+            box([3.0, 33.2, 0.6], [13.0, 34.0, 4.4], 'plate'),
+            box([4.2, 29.8, 0.2], [11.8, 32.6, 0.7], 'lens', skip=('south',)),    # ciemne szkło
+            box([2.6, 30.8, 2.0], [3.2, 32.4, 4.2], 'metal'),                     # zawiasy
+            box([12.8, 30.8, 2.0], [13.4, 32.4, 4.2], 'metal'),
+            box([3.9, 29.2, 2.8], [12.1, 29.9, 3.4], 'strap'),
+            box([3.6, 24.8, 11.4], [12.4, 27.4, 12.8], 'main'),                   # chusta/bandana na karku
+            box([4.4, 22.2, 4.6], [11.6, 24.4, 11.4], 'main', skip=('up',))]
+
+
+def mechanik_kamizelka():
+    """Skórzany fartuch spawacza z kieszenią na narzędzia i pasem z młotkiem i kluczem."""
+    e = [box([4.4, 9.4, 4.8], [11.6, 22.6, 5.5], 'dark', skip=('south',)),            # fartuch do ud
+         box([4.0, 12.6, 4.5], [12.0, 14.2, 5.6], 'plate', skip=('south',)),
+         box([4.6, 22.2, 5.0], [6.2, 24.8, 10.6], 'dark'),                           # szelki
+         box([9.8, 22.2, 5.0], [11.4, 24.8, 10.6], 'dark'),
+         box([5.0, 22.8, 4.6], [6.0, 23.6, 5.2], 'metal'),
+         box([10.0, 22.8, 4.6], [11.0, 23.6, 5.2], 'metal'),
+         box([4.6, 18.0, 4.2], [8.2, 21.6, 4.9], 'extra', skip=('south',)),          # kieszeń piersiowa
+         box([4.6, 20.6, 4.0], [8.2, 21.8, 4.4], 'dark', skip=('south',)),
+         box([5.0, 21.6, 3.8], [5.6, 23.4, 4.4], 'metal', skip=('south',)),          # śrubokręty
+         box([5.8, 21.6, 3.8], [6.4, 23.0, 4.4], 'accent', skip=('south',)),
+         box([6.6, 21.6, 3.8], [7.2, 23.2, 4.4], 'strap', skip=('south',)),
+         box([8.8, 15.0, 4.2], [11.4, 18.8, 4.9], 'dark', skip=('south',)),          # druga kieszeń
+         box([3.6, 11.8, 5.0], [12.4, 12.8, 11.0], 'strap'),                         # pas narzędziowy
+         box([7.4, 11.8, 4.8], [8.6, 12.8, 5.2], 'metal', skip=('south',)),
+         box([10.6, 8.0, 4.4], [11.4, 12.0, 5.0], 'strap', skip=('south',)),         # młotek
+         box([10.2, 7.4, 4.2], [11.8, 8.4, 5.0], 'metal', skip=('south',)),
+         box([4.6, 7.0, 4.4], [5.2, 12.0, 5.0], 'metal', skip=('south',)),           # klucz płaski
+         box([4.3, 6.4, 4.3], [5.5, 7.4, 5.1], 'metal', skip=('south',)),
+         box([4.2, 12.6, 5.2], [11.8, 22.8, 10.8], 'main')]                          # kombinezon pod fartuchem
+    e += molle(5.0, 11.0, 14.6, 17.0, 4.5)[:2]
+    e += [box([5.0, 12.8, 10.8], [11.0, 14.0, 11.2], 'strap', skip=('north',))]
+    return e
+
+
 # ------------------------------------------------------- GHILLIE (snajper)
 def sample_surface(rnd, f, t, faces=('north', 'south', 'east', 'west', 'up')):
     dx, dy, dz = t[0] - f[0], t[1] - f[1], t[2] - f[2]
@@ -753,6 +944,24 @@ ZESTAWY = {
         'spodnie': lambda: pants('main', 'dark', kneepad='main', holster=False),
         'buty': lambda: boots_base('strap', 'dark', high=4.6),
         'rekawice': lambda: gloves_base('strap', 'dark', cuff=2.0)},
+    'zlomiarz': {
+        'helm': zlomiarz_helm, 'kamizelka': zlomiarz_kamizelka,
+        'bluza': lambda: sleeves('main', 'dark', pad='extra', patch='cloth2'),
+        'spodnie': lambda: pants('main', 'dark', kneepad='extra', holster=False),
+        'buty': lambda: boots_base('dark', 'extra', high=5.2),
+        'rekawice': lambda: gloves_base('dark', 'main', cuff=2.5)},
+    'lowca': {
+        'helm': lowca_helm, 'kamizelka': lowca_kamizelka,
+        'bluza': lambda: sleeves('main', 'dark', pad='plate', patch='cloth2', cuff='strap'),
+        'spodnie': lambda: pants('main', 'dark', kneepad='plate', holster=True),
+        'buty': lambda: boots_base('dark', 'strap', high=6.2),
+        'rekawice': lambda: gloves_base('dark', 'main', cuff=3.0)},
+    'mechanik': {
+        'helm': mechanik_helm, 'kamizelka': mechanik_kamizelka,
+        'bluza': lambda: sleeves('main', 'dark', pad='dark', patch='cloth2'),
+        'spodnie': lambda: pants('main', 'dark', kneepad='extra', holster=False),
+        'buty': lambda: boots_base('dark', 'strap', high=5.0),
+        'rekawice': lambda: gloves_base('dark', 'cloth2', cuff=3.0)},
     'ghillie': {'helm': ghillie_helm, 'kamizelka': ghillie_kamizelka, 'spodnie': ghillie_spodnie,
                 'buty': ghillie_buty, 'rekawice': ghillie_rekawice},
 }
