@@ -176,7 +176,7 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 
 ## Zestawy pancerzy (modele 3D)
 
-Dziewięć zestawów. Każdy ma hełm/czapkę, kamizelkę, naramienniki (nałokietniki i opaskę), ochraniacze (pas, nakolanniki, kabura udowa), buty i rękawice. Ręce, nogi i boki tułowia zostają w skórce gracza, więc gracze w tym samym zestawie dalej się różnią. Tylko `ghillie` ma pełny strój (kurtkę z rękawami i spodnie), każdy element to osobny model 3D z własną teksturą 64×64, generowany przez `zrodla/gen_pancerze.py` (podgląd: `zrodla/preview_pancerze.py`, pliki w `modele/<zestaw>_<element>.json`). Przedmioty mają postać `axon:<zestaw>_<element>` (komponent `item_model`, model `axon:block/<zestaw>_<element>`, tekstura `axon:item/<zestaw>_<element>`).
+Dziewięć zestawów. Każdy ma hełm/czapkę, kamizelkę, naramienniki (nałokietniki i opaskę), ochraniacze (pas, nakolanniki, kabura udowa), buty i rękawice. Ręce, nogi i boki tułowia zostają w skórce gracza, więc gracze w tym samym zestawie dalej się różnią. Tylko `ghillie` ma pełny strój (kurtkę z rękawami i spodnie). Każdy element to osobny model 3D z własną teksturą 128×128, generowany przez `zrodla/gen_pancerze.py` (podgląd: `zrodla/preview_pancerze.py`, pliki w `modele/<zestaw>_<element>.json`). Przedmioty mają postać `axon:<zestaw>_<element>` (komponent `item_model`, model `axon:block/<zestaw>_<element>`, tekstura `axon:item/<zestaw>_<element>`).
 
 | Zestaw | Klasa | Wygląd | Elementy w modelu |
 |---|---|---|---|
