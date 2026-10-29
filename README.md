@@ -45,18 +45,18 @@ Paczka była wczytana w prawdziwym kliencie 1.21.1, 1.21.3, 1.21.5 i 1.21.11 (be
 
 ## Amunicja
 
-Dziesięć typów amunicji z paczki QualityArmory (przedmiot `phantom_membrane`, `custom_model_data` 1–10) ma nowe modele 3D. Numery i nazwy w pluginie zostają bez zmian, więc nic nie trzeba przestawiać w konfiguracji. Generuje je `zrodla/gen_ammo.py` (podgląd: `preview_ammo.py`), `build_pack.py` podmienia modele `qualityarmory:ammo/*`, a `dodaj_ammo.py` dopisuje je do gotowego zipa. Tekstury 128×128 leżą w `textures/axon/ammo_<nazwa>.png`.
+Dziesięć typów amunicji z paczki QualityArmory (przedmiot `phantom_membrane`, `custom_model_data` 1–10) ma nowe modele 3D. Jeden przedmiot to jedna sztuka (liczbę pokazuje licznik w slocie). Numery i nazwy w pluginie zostają bez zmian, więc nic nie trzeba przestawiać w konfiguracji. Generuje je `zrodla/gen_ammo.py` (podgląd: `preview_ammo.py`), `build_pack.py` podmienia modele `qualityarmory:ammo/*`, a `dodaj_ammo.py` dopisuje je do gotowego zipa. Tekstury 128×128 leżą w `textures/axon/ammo_<nazwa>.png`.
 
 | custom_model_data | Model | Opis |
 |---|---|---|
-| 1 | `ammo9mm` | karton z naboi 9 mm |
-| 2 | `ammo556` | oliwkowa skrzynka z nabojami 5.56 |
-| 3 | `ammo762` | drewniana skrzynka z nabojami 7.62 |
-| 4 | `ammoshotgun` | cztery czerwone naboje śrutowe |
+| 1 | `ammo9mm` | nabój 9 mm |
+| 2 | `ammo556` | nabój 5.56 |
+| 3 | `ammo762` | nabój 7.62 |
+| 4 | `ammoshotgun` | nabój śrutowy |
 | 5 | `ammorpg` | rakieta RPG |
-| 6 | `ammomusketball` | skórzana sakiewka z ołowianymi kulami |
-| 7 | `ammo50cal` | skrzynka z nabojami .50 cal |
-| 8 | `ammo40m` | trzy granaty 40 mm |
+| 6 | `ammomusketball` | kula ołowiana z papierem |
+| 7 | `ammo50cal` | nabój .50 cal |
+| 8 | `ammo40m` | granat 40 mm |
 | 9 | `ammomininuke` | mini-nuke z pasem ostrzegawczym |
 | 10 | `ammofusion` | ogniwo fuzyjne (świecący rdzeń) |
 

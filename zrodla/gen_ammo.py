@@ -82,55 +82,53 @@ class Amo(Bron):
         self.cyl(x, z, y0 + hc + (h - hc) * 0.55, y0 + h, r * 0.55, tip or head)
 
 
-def box(w, hw, hd, hh, body, lid, y0=0.0):
-    """Otwarte pudełko: dno, cztery ścianki, pasek na froncie."""
-    t = 0.35
-    w.b([-hw, y0, -hd], [hw, y0 + t, hd], body)
-    w.b([-hw, y0, -hd], [hw, y0 + hh, -hd + t], body)
-    w.b([-hw, y0, hd - t], [hw, y0 + hh, hd], body)
-    w.b([-hw, y0, -hd], [-hw + t, y0 + hh, hd], body)
-    w.b([hw - t, y0, -hd], [hw, y0 + hh, hd], body)
-    w.b([-hw - 0.02, y0 + hh - 0.5, -hd - 0.02], [hw + 0.02, y0 + hh, hd + 0.02], lid)
 
 
+
+
+
+# Jeden przedmiot = jedna sztuka (liczbę pokazuje licznik w slocie), dlatego bez pudełek i skrzynek.
 def a9mm(w):
-    box(w, 6, 4, 4.5, 'karton', 'karton_c')
-    w.b([-6.05, 1.2, -1.5], [6.05, 3.2, 1.5], 'zolty')                         # etykieta
-    for i in range(4):
-        for j in range(2):
-            w.bullet(-4.5 + i * 3, -2 + j * 4, 0.4, 8.5, 0.9, 'mosiadz', 'miedz')
-    w.b([-5.7, 4.3, -3.7], [5.7, 4.5, 3.7], 'karton_c')
+    w.bullet(0, 0, 0, 13, 2.3, 'mosiadz', 'miedz')
 
 
 def a556(w):
-    box(w, 7, 4.5, 5, 'oliwka', 'oliwka_c')                                    # skrzynka metalowa
-    w.b([-7.05, 1.4, -2.0], [7.05, 3.4, 2.0], 'zolty')
-    w.b([-7.05, 3.8, -4.0], [-5.0, 4.8, 4.0], 'stal_c')
-    for i in range(5):
-        for j in range(2):
-            w.bullet(-5.6 + i * 2.8, -2.2 + j * 4.4, 0.4, 10.5, 0.85, 'mosiadz', 'miedz', 'czerwony_c')
-    w.b([-1.0, 5.0, -5.0], [1.0, 5.6, 5.0], 'stal_c')                           # zatrzask
+    w.bullet(0, 0, 0, 16, 2.0, 'mosiadz', 'miedz', 'czerwony_c')
 
 
 def a762(w):
-    box(w, 6.5, 4.5, 6, 'drewno', 'drewno_c')                                  # drewniana skrzynka
-    w.b([-6.55, 1.0, -4.55], [6.55, 1.6, 4.55], 'drewno_c')
-    w.b([-6.55, 4.0, -4.55], [6.55, 4.6, 4.55], 'drewno_c')
-    w.b([-3.0, 1.8, -4.58], [3.0, 3.8, -4.52], 'bialy')                         # farba na froncie
-    for i in range(4):
-        for j in range(2):
-            w.bullet(-4.8 + i * 3.2, -2.2 + j * 4.4, 0.4, 11.5, 1.0, 'stal_lak', 'stal_c', 'czerwony')
+    w.bullet(0, 0, 0, 16, 2.4, 'stal_lak', 'stal_c', 'czerwony')
 
 
 def ashotgun(w):
-    for i in range(4):                                                          # cztery czerwone naboje
-        x, z = -3.6 + (i % 2) * 7.2, -3.6 + (i // 2) * 7.2
-        w.cyl(x, z, 0, 2.6, 1.9, 'mosiadz')
-        w.cyl(x, z, 2.6, 11.0, 1.75, 'czerwony')
-        w.cyl(x, z, 10.0, 11.0, 1.8, 'czerwony_c')
-        w.b([x - 0.7, 11.0, z - 0.7], [x + 0.7, 11.3, z + 0.7], 'czerwony_c')   # zawinięcie
-        w.cyl(x, z, 2.5, 3.0, 1.95, 'mosiadz_c')
-    w.b([-8.0, 0, -8.0], [8.0, 0.5, 8.0], 'karton_c')                           # podkładka
+    w.cyl(0, 0, 0, 3.4, 3.6, 'mosiadz')
+    w.cyl(0, 0, 3.2, 14.5, 3.3, 'czerwony')
+    w.cyl(0, 0, 13.0, 14.5, 3.4, 'czerwony_c')
+    w.b([-1.4, 14.5, -1.4], [1.4, 15.0, 1.4], 'czerwony_c')                     # zawinięcie
+    w.cyl(0, 0, 3.2, 4.0, 3.7, 'mosiadz_c')
+
+
+def amusket(w):
+    w.b([-2.5, 2, -2.5], [2.5, 7, 2.5], 'olow')                                  # kula ołowiana
+    w.b([-2, 0.8, -2], [2, 2, 2], 'olow')
+    w.b([-2, 7, -2], [2, 8.2, 2], 'olow')
+    w.b([-3, 3, -2], [3, 6, 2], 'olow')
+    w.b([-2, 3, -3], [2, 6, 3], 'olow')
+    w.b([-3.2, 0, -3.2], [3.2, 0.5, 3.2], 'szmata')                              # podkładka ze szmaty
+    w.b([-1, 8.2, -1], [1, 10.5, 1], 'szmata')                                   # skręcony papier
+
+
+def a50cal(w):
+    w.bullet(0, 0, 0, 20, 2.8, 'mosiadz', 'miedz', 'czern')
+
+
+def a40m(w):
+    w.cyl(0, 0, 0, 7, 3.2, 'mosiadz')
+    w.b([-3.4, 6.6, -3.4], [3.4, 7.3, 3.4], 'stal_c')                            # pierścień
+    w.cyl(0, 0, 7.3, 13, 3.0, 'oliwka')
+    w.cyl(0, 0, 13, 15.5, 2.2, 'oliwka_c')
+    w.cyl(0, 0, 15.5, 16, 1.0, 'stal_c')
+    w.b([-3.2, 10, -3.2], [3.2, 11, 3.2], 'zolty')                               # żółty pas
 
 
 def arpg(w):
@@ -147,37 +145,7 @@ def arpg(w):
     w.cyl(0, 0, -0.0, 0.8, 1.9, 'czern')
 
 
-def amusket(w):
-    w.b([-5.0, 0.0, -4.0], [5.0, 8.0, 4.0], 'skora')                            # sakiewka
-    w.b([-5.2, 0.0, -4.2], [5.2, 1.0, 4.2], 'skora_c')
-    w.b([-4.6, 8.0, -3.6], [4.6, 9.5, 3.6], 'skora_c')                          # zawiązanie
-    w.b([-1.0, 9.5, -1.0], [1.0, 11.5, 1.0], 'skora_c')
-    w.b([-5.0, 6.2, -4.1], [5.0, 6.6, 4.1], 'skora_c')                          # szew
-    w.b([5.0, 1.5, -1.0], [5.5, 6.0, 1.0], 'skora_c')                           # klapka
-    for i, (x, z) in enumerate(((-6.4, 3.5), (-4.6, 5.5), (6.0, 4.0), (5.0, -5.2), (-5.8, -5.0), (3.5, 5.8))):
-        w.b([x - 1.0, 0.0, z - 1.0], [x + 1.0, 2.0, z + 1.0], 'olow')            # kule ołowiane obok
-        w.b([x - 0.6, 2.0, z - 0.6], [x + 0.6, 2.4, z + 0.6], 'stal')
 
-
-def a50cal(w):
-    box(w, 6.5, 4.5, 6, 'oliwka_c', 'oliwka')
-    w.b([-6.55, 2.0, -4.55], [6.55, 3.0, 4.55], 'zolty')
-    w.b([5.0, 5.0, -4.0], [6.6, 6.8, 4.0], 'stal_c')                            # uchwyt
-    for i in range(4):
-        w.bullet(-4.8 + i * 3.2, -1.2, 0.4, 15.0, 1.3, 'mosiadz', 'miedz', 'czern')
-        w.bullet(-4.8 + i * 3.2, 1.8, 0.4, 15.0, 1.3, 'mosiadz', 'miedz', 'czern')
-
-
-def a40m(w):
-    for k, x in enumerate((-4.8, 0.0, 4.8)):                                    # trzy granaty
-        w.cyl(x, 0, 0.0, 6.0, 2.0, 'mosiadz')
-        w.b([x - 2.1, 5.6, -2.1], [x + 2.1, 6.2, 2.1], 'stal_c')                 # pierścień
-        w.cyl(x, 0, 6.2, 11.0, 1.9, 'oliwka')
-        w.cyl(x, 0, 11.0, 13.0, 1.4, 'oliwka_c')
-        w.cyl(x, 0, 13.0, 14.0, 0.7, 'stal_c')
-        w.b([x - 2.0, 9.0, -2.0], [x + 2.0, 9.8, 2.0], 'zolty')                  # żółty pas
-    w.b([-7.4, 0.0, -2.6], [7.4, 0.6, 2.6], 'czern')                            # listwa podstawy
-    w.b([-7.4, 6.4, -0.6], [7.4, 6.9, 0.6], 'stal_c')
 
 
 def amininuke(w):

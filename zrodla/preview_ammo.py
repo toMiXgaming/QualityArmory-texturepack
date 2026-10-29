@@ -9,9 +9,9 @@ from PIL import Image, ImageDraw, ImageFont
 import numpy as np
 from gen_ammo import NAZWY
 
-OPIS = {'ammo9mm': '9 mm', 'ammo556': '5.56 mm', 'ammo762': '7.62 mm', 'ammoshotgun': 'Śrut (12/70)',
-        'ammorpg': 'Rakieta RPG', 'ammomusketball': 'Kule do muszkietu', 'ammo50cal': '.50 cal',
-        'ammo40m': 'Granaty 40 mm', 'ammomininuke': 'Mini-nuke', 'ammofusion': 'Ogniwo fuzyjne'}
+OPIS = {'ammo9mm': '9 mm', 'ammo556': '5.56 mm', 'ammo762': '7.62 mm', 'ammoshotgun': 'Śrut',
+        'ammorpg': 'Rakieta RPG', 'ammomusketball': 'Kula do muszkietu', 'ammo50cal': '.50 cal',
+        'ammo40m': 'Granat 40 mm', 'ammomininuke': 'Mini-nuke', 'ammofusion': 'Ogniwo fuzyjne'}
 B = os.path.join(HERE, 'build')
 W, H, G = 280, 300, 120
 try:
@@ -24,7 +24,7 @@ for i, n in enumerate(NAZWY):
     m, q = load_model(os.path.join(B, base + '.json'), lambda ref: os.path.join(B, ref.split('/')[-1] + '.png'))
     cv = Canvas(W, H, grad=((70, 76, 90), (34, 38, 46)))
     R = ortho_view(30, 35)
-    fit = [dict(P=np.array([[1, 0, 1], [15, 16, 15]], float))]
+    fit = [dict(P=np.array([[3, 0, 3], [13, 16, 13]], float))]
     xf, pr, s = fit_ortho(fit, R, W, H, margin=0.1)
     draw(cv, q, xf, pr, light_preview)
     im = cv.image()
