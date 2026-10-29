@@ -24,7 +24,7 @@ for f, t, c in MAN:
 sheet = Image.new('RGB', (W * 3, H * len(sets)), (38, 42, 50))
 for r, z in enumerate(sets):
     quads = []
-    for e in ELEMENTY:
+    for e in [x for x in ELEMENTY if x in ZESTAWY[z]]:
         n = '%s_%s' % (z, e)
         m, q = load_model(os.path.join(B, n + '.json'), lambda ref: os.path.join(B, ref.split('/')[-1] + '.png'))
         quads += q

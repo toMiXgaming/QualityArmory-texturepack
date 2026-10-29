@@ -18,7 +18,7 @@ from PIL import Image, ImageDraw
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'build')
 YSHIFT = 4.0
-ELEMENTY = ['helm', 'kamizelka', 'spodnie', 'buty', 'rekawice']
+ELEMENTY = ['helm', 'kamizelka', 'bluza', 'spodnie', 'buty', 'rekawice']
 
 # ------------------------------------------------------------------ tekstura
 # 16 obszarów 16x16 px w siatce 4x4 (jednostka uv = 4 px, obszar = 4x4 uv).
@@ -334,6 +334,12 @@ def boots_base(main, dark, high=5.0, plate=None, sole='dark'):
          box([3.7, high - 0.8, 5.6], [8.1, high + 0.3, 10.4], dark),            # kołnierz
          box([3.7, 0.9, 5.0], [8.0, 1.5, 10.3], dark),                          # rant
          box([4.3, 1.0, 4.4], [7.5, 2.0, 4.6], 'strap', skip=('south',))]
+    b += [box([3.6, 0.0, 3.8], [8.1, 0.5, 4.2], sole),                           # nosek podeszwy
+          box([3.7, 0.9, 3.7], [7.9, 2.0, 4.0], dark),                           # wzmocniony czubek
+          box([4.0, 2.0, 3.9], [7.7, 2.6, 4.3], dark),
+          box([3.7, 0.0, 9.4], [8.0, 1.6, 10.6], sole)]                          # obcas
+    for i in range(5):                                                          # bieżnik: klocki pod podeszwą
+        b.append(box([3.7, -0.3, 4.4 + i * 1.2], [8.0, 0.0, 5.2 + i * 1.2], 'strap'))
     for z in (5.4, 6.8, 8.2):                                                   # sznurowanie
         b.append(box([5.4, 3.0 + (z - 5.4) * 0.3, 4.3], [6.6, 3.3 + (z - 5.4) * 0.3, 4.6], 'strap'))
     for i in range(4):                                                          # haczyki
@@ -350,10 +356,29 @@ def gloves_base(main, dark, plate=None, cuff=3.0):
          box([0.2, 11.4, 6.3], [3.8, 12.0, 9.7], dark)]                          # kłykcie od dołu
     for i in range(4):                                                          # palce
         g.append(box([0.2 + i * 0.9, 11.0, 5.7], [0.9 + i * 0.9, 12.2, 6.2], main))
+    for i in range(4):                                                          # zgięcia palców
+        g.append(box([0.2 + i * 0.9, 11.2, 5.6], [0.9 + i * 0.9, 11.9, 5.7], dark))
+    g.append(box([3.9, 11.6, 5.4], [4.5, 13.6, 6.6], main))                      # kciuk
+    g.append(box([4.0, 11.4, 5.5], [4.4, 12.0, 6.2], dark))
+    g.append(box([0.4, 13.8, 9.8], [3.6, 14.6, 10.3], dark))                     # rzep z tyłu dłoni
     if plate:
         g.append(box([0.4, 12.3, 5.5], [3.6, 14.2, 6.0], plate, skip=('south',)))
+        g.append(box([0.6, 14.0, 5.3], [3.4, 14.5, 5.9], plate))
     g.append(box([3.6, 12.0, 6.3], [4.15, 14.0, 9.7], dark))
     return both(g)
+
+
+def sleeves(main, dark, pad='plate', patch='emblem', cuff='dark'):
+    """Rękawy bluzy bojowej: szew barkowy, łokcie z wkładkami, naszywka na ramieniu, ściągacz."""
+    a = [box([-0.4, 12.6, 5.6], [4.2, 24.2, 10.4], main),
+         box([-0.5, 22.6, 5.5], [4.3, 24.3, 10.5], dark),                        # szew/wzmocnienie barku
+         box([-0.5, 12.2, 5.5], [4.3, 13.6, 10.5], cuff),                        # mankiet
+         box([-0.3, 16.0, 10.3], [4.1, 19.0, 11.0], pad),                        # wkładka łokciowa
+         box([0.2, 16.4, 10.9], [3.5, 18.6, 11.2], 'plate'),
+         box([-0.7, 19.8, 6.4], [-0.4, 22.8, 9.6], patch, skip=('east',)),       # naszywka na ramieniu (rzep)
+         box([-0.5, 14.0, 5.3], [4.2, 14.4, 5.65], 'strap'),                     # pasek mankietu
+         box([4.2, 14.4, 6.4], [4.4, 17.6, 9.6], dark)]                          # kieszeń po wewnętrznej stronie
+    return both(a)
 
 
 def head_open(reg, hi, lo=24.4, thick=0.0):
@@ -364,9 +389,14 @@ def head_open(reg, hi, lo=24.4, thick=0.0):
 
 def combat_helmet(shell='main', cover=True, rails=True, nvg=True, ear='plate', strap='strap'):
     """Hełm balistyczny typu FAST/ACH: czasza, pokrowiec, szyny, mocowanie NVG, nauszniki i podbródek."""
-    e = [box([3.4, 28.2, 3.4], [12.6, 31.6, 12.6], shell),                       # czasza
-         box([4.2, 31.4, 4.2], [11.8, 32.4, 11.8], shell),                       # wierzch
+    e = [box([3.2, 28.4, 3.2], [12.8, 29.6, 12.8], shell),                       # czasza schodkowa (kopuła z warstw)
+         box([3.5, 29.6, 3.5], [12.5, 30.6, 12.5], shell),
+         box([3.9, 30.6, 3.9], [12.1, 31.5, 12.1], shell),
+         box([4.6, 31.5, 4.6], [11.4, 32.3, 11.4], shell),
+         box([5.6, 32.3, 5.6], [10.4, 32.7, 10.4], shell),
          box([3.2, 27.6, 6.0], [12.8, 29.0, 12.8], shell),                       # tył/boki w dół
+         box([3.0, 26.0, 8.0], [3.4, 28.0, 12.6], shell),                        # wywinięty tył czaszy
+         box([12.6, 26.0, 8.0], [13.0, 28.0, 12.6], shell),
          box([3.6, 24.6, 10.4], [12.4, 27.8, 12.6], shell),                      # osłona karku
          box([3.0, 28.4, 3.0], [13.0, 29.0, 13.0], 'dark', skip=()),             # krawędź / opaska
          box([3.6, 29.0, 2.9], [12.4, 29.5, 3.5], strap)]                        # pas przedni nad czołem
@@ -637,21 +667,25 @@ def ghillie_rekawice(rnd):
 # --------------------------------------------------------------- zestawy
 ZESTAWY = {
     'cien': {
+        'bluza': lambda: sleeves('main', 'dark', pad='dark'),
         'helm': cien_helm, 'kamizelka': cien_kamizelka,
         'spodnie': lambda: pants('main', 'dark', kneepad='dark', holster=True),
         'buty': lambda: boots_base('dark', 'main', high=5.6, plate=None),
         'rekawice': lambda: gloves_base('dark', 'main', plate='plate', cuff=2.5)},
     'lis': {
+        'bluza': lambda: sleeves('main', 'dark', pad='dark'),
         'helm': lis_helm, 'kamizelka': lis_kamizelka,
         'spodnie': lambda: pants('main', 'dark', kneepad='dark'),
         'buty': lambda: boots_base('cloth2', 'dark', high=5.4),
         'rekawice': lambda: gloves_base('cloth2', 'dark', cuff=3.0)},
     'legion': {
+        'bluza': lambda: sleeves('main', 'dark', pad='plate'),
         'helm': legion_helm, 'kamizelka': legion_kamizelka,
         'spodnie': lambda: pants('main', 'dark', kneepad='plate'),
         'buty': lambda: boots_base('cloth2', 'dark', high=6.0, plate='plate'),
         'rekawice': lambda: gloves_base('cloth2', 'dark', plate='plate', cuff=3.0)},
     'bastion': {
+        'bluza': lambda: sleeves('main', 'dark', pad='plate'),
         'helm': bastion_helm, 'kamizelka': bastion_kamizelka,
         'spodnie': lambda: pants('main', 'dark', kneepad='plate', holster=False)
         + both([box([3.5, 6.2, 5.0], [8.2, 10.8, 5.7], 'plate', skip=('south',)),
@@ -659,6 +693,7 @@ ZESTAWY = {
         'buty': lambda: boots_base('dark', 'main', high=6.4, plate='plate'),
         'rekawice': lambda: gloves_base('dark', 'main', plate='plate', cuff=4.0)},
     'ranger': {
+        'bluza': lambda: sleeves('main', 'dark', pad='plate', patch='emblem'),
         'helm': ranger_helm, 'kamizelka': ranger_kamizelka,
         'spodnie': lambda: pants('main', 'dark', kneepad='main', holster=False),
         'buty': lambda: boots_base('strap', 'dark', high=4.6),
@@ -667,7 +702,7 @@ ZESTAWY = {
                 'buty': ghillie_buty, 'rekawice': ghillie_rekawice},
 }
 
-PANCERZE = ['%s_%s' % (z, e) for z in ZESTAWY for e in ELEMENTY]
+PANCERZE = ['%s_%s' % (z, e) for z in ZESTAWY for e in ELEMENTY if e in ZESTAWY[z]]
 
 
 def build(zestaw, elem):
@@ -703,7 +738,7 @@ def main():
     total = 0
     for z in ZESTAWY:
         tex = texture(z)
-        for e in ELEMENTY:
+        for e in [x for x in ELEMENTY if x in ZESTAWY[z]]:
             name = '%s_%s' % (z, e)
             m = build(z, e)
             for el in m['elements']:
