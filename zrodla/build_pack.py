@@ -145,6 +145,11 @@ def main():
                          (name + '.png', 'assets/axon/textures/item/%s.png' % name),
                          (name + '_item.json', 'assets/axon/items/%s.json' % name)):
             repl[dst] = open(os.path.join(HERE, 'build', src), 'rb').read()
+    from gen_axoncore import pliki as axoncore_pliki, sprawdz as axoncore_sprawdz   # AxonCore (gen_axoncore.py)
+    axoncore = axoncore_pliki()
+    if axoncore_sprawdz(axoncore):
+        raise SystemExit('axoncore: %s' % axoncore_sprawdz(axoncore))
+    repl.update(axoncore)
     repl.update(legacy_models(zin, repl))
     mc = os.path.join(HERE, 'pack.mcmeta')   # owner-edited description, carried over
     if os.path.exists(mc):

@@ -161,6 +161,46 @@ Auta mają 2 × 4 kratki, plugin rysuje je ze skalą 2, a środek modelu leży 0
 
 ![Auta i telewizor](podglady/auta.png)
 
+## AxonCore: przedmioty, narzędzia, stanowiska, pojemniki i wraki (styl PRL)
+
+`zrodla/gen_axoncore.py` (moduły w `zrodla/axoncore/`) robi wszystko, czego potrzebuje system craftingu AxonCore i plugin [Axon-items](https://github.com/toMiXgaming/Axon-items). Styl to PRL: wyblakła emalia, oliwka, rdza, sklejka i kremowe obudowy. Modele 3D są złożone z prostopadłościanów pokrytych kafelkami jednego atlasu materiałów 64×64 (`axon:block/axoncore_atlas`, kafelki 8×8 w `axoncore/atlas.py`). Przedmioty mają postać `axon:<nazwa>` (komponent `item_model`, model `axon:block/<nazwa>`), tak jak meble.
+
+Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.py`. Pełna przebudowa `build_pack.py` też je dodaje. Gotowe pliki są w `modele/axoncore/`, podglądy w `podglady/axoncore-*.png`.
+
+| Co | Nazwy | Jak trafia do gry |
+|---|---|---|
+| Ikony 2D | `scrap`, `metal_fragments`, `steel`, `hqm`, `gunpowder`, `cloth`, `pipe`, `spring`, `stock`, `screw`, `rivet`, `silencer`, `scope`, `body_pistol`, `pump_mechanism`, `body_smg`, `body_semi`, `body_rifle`, `body_sniper`, `rusty_tools`, `gears`, `repair_kit`, `tech_notes`, `blueprint` | Axon-items ustawia `item_model` = `axon:<id>` z `items.yml` |
+| Narzędzia 3D | `steel_axe`, `steel_pickaxe`, `steel_shovel`, `hardened_axe`, `hardened_pickaxe` | jak wyżej |
+| Narzędzia vanilla | drewniane i kamienne: siekiera, kilof, łopata, motyka | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
+| Bloki vanilla | stół rzemieślniczy, piec (zwykły i zapalony), ognisko (zapalone i zgaszone), beczka (zamknięta i otwarta), skrzynia pojedyncza i podwójna | nadpisane modele bloków i tekstura `entity/chest`, u wszystkich |
+| Stanowiska | `warsztat_t1`, `warsztat_t2`, `warsztat_t3` (każdy też z `_zuzycie1`, `_zuzycie2`, `_zuzycie3`), `piec_hutniczy`, `piec_hutniczy_on`, `recykler`, `recykler_kolo`, `stol_badan` | wyświetlacz przedmiotu, jedna kratka, przód na południe |
+| Pojemniki | `beczka`, `beczka_paliwa`, `beczka_rdza`, `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa` (2 kratki), `skrzynia_elitarna`, `spadochron` | wyświetlacz przedmiotu, przód na południe |
+| Wraki | `wrak_fiat_126p`, `wrak_polonez`, `wrak_zuk`, `wrak_nysa`, `wrak_star_266`, `wrak_autosan`, `wrak_ursus`, `wrak_wsk` | rekwizyt z sekcji `modele:` struktury, przód na północ |
+
+Skrzynia zrzutu to dalej `axon:zrzut` z `gen_zrzut.py`. `spadochron` to rozłożona czasza do zawieszenia nad nią w czasie spadania.
+
+Etapy zużycia warsztatów: 0 nowy, 1 porysowany, 2 zardzewiały, 3 rozbity (bez narzędzi i drobnych części). `recykler_kolo` to osobne koło zamachowe na zachodnim boku recyklera (oś X, środek w (-0,5, 8, 8)), plugin obraca je, kiedy recykler pracuje. `skrzynia_wojskowa` sięga od środka wyświetlacza 1,5 kratki na zachód i 0,5 na wschód.
+
+Pojemniki z beczkami, apteczką, skrzynką narzędziową i kartonem są węższe niż kratka, więc nie zakryją pełnego bloku-nośnika (np. beczki), tak jak zakrywa go `zrzut`. Przy przebudowie łupu w AXON-Structure trzeba dla nich wybrać mniejszy nośnik albo powiększyć wyświetlacz.
+
+Wraki leżą w modelu w zmniejszonej skali, a plugin rysuje je z transformacją `NONE` i skalą z tabeli. Wtedy mają prawdziwe wymiary (1 kratka = 1 m). Środek modelu (8 8 8) leży w środku obrysu, tyle kratek nad gruntem, ile podaje tabela. Kolizję dają bariery w strukturze, tak jak przy autach.
+
+| Wrak | Skala | Środek nad gruntem | Obrys (kratki) |
+|---|---|---|---|
+| `wrak_fiat_126p` | 1.078 | 0,54 | 1,4 × 3,1 |
+| `wrak_polonez` | 1.496 | 0,75 | 1,7 × 4,3 |
+| `wrak_zuk` | 1.565 | 0,78 | 1,9 × 4,5 |
+| `wrak_nysa` | 1.6 | 0,80 | 1,9 × 4,6 |
+| `wrak_star_266` | 2.435 | 1,22 | 2,5 × 7 |
+| `wrak_autosan` | 3.478 | 1,74 | 2,5 × 10 |
+| `wrak_ursus` | 1.252 | 0,63 | 1,8 × 3,6 |
+| `wrak_wsk` | 1.0 | 0,50 | leży na boku, ok. 1 × 2 |
+
+![Stanowiska i pojemniki](podglady/axoncore-stanowiska-pojemniki.png)
+![Wraki](podglady/axoncore-wraki.png)
+![Bloki vanilla](podglady/axoncore-bloki.png)
+![Narzędzia](podglady/axoncore-narzedzia.png)
+
 ## Wgranie na serwer
 
 Repo musi być **publiczne**, inaczej gracze nie pobiorą paczki. W `plugins/QualityArmory/config.yml`:
@@ -260,6 +300,6 @@ Do sprawdzenia w grze: celowanie broni z punktu 8 (zwłaszcza widok przez lunet�
 - `modele/` – wygenerowane modele i tekstury (to samo co w zipie).
 - `podglady/` – podglądy i porównania ze starymi modelami (`<broń>-skiny.png` – skiny danej broni).
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
-- `zrodla/` – generator broni (`gen.py`) i reaktora (`gen_reactor.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
+- `zrodla/` – generator broni (`gen.py`), reaktora (`gen_reactor.py`) i modeli AxonCore (`gen_axoncore.py` z pakietem `axoncore/`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
-Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 gen_pancerze.py && python3 gen_bronie_biale.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-deagle (itd.) && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 gen_pancerze.py && python3 gen_bronie_biale.py && python3 gen_axoncore.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-deagle (itd.) && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
