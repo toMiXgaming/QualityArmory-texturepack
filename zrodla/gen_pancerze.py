@@ -8,7 +8,8 @@ elementy w tym samym punkcie (wyświetlacz przedmiotu na graczu) i każdy ląduj
 miejscu. Jednostka modelu = 1 piksel skóry gracza.
 
 Zestawy: cien, lis, legion, bastion, ranger, ghillie oraz prowizoryczne: zlomiarz, lowca, tulacz (startowy) (strój liściasty dla snajperów).
-Elementy: helm, kamizelka, spodnie, buty, rekawice.
+Elementy: helm, kamizelka, naramienniki, ochraniacze, buty, rekawice (ghillie: helm, kamizelka, spodnie,
+buty, rekawice). Nakładki zostawiają widoczną skórkę gracza na rękach i nogach.
 
 Zapisuje build/<nazwa>.json, build/<nazwa>.png, build/<nazwa>_item.json.
 """
@@ -18,7 +19,7 @@ from PIL import Image, ImageDraw
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'build')
 YSHIFT = 4.0
-ELEMENTY = ['helm', 'kamizelka', 'bluza', 'spodnie', 'buty', 'rekawice']
+ELEMENTY = ['helm', 'kamizelka', 'naramienniki', 'ochraniacze', 'spodnie', 'buty', 'rekawice']
 
 # ------------------------------------------------------------------ tekstura
 # 16 obszarów 16x16 px w siatce 4x4 (jednostka uv = 4 px, obszar = 4x4 uv).
@@ -377,15 +378,15 @@ def pouch(x, y, w, h, zf=4.7, depth=0.8, reg='dark', flap=True, buckle=True):
 
 def plate_carrier(main='main', trim='dark', plates=True, side_plates=False, cummer=True, drag=True):
     """Nosidło płyt: worek na płytę przód i tył, ramiona, kołnierz i pas boczny z taśmami PALS."""
-    e = [box([3.7, 12.6, 5.2], [12.3, 23.0, 10.8], trim),                       # korpus pod spodem
-         box([4.2, 14.0, 4.6], [11.8, 22.4, 5.3], main, skip=('south',)),       # worek na płytę (przód)
+    e = [box([4.2, 14.0, 4.6], [11.8, 22.4, 5.3], main, skip=('south',)),       # worek na płytę (przód)
          box([4.2, 14.0, 10.7], [11.8, 22.4, 11.4], main, skip=('north',)),     # worek na płytę (tył)
          box([4.0, 22.2, 5.1], [6.6, 24.6, 10.9], main),                        # ramiona
          box([9.4, 22.2, 5.1], [12.0, 24.6, 10.9], main),
          box([4.0, 24.2, 5.2], [6.6, 24.9, 10.8], trim),                        # wyściółka na barkach
          box([9.4, 24.2, 5.2], [12.0, 24.9, 10.8], trim),
          box([5.6, 23.6, 5.8], [10.4, 24.9, 10.4], trim, skip=('up',)),         # miękki kołnierz
-         box([3.7, 12.2, 5.2], [12.3, 14.0, 10.8], trim)]                       # dolna krawędź
+         box([4.2, 13.2, 4.7], [11.8, 14.0, 5.3], trim, skip=('south',)),       # dolna krawędź (przód i tył)
+         box([4.2, 13.2, 10.7], [11.8, 14.0, 11.3], trim, skip=('north',))]
     if cummer:
         e += [box([3.5, 14.0, 5.0], [4.4, 18.6, 11.0], trim),                    # pas boczny (cummerbund)
               box([11.6, 14.0, 5.0], [12.5, 18.6, 11.0], trim),
@@ -584,11 +585,12 @@ def lis_helm():
 
 def lis_kamizelka():
     """Lekka kamizelka zwiadowcy (chest rig) i plecak patrolowy z zrolowaną karimatą."""
-    e = [box([3.8, 13.0, 5.4], [12.2, 23.4, 10.6], 'dark'),                      # kamizelka bazowa
-         box([4.1, 22.0, 5.2], [6.4, 24.6, 10.8], 'main'),                       # szelki
+    e = [box([4.1, 22.0, 5.2], [6.4, 24.6, 10.8], 'main'),                       # szelki
          box([9.6, 22.0, 5.2], [11.9, 24.6, 10.8], 'main'),
          box([4.2, 15.2, 4.7], [11.8, 21.6, 5.5], 'main', skip=('south',)),      # panel przedni
-         box([3.6, 13.0, 5.2], [12.4, 15.2, 10.8], 'dark')]                      # pas
+         box([3.6, 13.0, 5.2], [12.4, 15.2, 10.8], 'dark'),                      # pas
+         box([4.1, 15.2, 10.4], [6.4, 22.0, 10.8], 'main', skip=('north',)),     # szelki z tyłu
+         box([9.6, 15.2, 10.4], [11.9, 22.0, 10.8], 'main', skip=('north',))]
     e += molle(4.4, 11.6, 15.6, 21.2, 4.7)
     e += pouch(4.4, 15.2, 1.7, 3.2, zf=4.7) + pouch(6.3, 15.2, 1.7, 3.2, zf=4.7)
     e += pouch(8.2, 15.2, 1.7, 3.2, zf=4.7) + pouch(10.1, 15.2, 1.7, 3.2, zf=4.7)
@@ -796,24 +798,49 @@ def tulacz_helm():
             box([3.1, 30.0, 8.0], [3.3, 31.2, 9.6], 'dark', skip=('east',))]
 
 
+def arm_pads(pad='plate', strap='strap', patch='emblem', shoulder=None):
+    """Nakładki na ręce zamiast pełnych rękawów: nałokietniki z paskami i opaska z naszywką.
+    Reszta ręki to skórka gracza."""
+    a = [box([-0.3, 16.0, 10.0], [4.1, 19.0, 11.0], pad),                        # nałokietnik
+         box([0.2, 16.4, 10.9], [3.6, 18.6, 11.2], 'plate'),
+         box([-0.25, 16.6, 5.75], [4.05, 17.0, 10.25], strap),                   # pasek nałokietnika
+         box([-0.25, 18.2, 5.75], [4.05, 18.6, 10.25], strap),
+         box([-0.25, 20.4, 5.75], [4.05, 21.6, 10.25], strap),                   # opaska na ramieniu
+         box([-0.55, 20.2, 6.6], [-0.25, 22.4, 9.4], patch, skip=('east',))]     # naszywka na opasce
+    if shoulder:
+        a += [box([-0.4, 22.0, 5.6], [4.2, 24.4, 10.4], shoulder)]
+    return both(a)
+
+
+def leg_gear(kneepad='plate', strap='strap', belt='strap', holster=False, pouch_reg='dark'):
+    """Pas, nakolanniki i kabura udowa zamiast pełnych spodni: nogawki to skórka gracza."""
+    leg = [box([4.1, 3.2, 5.3], [7.7, 5.9, 5.75], kneepad, skip=('south',)),     # nakolannik
+           box([4.4, 3.5, 5.15], [7.4, 5.6, 5.3], 'plate', skip=('south',)),
+           box([3.8, 3.9, 5.75], [8.0, 4.3, 10.25], strap),                      # paski nakolannika
+           box([3.8, 5.2, 5.75], [8.0, 5.6, 10.25], strap)]
+    out = both(leg)
+    out += [box([3.6, 11.2, 5.6], [12.4, 12.7, 10.4], belt),                     # pas
+            box([7.4, 11.4, 5.4], [8.6, 12.5, 5.6], 'metal', skip=('south',))]
+    if holster:                                                                  # kabura/ładownica na prawym udzie
+        out += [box([3.75, 9.6, 5.75], [8.0, 10.0, 10.25], strap),
+                box([3.75, 7.4, 5.75], [8.0, 7.8, 10.25], strap),
+                box([3.0, 6.6, 6.2], [3.75, 10.6, 9.6], pouch_reg),
+                box([2.8, 9.6, 6.2], [3.2, 10.8, 9.6], strap),
+                box([3.2, 10.0, 7.6], [3.8, 11.4, 8.4], strap)]
+    return out
+
+
 def tulacz_kamizelka():
-    """Stara bluza z kapturem, kawałki kartonu przyklejone taśmą i przewiązane sznurkiem."""
-    e = [box([3.7, 12.4, 5.5], [12.3, 23.6, 10.5], 'main'),                       # bluza
-         box([4.2, 20.8, 10.4], [11.8, 24.4, 12.2], 'main'),                      # opuszczony kaptur
-         box([5.0, 21.4, 12.1], [11.0, 23.8, 12.5], 'dark', skip=('north',)),
-         box([5.0, 13.0, 5.2], [11.0, 16.2, 5.55], 'dark', skip=('south',)),      # kieszeń kangurka
-         box([6.6, 20.6, 5.2], [6.9, 23.0, 5.5], 'strap', skip=('south',)),       # sznurki kaptura
-         box([9.1, 20.0, 5.2], [9.4, 23.0, 5.5], 'strap', skip=('south',)),
-         box([4.4, 16.0, 4.9], [11.2, 21.8, 5.5], 'plate', skip=('south',)),      # karton na piersi
-         rotated([8.6, 18.4, 4.75], [11.6, 22.2, 5.15], 'plate', 'z', -22.5, skip=('south',)),  # drugi kawałek krzywo
-         box([4.4, 14.6, 10.5], [11.6, 21.8, 11.1], 'plate', skip=('north',)),    # karton na plecach
-         box([3.6, 16.8, 4.75], [12.4, 17.6, 11.25], 'mesh'),                     # taśma dookoła
-         box([3.6, 20.4, 4.75], [12.4, 21.2, 11.25], 'mesh'),
-         rotated([5.0, 15.0, 4.3], [5.5, 24.6, 4.6], 'strap', 'z', 22.5),          # sznurek przez ramię
-         box([4.6, 23.6, 4.8], [6.0, 24.3, 11.2], 'strap'),
-         box([9.6, 14.2, 4.6], [11.0, 15.6, 5.0], 'metal', skip=('south',)),      # wieczko od puszki
-         box([3.6, 12.0, 5.3], [12.4, 12.8, 10.7], 'strap')]                       # sznurek zamiast paska
-    return e
+    """Kawałki kartonu przyklejone taśmą i przewiązane sznurkiem prosto na ubranie gracza."""
+    return [box([4.4, 15.6, 5.3], [11.4, 21.8, 5.9], 'plate', skip=('south',)),      # karton na piersi
+            rotated([8.6, 18.4, 5.15], [11.6, 22.2, 5.55], 'plate', 'z', -22.5, skip=('south',)),   # drugi kawałek krzywo
+            box([4.4, 14.6, 10.1], [11.6, 21.8, 10.7], 'plate', skip=('north',)),    # karton na plecach
+            box([3.9, 16.8, 5.15], [12.1, 17.6, 10.85], 'mesh'),                     # taśma dookoła
+            box([3.9, 20.4, 5.15], [12.1, 21.2, 10.85], 'mesh'),
+            rotated([5.0, 15.0, 4.8], [5.5, 24.6, 5.1], 'strap', 'z', 22.5),          # sznurek przez ramię
+            box([4.6, 23.6, 5.4], [6.0, 24.3, 10.6], 'strap'),
+            box([9.6, 15.0, 5.0], [11.0, 16.4, 5.4], 'metal', skip=('south',)),      # wieczko od puszki
+            box([3.9, 12.0, 5.7], [12.1, 12.8, 10.3], 'strap')]                       # sznurek zamiast paska
 
 
 # ------------------------------------------------------- GHILLIE (snajper)
@@ -911,54 +938,53 @@ def ghillie_rekawice(rnd):
 # --------------------------------------------------------------- zestawy
 ZESTAWY = {
     'cien': {
-        'bluza': lambda: sleeves('main', 'dark', pad='dark'),
+        'naramienniki': lambda: arm_pads('dark', 'strap'),
         'helm': cien_helm, 'kamizelka': cien_kamizelka,
-        'spodnie': lambda: pants('main', 'dark', kneepad='dark', holster=True),
+        'ochraniacze': lambda: leg_gear('dark', holster=True),
         'buty': lambda: boots_base('dark', 'main', high=5.6, plate=None),
         'rekawice': lambda: gloves_base('dark', 'main', plate='plate', cuff=2.5)},
     'lis': {
-        'bluza': lambda: sleeves('main', 'dark', pad='dark'),
+        'naramienniki': lambda: arm_pads('dark', 'strap'),
         'helm': lis_helm, 'kamizelka': lis_kamizelka,
-        'spodnie': lambda: pants('main', 'dark', kneepad='dark'),
+        'ochraniacze': lambda: leg_gear('dark', holster=False),
         'buty': lambda: boots_base('cloth2', 'dark', high=5.4),
         'rekawice': lambda: gloves_base('cloth2', 'dark', cuff=3.0)},
     'legion': {
-        'bluza': lambda: sleeves('main', 'dark', pad='plate'),
+        'naramienniki': lambda: arm_pads('main', 'strap'),
         'helm': legion_helm, 'kamizelka': legion_kamizelka,
-        'spodnie': lambda: pants('main', 'dark', kneepad='plate'),
+        'ochraniacze': lambda: leg_gear('main', holster=True, pouch_reg='main'),
         'buty': lambda: boots_base('cloth2', 'dark', high=6.0, plate='plate'),
         'rekawice': lambda: gloves_base('cloth2', 'dark', plate='plate', cuff=3.0)},
     'bastion': {
-        'bluza': lambda: sleeves('main', 'dark', pad='plate'),
+        'naramienniki': lambda: arm_pads('plate', 'strap', shoulder='main'),
         'helm': bastion_helm, 'kamizelka': bastion_kamizelka,
-        'spodnie': lambda: pants('main', 'dark', kneepad='plate', holster=False)
+        'ochraniacze': lambda: leg_gear('plate', holster=True, pouch_reg='main')
         + both([box([3.5, 6.2, 5.0], [8.2, 10.8, 5.7], 'plate', skip=('south',)),
                 box([3.5, 1.2, 5.0], [8.2, 3.2, 5.7], 'plate', skip=('south',))]),
         'buty': lambda: boots_base('dark', 'main', high=6.4, plate='plate'),
         'rekawice': lambda: gloves_base('dark', 'main', plate='plate', cuff=4.0)},
     'ranger': {
-        'bluza': lambda: sleeves('main', 'dark', pad='plate', patch='emblem'),
+        'naramienniki': lambda: arm_pads('dark', 'strap'),
         'helm': ranger_helm, 'kamizelka': ranger_kamizelka,
-        'spodnie': lambda: pants('main', 'dark', kneepad='main', holster=False),
+        'ochraniacze': lambda: leg_gear('main', holster=True),
         'buty': lambda: boots_base('strap', 'dark', high=4.6),
         'rekawice': lambda: gloves_base('strap', 'dark', cuff=2.0)},
     'zlomiarz': {
         'helm': zlomiarz_helm, 'kamizelka': zlomiarz_kamizelka,
-        'bluza': lambda: sleeves('main', 'dark', pad='extra', patch='cloth2'),
-        'spodnie': lambda: pants('main', 'dark', kneepad='extra', holster=False),
+        'naramienniki': lambda: arm_pads('extra', 'mesh', patch='cloth2'),
+        'ochraniacze': lambda: leg_gear('extra', strap='mesh', belt='dark'),
         'buty': lambda: boots_base('dark', 'extra', high=5.2),
         'rekawice': lambda: gloves_base('dark', 'main', cuff=2.5)},
     'lowca': {
         'helm': lowca_helm, 'kamizelka': lowca_kamizelka,
-        'bluza': lambda: sleeves('main', 'dark', pad='plate', patch='cloth2', cuff='strap'),
-        'spodnie': lambda: pants('main', 'dark', kneepad='plate', holster=True),
+        'naramienniki': lambda: arm_pads('plate', 'strap', patch='cloth2'),
+        'ochraniacze': lambda: leg_gear('plate', holster=True, pouch_reg='dark'),
         'buty': lambda: boots_base('dark', 'strap', high=6.2),
         'rekawice': lambda: gloves_base('dark', 'main', cuff=3.0)},
     'tulacz': {
         'helm': tulacz_helm, 'kamizelka': tulacz_kamizelka,
-        'bluza': lambda: sleeves('main', 'dark', pad='plate', patch='cloth2', cuff='main'),
-        'spodnie': lambda: pants('cloth2', 'dark', kneepad='plate', belt='strap', cargo=False)
-        + both([box([3.6, 3.8, 5.1], [8.1, 4.4, 10.4], 'mesh'), box([3.6, 5.2, 5.1], [8.1, 5.8, 10.4], 'mesh')]),
+        'naramienniki': lambda: arm_pads('plate', 'mesh', patch='mesh'),
+        'ochraniacze': lambda: leg_gear('plate', strap='mesh', belt='strap'),
         'buty': lambda: boots_base('cloth2', 'dark', high=3.0, sole='extra')
         + both([box([3.6, 1.2, 4.1], [8.1, 1.9, 10.4], 'mesh')]),
         'rekawice': lambda: gloves_base('accent', 'accent', cuff=2.0)},
