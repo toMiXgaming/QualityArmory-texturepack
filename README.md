@@ -174,6 +174,27 @@ QualityArmory przy celowaniu przekłada broń do drugiej ręki, więc pozycja pr
 - Dragunov: celowanie przez lunetę PSO z siatką „szewronów”, tak jak AWP (broń skrócona wzdłuż, rura z krzyżem na środku ekranu).
 - SPAS-12: szczerbinka na komorze i muszka na osłonie lufy, oko za szczerbinką, przechył 2,5°, broń przy celowaniu 3,5 raza większa (z tego samego powodu co Kar98k). Kolba złożona wzdłuż lewego boku, żeby nie zasłaniała celownika.
 
+## Zestawy pancerzy (modele 3D)
+
+Siedem zestawów po pięć elementów (hełm, kamizelka, spodnie, buty, rękawice), każdy element to osobny model 3D z własną teksturą 64×64, generowany przez `zrodla/gen_pancerze.py` (podgląd: `zrodla/preview_pancerze.py`, pliki w `modele/<zestaw>_<element>.json`). Przedmioty mają postać `axon:<zestaw>_<element>` (komponent `item_model`, model `axon:block/<zestaw>_<element>`, tekstura `axon:item/<zestaw>_<element>`).
+
+| Zestaw | Klasa | Wygląd | Elementy w modelu |
+|---|---|---|---|
+| `cien` | lekki | grafit i czerń, pomarańczowe akcenty | kaptur z goglami, kamizelka z magazynkami, spodnie z kieszeniami cargo, buty |
+| `lis` | lekki/średni | kamuflaż leśny | czapka z daszkiem, kamizelka z plecakiem i zwiniętym kocem |
+| `legion` | średni | oliwka i koyote | hełm z noktowizorem, kamizelka z płytami i MOLLE |
+| `bastion` | ciężki | stal, złote akcenty | hełm z przyłbicą, ciężkie naramienniki, płyty na udach i goleniach |
+| `widmo` | elitarny | karbon, świecące cyjanowe linie | pełna maska, rdzeń zasilania na plecach |
+| `ranger` | służbowy | granat, odblaski | czapka z odznaką, kamizelka z kaburą i krótkofalówką |
+| `ghillie` | snajper | strój liściasty | kaptur, kurtka z rękawami, spodnie, buty i rękawice obsypane liśćmi i strzępami |
+
+Wszystkie elementy leżą w jednej „ramie gracza” (stopy y=-4, głowa 20–28, środek x=8 i z=8, przód = north, 1 jednostka = 1 piksel skóry), więc plugin stawia pięć wyświetlaczy w tym samym punkcie i każdy element ląduje na swoim miejscu.
+
+Do sprawdzenia: Minecraft nie rysuje modeli 3D na pancerzu gracza, więc modele trzeba pokazać wyświetlaczami przedmiotu na graczu (jak zrzut w AXON-Structure) albo w menu/ekwipunku. Bonusy (prędkość, obrażenia) ustawia się po stronie serwera. Skala i przesunięcie na postaci mogą wymagać dostrojenia w grze.
+
+![Zestawy pancerzy 1](podglady/pancerze-1.png)
+![Zestawy pancerzy 2](podglady/pancerze-2.png)
+
 ## Historia
 
 1. Pierwsza wersja trzech modeli; celowanie „zza kolby” (za mało czytelne).
@@ -200,4 +221,4 @@ Do sprawdzenia w grze: celowanie broni z punktu 8 (zwłaszcza widok przez lunet�
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
 - `zrodla/` – generator broni (`gen.py`) i reaktora (`gen_reactor.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
-Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-deagle (itd.) && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 gen_pancerze.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-deagle (itd.) && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
