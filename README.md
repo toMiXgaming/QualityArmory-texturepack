@@ -198,6 +198,27 @@ Do sprawdzenia: Minecraft nie rysuje modeli 3D na pancerzu gracza, więc modele 
 ![Zestawy pancerzy 2](podglady/pancerze-2.png)
 ![Zestawy prowizoryczne](podglady/pancerze-3.png)
 
+## Bronie białe (modele 3D)
+
+Dziesięć broni białych w czterech poziomach, każda jako pełny model 3D z teksturą 128×128 (szlifowana stal z rysami, słoje drewna, skóra, taśma, rdza, odpryski farby). Generator: `zrodla/gen_bronie_biale.py`, podgląd: `zrodla/preview_bronie_biale.py`, dopisanie do gotowego zipa: `zrodla/dodaj_bronie_biale.py`. Przedmiot `axon:<nazwa>` (komponent `item_model`), model `axon:block/<nazwa>`, tekstura `axon:item/<nazwa>`.
+
+| Nazwa | Broń | Poziom |
+|---|---|---|
+| `rurka` | rurka z taśmą | startowa |
+| `kij` | kij z gwoździami i drutem | startowa |
+| `maczeta` | maczeta z brzeszczotu piły | startowa |
+| `toporek` | toporek turystyczny | średnia |
+| `noz` | nóż myśliwski | średnia |
+| `lom` | łom | średnia |
+| `kabar` | nóż bojowy KA-BAR | wojskowa |
+| `saperka` | saperka z naostrzonymi krawędziami | wojskowa |
+| `tomahawk` | tomahawk taktyczny | wojskowa |
+| `palka` | pałka teleskopowa | służbowa |
+
+Broń stoi w modelu pionowo (chwyt na dole), a pozycje w ręce są ustawione jak u mieczy w Minecrafcie (1. i 3. osoba, ekwipunek po skosie). Do sprawdzenia w grze: dokładne położenie chwytu w dłoni. Obrażenia, szybkość i przypisanie do przedmiotu ustawia się po stronie serwera.
+
+![Bronie białe](podglady/bronie-biale.png)
+
 ## Historia
 
 1. Pierwsza wersja trzech modeli; celowanie „zza kolby” (za mało czytelne).
@@ -224,4 +245,4 @@ Do sprawdzenia w grze: celowanie broni z punktu 8 (zwłaszcza widok przez lunet�
 - `serwer/attachments/` – pliki skinów do configu QualityArmory.
 - `zrodla/` – generator broni (`gen.py`) i reaktora (`gen_reactor.py`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
-Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 gen_pancerze.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-deagle (itd.) && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 gen_pancerze.py && python3 gen_bronie_biale.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-deagle (itd.) && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
