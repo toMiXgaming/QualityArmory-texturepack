@@ -1,56 +1,58 @@
-"""Tekstury skrzyni (entity/chest): drewniana skrzynia z desek z okuciami."""
-import random
-from PIL import Image
-from .px import PAL
+"""Tekstury skrzyni (entity/chest): drewniana skrzynia z desek z okuciami, 128×128.
 
-def col(ch, f=1.0):
-    r, g, b = PAL[ch]
-    return (max(0, min(255, int(r * f))), max(0, min(255, int(g * f))), max(0, min(255, int(b * f))), 255)
+Układ jak w vanilla 64×64, tylko każdy piksel vanilla to 2×2 (Minecraft skaluje UV modelu
+skrzyni do rozmiaru tekstury). Każda ściana ma deski z usłojeniem, stalowy kątownik
+z nitami dookoła i jest symetryczna góra-dół, bo gra rysuje część ścian skrzyni odwróconych.
+"""
+from .crates import Canvas, BRASS, _mul
 
-def face(img, x0, y0, w, h, rnd, kind='side'):
-    """Deski poziome, ciemne fugi co 5 px, stalowy kątownik na brzegu, nity w rogach."""
-    for y in range(h):
-        for x in range(w):
-            edge = x in (0, w - 1) or y in (0, h - 1)
-            if edge:
-                ch, f = ('2', rnd.uniform(0.9, 1.1))
-                if (x in (0, w - 1)) and (y in (0, h - 1)):
-                    ch = '4'
-            else:
-                row = (y - 1) if kind == 'side' else (x - 1)
-                seam = row % 5 == 4
-                if seam:
-                    ch = 'w'
-                else:
-                    plank = row // 5
-                    ch = ('d', 'D', 'd')[plank % 3] if rnd.random() > 0.12 else 'W'
-                f = rnd.uniform(0.92, 1.06)
-            img.putpixel((x0 + x, y0 + y), col(ch, f))
+K = 2  # pikseli tekstury na piksel vanilla
+WOOD = (150, 108, 66)
+FRAME = (70, 74, 80)
 
-def box(img, u, v, w, h, d, rnd, top_kind='top'):
-    face(img, u + d, v, w, d, rnd, top_kind)            # góra
-    face(img, u + d + w, v, w, d, rnd, top_kind)        # dół
-    face(img, u, v + d, d, h, rnd)                      # bok
-    face(img, u + d, v + d, w, h, rnd)                  # przód
-    face(img, u + d + w, v + d, d, h, rnd)              # bok
-    face(img, u + 2 * d + w, v + d, w, h, rnd)          # tył
 
-def lock(img, u, v, w, h, d):
-    for x in range(u, u + 2 * (w + d)):
-        for y in range(v, v + d + h):
-            img.putpixel((x, y), col('A' if (x + y) % 3 else 'a'))
+def _box(c, u, v, w, h, d, lid):
+    """Sześć ścian bryły w układzie Minecrafta (u, v, szer., wys., głęb. w pikselach vanilla)."""
+    faces = {
+        'top': (u + d, v, w, d), 'bottom': (u + d + w, v, w, d),
+        'west': (u, v + d, d, h), 'north': (u + d, v + d, w, h),
+        'east': (u + d + w, v + d, d, h), 'south': (u + 2 * d + w, v + d, w, h),
+    }
+    for name, (x, y, ww, hh) in faces.items():
+        key = '%s_%d_%d' % (name, x, y)
+        c.R[key] = (x * K, y * K, ww * K, hh * K)
+        if name in ('top', 'bottom'):
+            c.wood(key, _mul(WOOD, 1.05 if lid else 0.8), plank=10, vertical=True)
+        else:
+            c.wood(key, WOOD, plank=10 if lid else 8)
+            if not lid:   # poprzeczka przez środek korpusu
+                hy = hh * K // 2
+                c.band(key, hy - 2, hy + 2, (78, 54, 34))
+        c.frame(key, 3, FRAME, rivets=True)
+        c.ao(key, 3, 0.85)
+
+
+def _lock(c, u, v, w, h, d):
+    c.R['lock'] = (u * K, v * K, 2 * (w + d) * K, (d + h) * K)
+    c.metal('lock', BRASS, chips=1, chip=(214, 186, 110))
+    x0, y0, ww, hh = c.R['lock']
+    cx = x0 + (2 * d + w) * K // 2                         # środek przedniej ściany zamka
+    for y in range(y0 + (d + 1) * K, y0 + (d + h - 1) * K):   # dziurka od klucza
+        for x in ((cx - 1, cx) if w > 1 else (cx - 1,)):
+            c.set(x, y, (30, 26, 20))
+
 
 def chest(width):
     """width 14 = pojedyncza, 15 = połówka podwójnej."""
-    img = Image.new('RGBA', (64, 64), (0, 0, 0, 0))
-    rnd = random.Random(width)
-    box(img, 0, 0, width, 5, 14, rnd)       # wieko
-    box(img, 0, 19, width, 10, 14, rnd)     # skrzynia
+    c = Canvas('chest_%d' % width, {})
+    _box(c, 0, 0, width, 5, 14, lid=True)       # wieko
+    _box(c, 0, 19, width, 10, 14, lid=False)    # korpus
     if width == 14:
-        lock(img, 0, 0, 2, 4, 1)
+        _lock(c, 0, 0, 2, 4, 1)
     else:
-        lock(img, 0, 0, 1, 4, 1)
-    return img
+        _lock(c, 0, 0, 1, 4, 1)
+    return c.img
+
 
 TEX = {
     'minecraft:entity/chest/normal': chest(14),
