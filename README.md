@@ -179,6 +179,8 @@ Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.p
 
 Beczki (`zrodla/axoncore/barrels.py`) mają własny model i tekstury 128×128 (`axon:item/beczka`, `beczka_paliwa`, `beczka_rdza`), wspólne dla wersji rozbitych i dla podmienionej beczki z Minecrafta. Korpus to pięć stykających się brył bez nakładających się ścian, więc wieko nie migocze. Podgląd: `podglady/axoncore-beczki.png`.
 
+Skrzynie i pozostałe pojemniki (`zrodla/axoncore/crates.py`: `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa`, `skrzynia_elitarna`) też mają własny model i teksturę 128×128 (`axon:item/<nazwa>`). Każda to korpus, wieko położone na korpusie i kilka detali przyklejonych z zewnątrz, bez brył nachodzących na siebie, więc nic nie migocze; deski, opaski i napisy są namalowane na teksturze. Tekstura zwykłej skrzyni z Minecrafta (`entity/chest`) ma 128×128 i ten sam styl: deski z usłojeniem, stalowe kątowniki z nitami, mosiężny zamek. Podgląd: `podglady/axoncore-skrzynie.png`.
+
 Beczki przy drogach działają jak w Rust: gracz je niszczy, wtedy plugin podmienia model na `<beczka>_rozbita` (wgnieciony dół, wieko na ziemi, łup w środku), prawy klik otwiera łup, a po czasie beczka odnawia się w tym samym miejscu.
 
 Skrzynia zrzutu to dalej `axon:zrzut` z `gen_zrzut.py`. `spadochron` to rozłożona czasza do zawieszenia nad nią w czasie spadania.
