@@ -1,6 +1,6 @@
 """Stanowiska (ItemDisplay): warsztaty T1-T3 z etapami zużycia, piec hutniczy, recykler, stół badań.
 Budowane przodem na północ; gen_axoncore.py obraca je przodem na południe jak meble."""
-from .model import Model
+from .surface import SolidModel
 
 # wyświetlanie jak blok: w GUI rzut izometryczny, w ramce/ItemDisplay 1:1
 BLOCKLIKE = {
@@ -23,9 +23,9 @@ WEAR = [
      'plank_dark': 'wood_dark', 'red_paint': 'rust_heavy', 'green_led': 'black', 'glow': 'black', 'brass': 'rust'},
 ]
 
-class Station(Model):
+class Station(SolidModel):
     def __init__(self, wear=0):
-        super().__init__(display=BLOCKLIKE, rotation=None, gui_light='side')
+        super().__init__(display=BLOCKLIKE, gui_light='side')
         self.wear = wear
 
     def part(self, frm, to, tex, fragile=False, **faces):
@@ -34,7 +34,7 @@ class Station(Model):
         m = WEAR[self.wear]
         tex = m.get(tex, tex) if tex else tex
         faces = {k: (m.get(v, v) if isinstance(v, str) else v) for k, v in faces.items()}
-        return self.box(frm, to, tex, **faces)
+        return self.solid(frm, to, tex, **faces)
 
 S = {}
 
@@ -135,9 +135,7 @@ for name, fn in (('warsztat_t1', warsztat_t1), ('warsztat_t2', warsztat_t2), ('w
 def piec(lit):
     m = Station()
     m.part((0, 0, 0), (16, 4, 16), 'concrete', up='stone_dark')
-    m.part((1, 4, 1), (15, 14, 15), 'red_paint', north='red_paint', up='stone_dark')    # ceglany trzon
-    for y in (6.5, 9.5, 12.5):
-        m.part((0.9, y, 0.9), (15.1, y + 0.4, 15.1), 'concrete')                       # fugi
+    m.part((1, 4, 1), (15, 14, 15), 'brick', up='stone_dark')    # ceglany trzon
     m.part((4, 5, 0.4), (12, 11, 1), 'glow' if lit else 'black')                       # palenisko
     m.part((3.5, 11, 0.2), (12.5, 12, 1), 'steel_dark')
     m.part((3.5, 4.4, 0.2), (12.5, 5, 1), 'steel_dark')

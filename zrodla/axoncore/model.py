@@ -63,6 +63,8 @@ def _point_90(p):
 
 def rotate_y(model, quarters):
     """Obraca wszystkie elementy modelu o quarters × 90° (przód z zachodu na północ, z północy na wschód...)."""
+    if hasattr(model, 'rotate'):
+        return model.rotate(quarters)
     for _ in range(quarters % 4):
         for e in model.elements:
             a, b = _point_90(e['from']), _point_90(e['to'])
