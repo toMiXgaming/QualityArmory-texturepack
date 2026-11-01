@@ -35,24 +35,66 @@ def gear(img, cx, cy, r, teeth, body='3', dark='2', hole=1.4):
 
 I = {}
 
-I['scrap'] = parse('''
+def outline(img, ch='k'):
+    """Ciemny obrys dookoła nieprzezroczystych pikseli, żeby ikona odcinała się od tła."""
+    out = img.copy()
+    for y in range(16):
+        for x in range(16):
+            if img.getpixel((x, y))[3]:
+                continue
+            if any(0 <= x + dx < 16 and 0 <= y + dy < 16 and img.getpixel((x + dx, y + dy))[3]
+                   for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1))):
+                put(out, x, y, ch)
+    return out
+
+def scrap():
+    """Złom: zardzewiała blacha, koło zębate i śruba (wcześniej szara kupka myliła się z prochem)."""
+    img = parse('''
 ................
 ................
-.......33.......
-......3443..2...
-.....234432.32..
-....2R33R432....
-...2oR2333R2....
-..23R3442RR32...
-..2433RR34432...
-.2RR3422R33oR2..
-.23443RR344332..
-.2RR4323332RR2..
-..2RR23332RR2...
-...222222222....
 ................
+................
+................
+.........RRo....
+........RoOoR...
+.......RoOooRR..
+......RoORoOooR.
+.....RooRRooOoR.
+....RoOoRRoooRr.
+....RooOoRooRr..
+.....rRooRoRr...
+......rrRRRr....
+.......rrrr.....
 ................
 ''')
+    g = blank()
+    gear(g, 5.5, 5.5, 4.4, 8, body='3', dark='2', hole=1.3)
+    for y in range(16):          # światło z lewej góry
+        for x in range(16):
+            if x + y < 9 and g.getpixel((x, y))[:3] == PAL['3'] and g.getpixel((x, y))[3]:
+                put(g, x, y, '4')
+    img.alpha_composite(g)
+    img.alpha_composite(parse('''
+................
+................
+................
+................
+................
+................
+................
+................
+................
+................
+..........k.....
+.........k45k...
+........k4532k..
+.......k5432k...
+.......k332k....
+........kkk.....
+'''))
+    return outline(img)
+
+I['scrap'] = scrap()
 
 I['metal_fragments'] = parse('''
 ................
@@ -151,13 +193,37 @@ I['cloth'] = parse('''
 
 I['pipe'] = diag(blank(), 12, 9, '4455332', ends=('3443221', 1))
 
-sp = blank()
-for i in range(6):
-    ax, ay = 3 + 2 * i, 12 - 2 * i
-    for k, ch in zip(range(-2, 3), '45433'):
-        put(sp, ax + k, ay + k, ch)
-        put(sp, ax + k + 1, ay + k, '3' if k < 1 else '2')
-I['spring'] = sp
+def spring(coils=4, top=1, step=3, x0=3, w=10):
+    """Sprężyna stojąca: owalne zwoje, jasny przód, ciemne tylne zwoje widoczne w środku.
+    Wcześniej była cienkimi skośnymi kreskami, które w ręce wyglądały jak szachownica."""
+    img = {}
+    inner = w - 4
+    for i in range(coils):
+        y = top + i * step
+        if i == 0:
+            for x in range(x0 + 2, x0 + w - 2):
+                img[(x, y)] = '2'
+                img[(x, y - 1)] = 'k'
+        for dy in (1, 2):
+            img[(x0 + 1, y + dy)] = '4'
+            img[(x0 + w - 2, y + dy)] = '2'
+            img[(x0, y + dy)] = 'k'
+            img[(x0 + w - 1, y + dy)] = 'k'
+        img[(x0 + 1, y)] = img[(x0 + w - 2, y)] = 'k'
+        for k in range(inner):           # tylny zwój w prześwicie
+            img[(x0 + 2 + k, y + 2 if k < inner / 2 else y + 1)] = '1' if k % 3 else '2'
+        for x in range(x0 + 2, x0 + w - 2):   # przedni zwój
+            f = (x - x0 - 2) / (w - 5)
+            img[(x, y + 3)] = '5' if f < 0.45 else '4' if f < 0.8 else '3'
+            if i == coils - 1:
+                img[(x, y + 4)] = 'k'
+        img[(x0 + 1, y + 3)] = img[(x0 + w - 2, y + 3)] = 'k'
+    out = blank()
+    for (x, y), ch in img.items():
+        put(out, x, y, ch)
+    return out
+
+I['spring'] = spring()
 
 I['stock'] = parse('''
 ................
