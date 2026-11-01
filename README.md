@@ -163,7 +163,7 @@ Auta mają 2 × 4 kratki, plugin rysuje je ze skalą 2, a środek modelu leży 0
 
 ## AxonCore: przedmioty, narzędzia, stanowiska, pojemniki i wraki (styl PRL)
 
-`zrodla/gen_axoncore.py` (moduły w `zrodla/axoncore/`) robi wszystko, czego potrzebuje system craftingu AxonCore i plugin [Axon-items](https://github.com/toMiXgaming/Axon-items). Styl to PRL: wyblakła emalia, oliwka, rdza, sklejka i kremowe obudowy. Modele 3D są złożone z prostopadłościanów pokrytych kafelkami jednego atlasu materiałów 64×64 (`axon:block/axoncore_atlas`, kafelki 8×8 w `axoncore/atlas.py`). Przedmioty mają postać `axon:<nazwa>` (komponent `item_model`, model `axon:block/<nazwa>`), tak jak meble.
+`zrodla/gen_axoncore.py` (moduły w `zrodla/axoncore/`) robi wszystko, czego potrzebuje system craftingu AxonCore i plugin [Axon-items](https://github.com/toMiXgaming/Axon-items). Styl to PRL: wyblakła emalia, oliwka, rdza, sklejka i kremowe obudowy. Modele 3D (poza stanowiskami, które mają własne tekstury) są złożone z prostopadłościanów pokrytych kafelkami jednego atlasu materiałów 64×64 (`axon:block/axoncore_atlas`, kafelki 8×8 w `axoncore/atlas.py`). Przedmioty mają postać `axon:<nazwa>` (komponent `item_model`, model `axon:block/<nazwa>`), tak jak meble.
 
 Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.py`. Pełna przebudowa `build_pack.py` też je dodaje. Gotowe pliki są w `modele/axoncore/`, podglądy w `podglady/axoncore-*.png`.
 
@@ -180,6 +180,8 @@ Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.p
 Beczki (`zrodla/axoncore/barrels.py`) mają własny model i tekstury 128×128 (`axon:item/beczka`, `beczka_paliwa`, `beczka_rdza`), wspólne dla wersji rozbitych i dla podmienionej beczki z Minecrafta. Korpus to pięć stykających się brył bez nakładających się ścian, więc wieko nie migocze. Podgląd: `podglady/axoncore-beczki.png`.
 
 Skrzynie i pozostałe pojemniki (`zrodla/axoncore/crates.py`: `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa`, `skrzynia_elitarna`) też mają własny model i teksturę 128×128 (`axon:item/<nazwa>`). Każda to korpus, wieko położone na korpusie i kilka detali przyklejonych z zewnątrz, bez brył nachodzących na siebie, więc nic nie migocze; deski, opaski i napisy są namalowane na teksturze. Tekstura zwykłej skrzyni z Minecrafta (`entity/chest`) ma 128×128 i ten sam styl: deski z usłojeniem, stalowe kątowniki z nitami, mosiężny zamek. Podgląd: `podglady/axoncore-skrzynie.png`.
+
+Stanowiska (warsztaty T1–T3 z trzema etapami zużycia, piec hutniczy, recykler z kołem, stół badań, spadochron) mają własną teksturę modelu liczoną w `zrodla/axoncore/surface.py`, a nie rozciągnięte kafelki 8×8. Każda widoczna ściana dostaje własny prostokąt w teksturze, zawsze 4 piksele na jednostkę (64 na blok), więc deski, blacha i cegły mają wszędzie tę samą skalę. Drewno to deski o różnych odcieniach ze szwami, słojami, sękami i gwoździami, stal jest szczotkowana, emalia ma odpryski przy krawędziach, a rdza rośnie z etapem zużycia. Ściany zasłonięte przez sąsiednią bryłę nie są rysowane, a ściany w jednej płaszczyźnie (powód migania) są rozsuwane o 0,03. Zacienienie przy stykach brył jest wypalone w teksturze. Podgląd: `podglady/axoncore-warsztaty.png`.
 
 Beczki przy drogach działają jak w Rust: gracz je niszczy, wtedy plugin podmienia model na `<beczka>_rozbita` (wgnieciony dół, wieko na ziemi, łup w środku), prawy klik otwiera łup, a po czasie beczka odnawia się w tym samym miejscu.
 
@@ -202,6 +204,7 @@ Wraki leżą w modelu w zmniejszonej skali, a plugin rysuje je z transformacją 
 | `wrak_ursus` | 1.252 | 0,63 | 1,8 × 3,6 |
 | `wrak_wsk` | 1.0 | 0,50 | leży na boku, ok. 1 × 2 |
 
+![Warsztaty i stanowiska](podglady/axoncore-warsztaty.png)
 ![Stanowiska i pojemniki](podglady/axoncore-stanowiska-pojemniki.png)
 ![Wraki](podglady/axoncore-wraki.png)
 ![Bloki vanilla](podglady/axoncore-bloki.png)

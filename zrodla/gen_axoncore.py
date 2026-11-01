@@ -48,6 +48,7 @@ def modele_3d():
     out = {}
     for group, quarters in ((S, 2), (C, 2), (V, 1)):
         for name, m in group.items():
+            m.name = name
             out[name] = rotate_y(m, quarters)
     return out
 
@@ -79,6 +80,8 @@ def pliki():
         files['assets/axon/textures/item/%s.png' % name] = _png(img)
     for name, m in MODELE_3D.items():
         _przedmiot(files, name, m.json())
+        if hasattr(m, 'texture'):   # stanowiska: własna tekstura na model (surface.py)
+            files['assets/axon/textures/item/%s.png' % name] = _png(m.texture)
     return files
 
 
