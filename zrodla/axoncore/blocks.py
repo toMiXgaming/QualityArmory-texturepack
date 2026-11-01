@@ -10,6 +10,9 @@ def block():
 
 # --- stół rzemieślniczy T0: blat z desek obity blachą, imadło, młotek, półka
 m = block()
+# Podłoga z desek: stół podmienia pełny blok vanilla, więc gra nie rysuje górnej ściany bloku pod spodem.
+# Bez niej między nogami widać dziurę w ziemi.
+m.box((0, 0, 0), (16, 0.5, 16), 'plank_dark', up='plank')
 for x, z in ((1, 1), (13, 1), (1, 13), (13, 13)):
     m.box((x, 0, z), (x + 2, 13, z + 2), 'plank_dark')
 m.box((0, 13, 0), (16, 16, 16), 'plank', down='plank_dark')
