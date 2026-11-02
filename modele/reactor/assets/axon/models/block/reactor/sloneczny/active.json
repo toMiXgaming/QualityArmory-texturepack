@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/sloneczny/shell",
+ "textures": {
+  "core": "axon:block/reactor/sloneczny/core_active",
+  "top": "axon:block/reactor/sloneczny/top_active",
+  "glow": "axon:block/reactor/sloneczny/glow_active"
+ }
+}

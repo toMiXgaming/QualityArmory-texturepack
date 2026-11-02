@@ -17,6 +17,8 @@ SKY = ((126, 168, 214), (196, 214, 226))
 SCALE = 1.2     # tak samo jak w pluginie (ReactorSkins)
 CRYSTAL_SCALE = 0.55
 CRYSTAL_Y = 15.5   # środek kryształu nad środkiem bloku, w pikselach
+HALO_SCALE = 0.9   # aureola skinów Elity (ReactorSkins.HALO_SCALE)
+HALO_TILT = 18.0
 NAMES = {'active': 'zasilony', 'low': 'mało paliwa', 'off': 'wygaszony', 'raid': 'atak'}
 
 
@@ -70,6 +72,9 @@ def scene(skin, state, frame=0, spin=20.0):
         bob = 0.6 * math.sin(spin / 180 * math.pi)
         crystal = placed(model_quads(skin, 'crystal_' + state, frame), crystal_matrix(spin),
                          np.array([0, CRYSTAL_Y + bob, 0]))
+        if os.path.exists(os.path.join(MODELS, skin, 'halo_' + state + '.json')):
+            M = rot_axis('x', HALO_TILT) @ rot_axis('y', -spin * 0.75) * HALO_SCALE
+            crystal += placed(model_quads(skin, 'halo_' + state, frame), M, np.array([0, CRYSTAL_Y, 0]))
     return shell, crystal
 
 
@@ -152,6 +157,16 @@ def main():
         frames.append(im)
     frames[0].save(os.path.join(out, 'reaktor-animacja.gif'), save_all=True, append_images=frames[1:],
                    duration=100, loop=0)
+
+    elite = [sid for sid in SKINS if SKINS[sid].index >= 7]
+    if elite:
+        big = 360
+        ell = Image.new('RGB', ((big + 4) * 4 - 4, (big + 4) * len(elite) - 4), (20, 22, 26))
+        for r, sid in enumerate(elite):
+            for i, (st, f, sp) in enumerate((('active', 2, 15), ('active', 9, 60), ('raid', 5, 30), ('low', 3, 45))):
+                im = render_state(sid, st, big, big, frame=f, spin=sp, yaw=-28, pitch=16).image()
+                ell.paste(label(im, '%s (Elita): %s' % (SKINS[sid].name, NAMES[st]), 17), (i * (big + 4), r * (big + 4)))
+        ell.save(os.path.join(out, 'reaktor-elita.png'))
 
     for sid in SKINS:
         for st in states:

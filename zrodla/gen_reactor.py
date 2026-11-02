@@ -15,6 +15,12 @@ Kryształ nad reaktorem ma numer o 10 większy (wygaszony reaktor nie ma kryszta
   skin 4 krolewski   7181..7184, kryształ 7191..7194
   skin 5 miedziany   7201..7204, kryształ 7211..7214
   skin 6 lodowy      7221..7224, kryształ 7231..7234
+  skin 7 sloneczny   7241..7244, kryształ 7251..7254, aureola 7246..7249   (Elita)
+  skin 8 pryzmatyczny 7261..7264, kryształ 7271..7274, aureola 7266..7269  (Elita)
+  skin 9 plazmowy    7281..7284, kryształ 7291..7294, aureola 7286..7289   (Elita)
+
+Skiny Elity mają aureolę: trzeci byt nad reaktorem (numer stanu + 5), plugin kręci nią w drugą
+stronę niż kryształem. Wygaszony reaktor nie ma ani kryształu, ani aureoli.
 
 Stany są takie same we wszystkich skinach, żeby gracz od razu je rozpoznał: zasilony świeci
 kolorem skina, mało paliwa przygasa i mruga na żółto, atak pulsuje na czerwono, wygaszony jest ciemny.
@@ -712,6 +718,389 @@ def els_lodowy():
     return els
 
 
+# ---- Elita: Słoneczny, Pryzmatyczny, Plazmowy --------------------------------
+# Skiny dla rangi Elita (AxonPlot, axonitems.elita). Mają więcej tekstur (#deco: druga
+# materia obudowy) i trzeci byt nad reaktorem: aureolę (numer modelu stanu + 5), która
+# kręci się w przeciwną stronę niż kryształ. Kryształ i aureola są w kolorze stanu.
+
+def hsv(h, s, v):
+    import colorsys
+    r, g, b = colorsys.hsv_to_rgb(h % 1.0, s, v)
+    return (r * 255, g * 255, b * 255)
+
+
+def deco_gold(s):
+    """Polerowane złoto z białą emalią w paski."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            k = 0.5 + 0.5 * math.cos((x + y) / T * 2 * math.pi * 2)
+            c = mix((150, 96, 20), (255, 236, 150), 0.25 + 0.6 * k)
+            if y % 8 in (3, 4):
+                c = mix((255, 250, 235), c, 0.25 * noise(x, y, 51))
+            elif y % 8 in (2, 5):
+                c = (120, 80, 18)
+            px[x, y] = c + (255,)
+    return im
+
+
+def deco_glass(s):
+    """Szkło pryzmatu: jasny błękit z ukośnymi refleksami i tęczową krawędzią."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            c = mix((150, 210, 240), (230, 250, 255), 0.3 * noise(x, y, 52) + 0.4 * ((x - y) % 16 < 3))
+            if x in (0, T - 1) or y in (0, T - 1):
+                c = clamp(hsv((x + y) / (2 * T), 0.55, 1.0))
+            px[x, y] = c + (255,)
+    return im
+
+
+def deco_chrome(s):
+    """Chrom toroidu: poziome odbicia nieba i ziemi."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        k = 0.5 + 0.5 * math.cos(y / T * 2 * math.pi)
+        for x in range(T):
+            c = mix((54, 50, 70), (232, 236, 250), k * (0.85 + 0.15 * noise(x, y, 53)))
+            if y in (T // 2, T // 2 + 1):
+                c = mix(c, s.accent, 0.5)
+            px[x, y] = c + (255,)
+    return im
+
+
+def pillar_twist(s):
+    """Złota kolumna skręcona spiralnie z białym pasem."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            band = (x + y * 0.5) % 12
+            k = math.sin((x + 0.5) / T * math.pi)
+            c = mix(s.dark, s.light, 0.2 + 0.7 * k * k)
+            if band < 3:
+                c = mix((255, 248, 225), c, 0.3 * (1 - k))
+            px[x, y] = c + (255,)
+    return im
+
+
+def pillar_crystal(s):
+    """Kryształowy słup: jasne szkło z pionowymi krawędziami i tęczowym połyskiem."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            c = mix((120, 170, 210), (220, 245, 255), 0.35 + 0.4 * noise(x // 3, y // 6, 54))
+            if x % 16 in (0, 1):
+                c = (250, 255, 255)
+            elif (x + y) % 24 < 2:
+                c = clamp(hsv(y / T, 0.4, 1.0))
+            px[x, y] = c + (255,)
+    return im
+
+
+def pillar_coil(s):
+    """Cewka: miedziany drut w poziome zwoje na ciemnym rdzeniu."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            k = math.sin((x + 0.5) / T * math.pi)
+            if y % 3 == 2:
+                c = mix((30, 20, 16), (60, 40, 30), k)
+            else:
+                c = mix((110, 56, 30), (250, 180, 120), 0.2 + 0.7 * k * k * (1 if y % 3 == 0 else 0.8))
+            px[x, y] = c + (255,)
+    return im
+
+
+def trim_sun(s):
+    """Złoty cokół z grawerowanymi promieniami."""
+    im = metal_tex(s, 3, rivets=False)
+    px = im.load()
+    for y in range(20, T):
+        for x in range(T):
+            if (x % 8 == 4 and y > 22) or (y == 21) or (y == 30):
+                px[x, y] = s.dark + (255,)
+            elif x % 8 in (3, 5) and y > 24:
+                px[x, y] = mix(s.light, (255, 255, 255), 0.4) + (255,)
+    return im
+
+
+def trim_marble(s):
+    """Biały marmur z żyłkami i tęczową listwą."""
+    im = Image.new('RGBA', (T, T))
+    px = im.load()
+    for y in range(T):
+        for x in range(T):
+            v = math.sin(x * 0.35 + 3 * noise(x // 4, y // 4, 55) + y * 0.1)
+            c = mix((236, 238, 246), (180, 186, 205), 0.5 + 0.5 * v if abs(v) > 0.92 else 0.1 * noise(x, y, 56))
+            if 27 <= y <= 28:
+                c = clamp(hsv(x / T, 0.55, 1.0))
+            px[x, y] = c + (255,)
+    return im
+
+
+def trim_tech(s):
+    """Ciemna płyta z wentylacją i fioletowym paskiem."""
+    im = metal_tex(s, 3, rivets=True)
+    px = im.load()
+    for y in range(22, T - 2):
+        for x in range(3, T - 3):
+            if y % 3 == 0 and 4 <= x % 10 <= 8:
+                px[x, y] = BLACK + (255,)
+    for x in range(T):
+        px[x, 28] = mix(s.accent, (40, 30, 60), 0.3) + (255,)
+    return im
+
+
+def core_sun(color, bright, speed, flick, x, y, t):
+    """Powierzchnia słońca: wirująca plazma z granulacją; wygasłe to zastygła skorupa."""
+    cx, cy = x - 15.5, y - 15.5
+    r = math.hypot(cx, cy)
+    a = math.atan2(cy, cx)
+    gran = noise(x // 2, y // 2, 60)
+    if bright <= 0:
+        c = mix((40, 26, 20), (64, 44, 34), gran)
+        return mix(c, (110, 50, 30), 0.5) if CRACKS[x, y] < 0.7 else c
+    swirl = 0.5 + 0.5 * math.sin(a * 3 + r * 0.45 - t * 2 * math.pi * speed)
+    k = bright * flick * (0.45 + 0.35 * swirl + 0.2 * gran)
+    c = mix((120, 30, 8), color, min(1, k * 1.2))
+    return mix(c, (255, 252, 230), max(0, k - 0.6) * 1.4 * bright)
+
+
+def core_prism(color, bright, speed, flick, x, y, t):
+    """Szlif w trójkąty; zasilony pryzmat przepuszcza tęczę płynącą po skosie."""
+    u, v = x % 16, y % 16
+    edge = u == 0 or v == 0 or (u + v) % 16 == 0
+    if edge:
+        return (235, 245, 255) if bright > 0 else (110, 116, 130)
+    shade = 0.55 + 0.45 * ((u - v) / 30.0)
+    if bright <= 0:
+        return mix((40, 44, 56), (70, 76, 92), shade)
+    if speed == 1.0 and bright >= 1:   # zasilony: tęcza
+        base = hsv((x + y) / 64.0 - t * speed, 0.65, 1.0)
+    else:
+        base = color
+    c = mix((20, 24, 40), base, (0.45 + 0.4 * shade) * bright * flick)
+    glint = ((x - y) / 2 - t * 2 * T * speed) % T
+    if glint < 2:
+        c = mix(c, (255, 255, 255), 0.6 * bright)
+    return c
+
+
+def core_plasma(color, bright, speed, flick, x, y, t):
+    """Ciemne szkło z trzema włóknami plazmy, które wiją się od dołu do góry."""
+    c = mix((10, 8, 18), (24, 18, 40), noise(x, y, 61))
+    if bright <= 0:
+        return c
+    best = 9.0
+    for i in range(3):
+        fx = 15.5 + 10 * math.sin(y * 0.2 + t * 2 * math.pi * speed + i * 2.1) * (0.5 + 0.5 * math.cos(y * 0.1 + i))
+        best = min(best, abs(x - fx))
+    k = bright * flick
+    if best < 0.6:
+        return mix(color, (255, 255, 255), 0.6 * k)
+    if best < 1.5:
+        return mix(c, color, 0.8 * k)
+    halo = max(0.0, 1 - best / 5)
+    return mix(c, color, 0.22 * halo * k)
+
+
+def glow_rainbow_frames(s, state):
+    """Jak glow_frames, ale zasilony przelewa się kolejnymi kolorami tęczy."""
+    if state != 'active':
+        return glow_frames(s, state)
+    frames = []
+    for f in range(FRAMES):
+        t = f / FRAMES
+        im = Image.new('RGBA', (16, 16))
+        px = im.load()
+        for y in range(16):
+            for x in range(16):
+                c = hsv((x + y) / 32.0 + t, 0.55, 1.0)
+                px[x, y] = clamp(c) + (255,)
+        frames.append(im)
+    return frames
+
+
+def halo_frames(s, state):
+    """Aureola: jasny pas biegnący wzdłuż pierścienia (pętla), w kolorze stanu albo tęczy."""
+    color, bright, speed, flicker = s.states()[state]
+    frames = []
+    for f in range(FRAMES):
+        t = f / FRAMES
+        im = Image.new('RGBA', (16, 16))
+        px = im.load()
+        for y in range(16):
+            for x in range(16):
+                band = 0.5 + 0.5 * math.cos((x / 16 - t * max(speed, 0.5)) * 2 * math.pi)
+                base = clamp(hsv(x / 16 + t, 0.6, 1.0)) if s.rainbow and state == 'active' else color
+                k = 0.45 + 0.55 * band
+                if flicker and f % 5 == 0:
+                    k *= 0.5
+                c = mix(mix(base, (30, 20, 30), 0.4), mix(base, (255, 255, 245), 0.55), k)
+                if y in (0, 15):
+                    c = mix(c, (20, 16, 24), 0.4)
+                px[x, y] = c + (255,)
+        frames.append(im)
+    return frames
+
+
+def crystal_rainbow_frames(s, state):
+    if state != 'active':
+        return crystal_frames(s, state)
+    frames = []
+    S = 16
+    for f in range(FRAMES):
+        t = f / FRAMES
+        im = Image.new('RGBA', (S, S))
+        px = im.load()
+        for y in range(S):
+            for x in range(S):
+                edge = min(x, y, S - 1 - x, S - 1 - y)
+                k = 0.55 + 0.45 * (edge / 7.5)
+                c = mix(clamp(hsv((x - y) / 32.0 + t, 0.6, 1.0)), (255, 255, 250), 0.35 * k * k)
+                if edge == 0:
+                    c = mix(c, (60, 60, 90), 0.4)
+                px[x, y] = c + (255,)
+        frames.append(im)
+    return frames
+
+
+def ring(name, y, radius, width, height, tex, axis='y'):
+    """Pierścień z 16 odcinków (4 strony × obroty −22.5..45°) wokół środka bloku.
+    axis='y': pierścień poziomy, axis='x': pionowy w płaszczyźnie YZ."""
+    half = radius * math.tan(math.pi / 16) + 0.05
+    els = []
+    for q in range(4):
+        for r in (-22.5, 0, 22.5, 45):
+            if axis == 'y':
+                f, t = [8 - half, y - height / 2, 8 - radius - width / 2], [8 + half, y + height / 2, 8 - radius + width / 2]
+                if q % 2:   # wschód / zachód
+                    f, t = [8 - radius - width / 2, y - height / 2, 8 - half], [8 - radius + width / 2, y + height / 2, 8 + half]
+                if q >= 2:  # odbicie na drugą stronę
+                    f, t = [16 - t[0], f[1], 16 - t[2]], [16 - f[0], t[1], 16 - f[2]]
+            else:
+                f, t = [8 - height / 2, y - half, 8 - radius - width / 2], [8 + height / 2, y + half, 8 - radius + width / 2]
+                if q % 2:   # góra / dół
+                    f, t = [8 - height / 2, y - radius - width / 2, 8 - half], [8 + height / 2, y - radius + width / 2, 8 + half]
+                if q >= 2:
+                    f, t = [f[0], 2 * y - t[1], 16 - t[2]], [t[0], 2 * y - f[1], 16 - f[2]]
+            b = box(name, f, t, tex)
+            b['rotation'] = {'origin': [8, y, 8], 'axis': axis, 'angle': r}
+            els.append(b)
+    return els
+
+
+def halo_sun():
+    els = ring('aureola', 8, 6.5, 1, 1, '#h')
+    for r in (0, 45):
+        for (f, t) in (([7.5, 7.5, 0], [8.5, 8.5, 1.5]), ([7.5, 7.5, 14.5], [8.5, 8.5, 16]),
+                       ([0, 7.5, 7.5], [1.5, 8.5, 8.5]), ([14.5, 7.5, 7.5], [16, 8.5, 8.5])):
+            b = box('promien', f, t, '#g')
+            b['rotation'] = {'origin': [8, 8, 8], 'axis': 'y', 'angle': r}
+            els.append(b)
+    return els
+
+
+def halo_prism():
+    els = ring('aureola', 8, 6, 0.75, 0.75, '#h')
+    for (x, z) in ((8, 1.25), (8, 14.75), (1.25, 8), (14.75, 8)):
+        b = box('odlamek', [x - 0.9, 7.1, z - 0.9], [x + 0.9, 8.9, z + 0.9], '#g')
+        b['rotation'] = {'origin': [x, 8, z], 'axis': 'y', 'angle': 45}
+        els.append(b)
+    els += ring('aureola2', 8, 4.5, 0.5, 0.5, '#g')
+    return els
+
+
+def halo_plasma():
+    els = ring('zyroskop', 8, 6.5, 0.75, 0.75, '#h', 'y')
+    els += ring('zyroskop2', 8, 5.5, 0.6, 0.6, '#h', 'x')
+    for (x, z) in ((8, 1.5), (8, 14.5)):
+        els.append(box('jon', [x - 0.6, 7.4, z - 0.6], [x + 0.6, 8.6, z + 0.6], '#g'))
+    return els
+
+
+def els_sloneczny():
+    """Złoty ołtarz słońca: dwustopniowy cokół, skręcone kolumny, medaliony słońca na ścianach
+    i korona ośmiu promieni na pokrywie."""
+    els = [
+        box('podstawa', [0, 0, 0], [16, 2, 16], '#trim', per_face={'up': '#deco', 'down': '#metal'}),
+        box('stopien', [1, 2, 1], [15, 3, 15], '#deco', which='nsewu'),
+        box('pokrywa', [0, 13.5, 0], [16, 15.5, 16], '#deco', per_face={'up': '#top', 'down': '#metal'}),
+        box('rdzen', [1.25, 3, 1.25], [14.75, 13.5, 14.75], '#core', which='nsew'),
+    ]
+    for x, z in corners(2.5):
+        els.append(box('kolumna', [x, 3, z], [x + 2.5, 13.5, z + 2.5], '#pillar', which='nsew'))
+    for (f, t) in (([6, 6, 0.5], [10, 10, 1.25]), ([6, 6, 14.75], [10, 10, 15.5]),
+                   ([0.5, 6, 6], [1.25, 10, 10]), ([14.75, 6, 6], [15.5, 10, 10])):
+        els.append(box('medalion', f, t, '#glow'))
+    for r in (0, 45):
+        for (bf, bt, tf, tt) in (([7, 15.5, 1], [9, 16.5, 5], [7.5, 16.5, 1.5], [8.5, 17.5, 3.5]),
+                                 ([7, 15.5, 11], [9, 16.5, 15], [7.5, 16.5, 12.5], [8.5, 17.5, 14.5]),
+                                 ([1, 15.5, 7], [5, 16.5, 9], [1.5, 16.5, 7.5], [3.5, 17.5, 8.5]),
+                                 ([11, 15.5, 7], [15, 16.5, 9], [12.5, 16.5, 7.5], [14.5, 17.5, 8.5])):
+            for b in (box('promien_korony', bf, bt, '#deco', which='nsewu'), box('czubek', tf, tt, '#glow', which='nsewu')):
+                b['rotation'] = {'origin': [8, 16, 8], 'axis': 'y', 'angle': r}
+                els.append(b)
+    return els
+
+
+def els_pryzmatyczny():
+    """Marmurowa kapsuła z kryształowymi słupami, tęczowymi listwami, odłamkami pryzmatu w rogach
+    i schodkową piramidą pod kryształem."""
+    els = [
+        box('podstawa', [0, 0, 0], [16, 2, 16], '#trim', per_face={'up': '#metal', 'down': '#metal'}),
+        box('pokrywa', [0, 14, 0], [16, 15.5, 16], '#metal', per_face={'up': '#top'}),
+        box('rdzen', [1.25, 2, 1.25], [14.75, 14, 14.75], '#core', which='nsew'),
+        box('piramida', [5, 15.5, 5], [11, 16.25, 11], '#deco', which='nsewu'),
+        box('piramida', [6, 16.25, 6], [10, 17, 10], '#deco', which='nsewu'),
+        box('szczyt', [7, 17, 7], [9, 17.5, 9], '#glow', which='nsewu'),
+    ]
+    for x, z in corners(2):
+        els.append(box('slup', [x, 2, z], [x + 2, 14, z + 2], '#pillar', which='nsew'))
+    for y in (2, 13.5):
+        els.append(box('listwa', [0.25, y, 0.25], [15.75, y + 0.5, 15.75], '#glow', which='nsewud'))
+    for (x, z, axis, angle) in ((1, 1, 'x', -22.5), (13, 13, 'x', 22.5), (1, 13, 'z', -22.5), (13, 1, 'z', 22.5)):
+        rot = {'origin': [x + 1, 15.5, z + 1], 'axis': axis, 'angle': angle}
+        shard = box('odlamek', [x, 15.5, z], [x + 2, 19, z + 2], '#deco', which='nsew')
+        tip = box('czubek', [x + 0.5, 19, z + 0.5], [x + 1.5, 20.25, z + 1.5], '#glow', which='nsewu')
+        shard['rotation'] = rot
+        tip['rotation'] = dict(rot)
+        els += [shard, tip]
+    return els
+
+
+def els_plazmowy():
+    """Generator Tesli: cewki w rogach, klatka z prętów energii przed szybą i cztery toroidy z chromu
+    na słupkach nad pokrywą."""
+    els = [
+        box('podstawa', [0, 0, 0], [16, 2.5, 16], '#trim', per_face={'up': '#metal', 'down': '#metal'}),
+        box('pokrywa', [0, 13.5, 0], [16, 15, 16], '#metal', per_face={'up': '#top'}),
+        box('rdzen', [1.25, 2.5, 1.25], [14.75, 13.5, 14.75], '#core', which='nsew'),
+    ]
+    for x, z in corners(3):
+        els.append(box('cewka', [x, 2.5, z], [x + 3, 13.5, z + 3], '#pillar', which='nsew'))
+        els.append(box('slupek', [x + 1, 15, z + 1], [x + 2, 16.75, z + 2], '#metal', which='nsew'))
+        els.append(box('toroid', [x - 0.25, 16.75, z - 0.25], [x + 3.25, 17.75, z + 3.25], '#deco'))
+        els.append(box('iskra', [x + 0.5, 17.75, z + 0.5], [x + 2.5, 18, z + 2.5], '#glow', which='u'))
+    for c in (5.5, 10):
+        els.append(box('pret', [c, 2.5, 0.75], [c + 0.5, 13.5, 1.25], '#glow', which='nwe'))
+        els.append(box('pret', [c, 2.5, 14.75], [c + 0.5, 13.5, 15.25], '#glow', which='swe'))
+        els.append(box('pret', [0.75, 2.5, c], [1.25, 13.5, c + 0.5], '#glow', which='wns'))
+        els.append(box('pret', [14.75, 2.5, c], [15.25, 13.5, c + 0.5], '#glow', which='ens'))
+    for y in (6, 10):
+        els.append(box('obrecz', [3, y, 0.5], [13, y + 0.5, 1], '#deco', which='nud'))
+        els.append(box('obrecz', [3, y, 15], [13, y + 0.5, 15.5], '#deco', which='sud'))
+        els.append(box('obrecz', [0.5, y, 3], [1, y + 0.5, 13], '#deco', which='wud'))
+        els.append(box('obrecz', [15, y, 3], [15.5, y + 0.5, 13], '#deco', which='eud'))
+    return els
+
+
 SKINS = {
     'standard': Skin(0, 'Standard', (60, 240, 90), (52, 54, 60), (84, 88, 96), (28, 29, 33),
                      core_rods, trim_hazard, pillar_groove, els_standard),
@@ -727,7 +1116,24 @@ SKINS = {
                       core_coils, trim_copper, pillar_pipe, els_miedziany),
     'lodowy': Skin(6, 'Lodowy', (215, 240, 255), (140, 182, 230), (206, 228, 250), (70, 100, 150),
                    core_frost, trim_snow, pillar_ice, els_lodowy),
+    # Elita
+    'sloneczny': Skin(7, 'Słoneczny', (255, 196, 60), (214, 160, 52), (255, 232, 140), (120, 76, 18),
+                      core_sun, trim_sun, pillar_twist, els_sloneczny),
+    'pryzmatyczny': Skin(8, 'Pryzmatyczny', (120, 240, 255), (226, 230, 240), (250, 252, 255), (150, 158, 180),
+                         core_prism, trim_marble, pillar_crystal, els_pryzmatyczny),
+    'plazmowy': Skin(9, 'Plazmowy', (190, 120, 255), (46, 42, 60), (96, 90, 120), (18, 16, 26),
+                     core_plasma, trim_tech, pillar_coil, els_plazmowy),
 }
+
+# Dodatki elitarnych skinów: druga materia (#deco), aureola i tęcza w Pryzmatycznym.
+ELITE = {
+    'sloneczny': (deco_gold, halo_sun),
+    'pryzmatyczny': (deco_glass, halo_prism),
+    'plazmowy': (deco_chrome, halo_plasma),
+}
+for _sid, _s in SKINS.items():
+    _s.elite = _sid in ELITE
+    _s.rainbow = _sid == 'pryzmatyczny'
 
 
 def strip(frames, frametime):
@@ -765,18 +1171,25 @@ def main():
         write(os.path.join(tex, 'metal.png'), metal_tex(s, 1))
         write(os.path.join(tex, 'trim.png'), s.trim(s))
         write(os.path.join(tex, 'pillar.png'), s.pillar(s))
+        if s.elite:
+            write(os.path.join(tex, 'deco.png'), ELITE[sid][0](s))
+        glow_fn = glow_rainbow_frames if s.rainbow else glow_frames
+        crystal_fn = crystal_rainbow_frames if s.rainbow else crystal_frames
         for st, (_, _, speed, _) in s.states().items():
             frametime = 2 if speed >= 1 else 3
             animated = st != 'off'
             write_anim(tex, 'core_' + st, energy_frames(s, st, s.core), frametime, animated)
             write_anim(tex, 'top_' + st, top_frames(s, st), frametime, animated)
-            write_anim(tex, 'glow_' + st, glow_frames(s, st), frametime, animated)
+            write_anim(tex, 'glow_' + st, glow_fn(s, st), frametime, animated)
             if st != 'off':
-                write_anim(tex, 'crystal_' + st, crystal_frames(s, st), frametime, True)
+                write_anim(tex, 'crystal_' + st, crystal_fn(s, st), frametime, True)
+                if s.elite:
+                    write_anim(tex, 'halo_' + st, halo_frames(s, st), frametime, True)
 
         write(os.path.join(models, 'shell.json'), {
             'parent': 'minecraft:block/block',
-            'textures': {'particle': ns + 'metal', 'metal': ns + 'metal', 'trim': ns + 'trim', 'pillar': ns + 'pillar'},
+            'textures': dict({'particle': ns + 'metal', 'metal': ns + 'metal', 'trim': ns + 'trim', 'pillar': ns + 'pillar'},
+                             **({'deco': ns + 'deco'} if s.elite else {})),
             'elements': s.elements(),
         })
         for st in STATE_IDS:
@@ -793,6 +1206,13 @@ def main():
             })
             entries.append({'threshold': s.cmd(st, True),
                             'model': {'type': 'minecraft:model', 'model': ns + 'crystal_' + st}})
+            if s.elite:
+                write(os.path.join(models, 'halo_' + st + '.json'), {
+                    'textures': {'particle': ns + 'halo_' + st, 'h': ns + 'halo_' + st, 'g': ns + 'glow_' + st},
+                    'elements': ELITE[sid][1](),
+                })
+                entries.append({'threshold': s.cmd(st) + 5,
+                                'model': {'type': 'minecraft:model', 'model': ns + 'halo_' + st}})
     entries.sort(key=lambda e: e['threshold'])
     # Bez custom_model_data (albo z mniejszym) crying obsidian wygląda jak zwykle.
     write(os.path.join(OUT, 'assets/minecraft/items/crying_obsidian.json'), {'model': {

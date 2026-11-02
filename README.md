@@ -110,6 +110,13 @@ Numer modelu to `7100 + 20 × skin + stan`, gdzie stan to 1 zasilony, 2 mało pa
 | 4 Królewski | 7181–7184 | 7191–7194 | różowo |
 | 5 Miedziany | 7201–7204 | 7211–7214 | limonkowo (iskry w cewkach) |
 | 6 Lodowy | 7221–7224 | 7231–7234 | mroźną bielą |
+| 7 Słoneczny (Elita) | 7241–7244 | 7251–7254 | złotem (plazma słońca), aureola 7246–7249 |
+| 8 Pryzmatyczny (Elita) | 7261–7264 | 7271–7274 | tęczą, aureola 7266–7269 |
+| 9 Plazmowy (Elita) | 7281–7284 | 7291–7294 | fioletem (włókna plazmy), aureola 7286–7289 |
+
+Skiny 7–9 są dla rangi Elita. Mają drugą materię obudowy (`deco.png`: złoto z emalią, szkło pryzmatu, chrom toroidów), więcej elementów (korona ośmiu promieni i medaliony słońca; kryształowe słupy, odłamki i piramida; cewki Tesli, pręty energii i cztery toroidy) i trzeci byt nad reaktorem: aureolę o numerze stanu + 5, którą AxonPlot kręci w drugą stronę niż kryształ. Aureola ma animowaną teksturę z biegnącym światłem. W Pryzmatycznym zasilony rdzeń, ozdoby, kryształ i aureola przelewają się tęczą.
+
+![Skiny reaktora Elity](podglady/reaktor-elita.png)
 
 ![Skiny reaktora](podglady/reaktor-skiny.png)
 

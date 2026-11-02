@@ -346,6 +346,216 @@
      "type": "minecraft:model",
      "model": "axon:block/reactor/lodowy/crystal_raid"
     }
+   },
+   {
+    "threshold": 7241,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/active"
+    }
+   },
+   {
+    "threshold": 7242,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/low"
+    }
+   },
+   {
+    "threshold": 7243,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/off"
+    }
+   },
+   {
+    "threshold": 7244,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/raid"
+    }
+   },
+   {
+    "threshold": 7246,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/halo_active"
+    }
+   },
+   {
+    "threshold": 7247,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/halo_low"
+    }
+   },
+   {
+    "threshold": 7249,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/halo_raid"
+    }
+   },
+   {
+    "threshold": 7251,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/crystal_active"
+    }
+   },
+   {
+    "threshold": 7252,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/crystal_low"
+    }
+   },
+   {
+    "threshold": 7254,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/sloneczny/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7261,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/active"
+    }
+   },
+   {
+    "threshold": 7262,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/low"
+    }
+   },
+   {
+    "threshold": 7263,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/off"
+    }
+   },
+   {
+    "threshold": 7264,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/raid"
+    }
+   },
+   {
+    "threshold": 7266,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/halo_active"
+    }
+   },
+   {
+    "threshold": 7267,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/halo_low"
+    }
+   },
+   {
+    "threshold": 7269,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/halo_raid"
+    }
+   },
+   {
+    "threshold": 7271,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/crystal_active"
+    }
+   },
+   {
+    "threshold": 7272,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/crystal_low"
+    }
+   },
+   {
+    "threshold": 7274,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/pryzmatyczny/crystal_raid"
+    }
+   },
+   {
+    "threshold": 7281,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/active"
+    }
+   },
+   {
+    "threshold": 7282,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/low"
+    }
+   },
+   {
+    "threshold": 7283,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/off"
+    }
+   },
+   {
+    "threshold": 7284,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/raid"
+    }
+   },
+   {
+    "threshold": 7286,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/halo_active"
+    }
+   },
+   {
+    "threshold": 7287,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/halo_low"
+    }
+   },
+   {
+    "threshold": 7289,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/halo_raid"
+    }
+   },
+   {
+    "threshold": 7291,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/crystal_active"
+    }
+   },
+   {
+    "threshold": 7292,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/crystal_low"
+    }
+   },
+   {
+    "threshold": 7294,
+    "model": {
+     "type": "minecraft:model",
+     "model": "axon:block/reactor/plazmowy/crystal_raid"
+    }
    }
   ],
   "fallback": {
