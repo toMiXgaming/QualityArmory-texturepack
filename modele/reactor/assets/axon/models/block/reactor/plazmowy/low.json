@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/plazmowy/shell",
+ "textures": {
+  "core": "axon:block/reactor/plazmowy/core_low",
+  "top": "axon:block/reactor/plazmowy/top_low",
+  "glow": "axon:block/reactor/plazmowy/glow_low"
+ }
+}

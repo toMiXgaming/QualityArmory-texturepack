@@ -1,0 +1,8 @@
+{
+ "parent": "axon:block/reactor/pryzmatyczny/shell",
+ "textures": {
+  "core": "axon:block/reactor/pryzmatyczny/core_low",
+  "top": "axon:block/reactor/pryzmatyczny/top_low",
+  "glow": "axon:block/reactor/pryzmatyczny/glow_low"
+ }
+}
