@@ -48,11 +48,10 @@ Paczka była wczytana w prawdziwym kliencie 1.21.1, 1.21.3, 1.21.5 i 1.21.11 (be
 Domyślna paczka (`QualityArmory-21-axon.zip`) ma shadery AxonMap w starym formacie (1.21.4: `fog_distance`, `linear_fog`, własne `uniform FogColor`). Klient 1.21.11 ich nie skompiluje (`undefined variable "fog_distance"`, `declaration of "FogColor" conflicts`) i odrzuca całą paczkę. Do tego jej `pack.mcmeta` z `pack_format` 46 bez `supported_formats` jest na 1.21.11 odrzucany.
 
 `QualityArmory-21-axon-1.21.11-shadery.zip` to ta sama zawartość co domyślna paczka, tylko:
-- bez starych shaderów z `assets/minecraft/shaders/core/` (także plików `.json`),
-- z shaderami `rendertype_text` i `position_tex_color` w formacie 1.21.11 (`fog_spherical_distance`, `apply_fog`, bloki `DynamicTransforms`/`Projection`), wziętymi z paczki testowej HUD,
-- z `pack.mcmeta` `min_format`/`max_format` = 75 (tylko 1.21.11).
+- shadery z `zrodla/shadery_1_21_11/` zamiast tych z `zrodla/shadery/`: ta sama logika (mapa na cały ekran, kursor, sprity i zegar klienta z #29, chowanie HUD i wskaźnika cooldownu), zmienione tylko nagłówki na format 1.21.11 (bloki `DynamicTransforms`/`Projection`/`Globals` zamiast pojedynczych uniformów, `fog_spherical_distance`/`fog_cylindrical_distance` i `apply_fog` zamiast `fog_distance`/`linear_fog`), bez plików `.json`,
+- `pack.mcmeta` z `min_format`/`max_format` = 75 (tylko 1.21.11).
 
-Domyślna paczka i `QualityArmory-21-axon-1.21.11.zip` zostają bez zmian. Shadery w wersji 1.21.11 są z 26.10, więc nie mają zmian z „Shader AxonMap: sprity i zegar klienta” (#29).
+Buduje ją `python3 zrodla/buduj_1_21_11.py` z aktualnej `QualityArmory-21-axon.zip`. Przy zmianie shaderów w `zrodla/shadery/` trzeba tę samą zmianę zrobić w `zrodla/shadery_1_21_11/` i przebudować zip. Domyślna paczka i `QualityArmory-21-axon-1.21.11.zip` zostają bez zmian.
 
 ## Amunicja
 
