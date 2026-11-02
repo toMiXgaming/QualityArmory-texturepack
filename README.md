@@ -43,6 +43,17 @@ Od 1.21.6 shadery mają inny format, więc tam paczka ich nie dodaje (mapa AxonM
 
 Paczka była wczytana w prawdziwym kliencie 1.21.1, 1.21.3, 1.21.5 i 1.21.11 (bez błędów modeli i shaderów; na 1.21.1 i 1.21.3 sprawdzone, że nakładka z `overrides` się wczytuje). `QualityArmory-21-axon-1.21.11.zip` to teraz kopia tej samej paczki, zostawiona, żeby stare linki działały.
 
+## Osobna paczka na 1.21.11 (`QualityArmory-21-axon-1.21.11-shadery.zip`)
+
+Domyślna paczka (`QualityArmory-21-axon.zip`) ma shadery AxonMap w starym formacie (1.21.4: `fog_distance`, `linear_fog`, własne `uniform FogColor`). Klient 1.21.11 ich nie skompiluje (`undefined variable "fog_distance"`, `declaration of "FogColor" conflicts`) i odrzuca całą paczkę. Do tego jej `pack.mcmeta` z `pack_format` 46 bez `supported_formats` jest na 1.21.11 odrzucany.
+
+`QualityArmory-21-axon-1.21.11-shadery.zip` to ta sama zawartość co domyślna paczka, tylko:
+- bez starych shaderów z `assets/minecraft/shaders/core/` (także plików `.json`),
+- z shaderami `rendertype_text` i `position_tex_color` w formacie 1.21.11 (`fog_spherical_distance`, `apply_fog`, bloki `DynamicTransforms`/`Projection`), wziętymi z paczki testowej HUD,
+- z `pack.mcmeta` `min_format`/`max_format` = 75 (tylko 1.21.11).
+
+Domyślna paczka i `QualityArmory-21-axon-1.21.11.zip` zostają bez zmian. Shadery w wersji 1.21.11 są z 26.10, więc nie mają zmian z „Shader AxonMap: sprity i zegar klienta” (#29).
+
 ## Amunicja
 
 Dziesięć typów amunicji z paczki QualityArmory (przedmiot `phantom_membrane`, `custom_model_data` 1–10) ma nowe modele 3D. Jeden przedmiot to jedna sztuka (liczbę pokazuje licznik w slocie). Numery i nazwy w pluginie zostają bez zmian, więc nic nie trzeba przestawiać w konfiguracji. Generuje je `zrodla/gen_ammo.py` (podgląd: `preview_ammo.py`), `build_pack.py` podmienia modele `qualityarmory:ammo/*`, a `dodaj_ammo.py` dopisuje je do gotowego zipa. Tekstury 128×128 leżą w `textures/axon/ammo_<nazwa>.png`.
