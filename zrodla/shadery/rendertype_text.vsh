@@ -2,6 +2,27 @@
 
 #moj_import <minecraft:fog.glsl>
 
+#define AXON_SPRITES 5
+#define AXON_SPRITE_NIBBLES 21
+#define AXON_CLOCK_PERIOD 40.0
+const vec3 AXON_NIB[16] = vec3[16](
+    vec3(13.0, 13.0, 13.0) / 255.0,
+    vec3(255.0, 255.0, 255.0) / 255.0,
+    vec3(64.0, 64.0, 255.0) / 255.0,
+    vec3(255.0, 0.0, 0.0) / 255.0,
+    vec3(127.0, 204.0, 25.0) / 255.0,
+    vec3(208.0, 109.0, 142.0) / 255.0,
+    vec3(92.0, 219.0, 213.0) / 255.0,
+    vec3(48.0, 115.0, 112.0) / 255.0,
+    vec3(250.0, 238.0, 77.0) / 255.0,
+    vec3(132.0, 44.0, 44.0) / 255.0,
+    vec3(0.0, 217.0, 58.0) / 255.0,
+    vec3(0.0, 124.0, 0.0) / 255.0,
+    vec3(125.0, 53.0, 152.0) / 255.0,
+    vec3(160.0, 160.0, 255.0) / 255.0,
+    vec3(216.0, 127.0, 51.0) / 255.0,
+    vec3(33.0, 33.0, 135.0) / 255.0);
+
 in vec3 Position;
 in vec4 Color;
 in vec2 UV0;
@@ -21,6 +42,10 @@ out vec2 texCoord0;
 flat out int axonMap;
 flat out int axonTile;
 flat out vec2 axonCursor;
+flat out vec4 axonSpriteA[AXON_SPRITES];
+flat out vec4 axonSpriteB[AXON_SPRITES];
+flat out vec2 axonSpriteLim[AXON_SPRITES];
+flat out float axonClock;
 
 // AxonMap: ekran mapy na cały ekran. Musi się zgadzać z pluginem (OverlayLayout).
 #define AXON_COLS 5
@@ -29,6 +54,11 @@ flat out vec2 axonCursor;
 // Plugin ustawia graczowi yaw 0 i pitch 0 przy otwarciu mapy (OverlayLayout.CURSOR_*).
 #define AXON_YAW_RANGE 180.0
 #define AXON_PITCH_RANGE 100.0
+
+// Sprity: ruchome elementy mini gier rysuje shader (60+ fps), a serwer wysyła tylko tabelę parametrów.
+// Tabela leży w ostatnim wierszu kafla (piksel y=127, od x=8): każdy piksel to jeden z 16 kolorów
+// (półbajt), rozpoznawany jako najbliższy z AXON_NIB. Pierwsze 4 półbajty to nagłówek; bez niego
+// (np. zwykła mapa AxonMap) tabela jest ignorowana.
 
 // Znacznik: w pierwszym wierszu mapy piksele 0-7 to na przemian biały (A) i czarny (B),
 // w pikselach 8-23 liczba białych pikseli to numer kafelka, a w ostatnim wierszu
@@ -59,6 +89,63 @@ int axonTileIndex() {
         }
     }
     return index < AXON_COLS * AXON_ROWS ? index : -1;
+}
+
+int axonNibble(int i) {
+    vec3 c = texelFetch(Sampler0, ivec2(8 + i, 127), 0).rgb;
+    int best = 0;
+    float bestDistance = 1e9;
+    for (int k = 0; k < 16; k++) {
+        vec3 d = c - AXON_NIB[k];
+        float dd = dot(d, d);
+        if (dd < bestDistance) {
+            bestDistance = dd;
+            best = k;
+        }
+    }
+    return best;
+}
+
+int axonNibbles(int first, int count) {
+    int v = 0;
+    for (int i = 0; i < count; i++) {
+        v = v * 16 + axonNibble(first + i);
+    }
+    return v;
+}
+
+int axonSigned8(int v) {
+    return v >= 128 ? v - 256 : v;
+}
+
+void axonReadSprites() {
+    for (int i = 0; i < AXON_SPRITES; i++) {
+        axonSpriteA[i] = vec4(0.0);
+        axonSpriteB[i] = vec4(0.0);
+        axonSpriteLim[i] = vec2(0.0);
+    }
+    if (axonNibble(0) != 10 || axonNibble(1) != 5 || axonNibble(2) != 12 || axonNibble(3) != 3) {
+        return;
+    }
+    for (int i = 0; i < AXON_SPRITES; i++) {
+        int base = 4 + i * AXON_SPRITE_NIBBLES;
+        int kind = axonNibble(base + 9);
+        if (kind == 0) {
+            continue;
+        }
+        // Pozycja to x + 1024 * y (po 10 bitów).
+        int xy = axonNibbles(base, 5);
+        float y = float(xy / 1024);
+        float x = float(xy - (xy / 1024) * 1024);
+        float vx = float(axonSigned8(axonNibbles(base + 5, 2))) * 0.25;
+        float vy = float(axonSigned8(axonNibbles(base + 7, 2))) * 0.25;
+        float color = float(axonNibble(base + 10));
+        float size = float(axonNibbles(base + 11, 2));
+        float stamp = float(axonNibbles(base + 13, 2));
+        axonSpriteA[i] = vec4(x, y, vx, vy);
+        axonSpriteB[i] = vec4(float(kind), color, size, stamp);
+        axonSpriteLim[i] = vec2(float(axonNibbles(base + 15, 3)), float(axonNibbles(base + 18, 3)));
+    }
 }
 
 // AxonMap: przy otwartej mapie plugin ustawia graczowi czas gry, którego reszta z 24000 jest
@@ -104,6 +191,12 @@ void main() {
     axonMap = 0;
     axonTile = 0;
     axonCursor = vec2(-1.0);
+    axonClock = mod(GameTime * 24000.0 - 12000.0, AXON_CLOCK_PERIOD);
+    for (int s = 0; s < AXON_SPRITES; s++) {
+        axonSpriteA[s] = vec4(0.0);
+        axonSpriteB[s] = vec4(0.0);
+        axonSpriteLim[s] = vec2(0.0);
+    }
 
     if (ProjMat[2][3] == 0.0 && axonMapOpen(GameTime) && axonIsXpText()
             && axonInHud(axonGuiPos(gl_Position, ProjMat), axonGuiSize(ProjMat), 40.0)) {
@@ -115,6 +208,7 @@ void main() {
     if (tile >= 0) {
         axonMap = 1;
         axonTile = tile;
+        axonReadSprites();
         // Kierunek kamery z ModelViewMat (świat -> widok): przód = -trzeci wiersz macierzy.
         vec3 forward = -vec3(ModelViewMat[0][2], ModelViewMat[1][2], ModelViewMat[2][2]);
         float yaw = degrees(atan(-forward.x, forward.z));

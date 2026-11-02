@@ -36,7 +36,8 @@ vec2 axonGuiPos(vec4 clip, mat4 proj) {
 bool axonInHud(vec2 pos, vec2 size, float hudHeight) {
     vec2 center = size * 0.5;
     bool hotbar = abs(pos.x - center.x) <= 92.0 && pos.y >= size.y - hudHeight;
-    bool crosshair = abs(pos.x - center.x) <= 8.0 && abs(pos.y - center.y) <= 8.0;
+    // Celownik i pod nim wskaźnik cooldownu ataku (pasek 16x4 pod celownikiem, pojawia się po kliknięciu LPM).
+    bool crosshair = abs(pos.x - center.x) <= 10.0 && pos.y >= center.y - 10.0 && pos.y <= center.y + 22.0;
     return hotbar || crosshair;
 }
 
