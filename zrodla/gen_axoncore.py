@@ -73,6 +73,8 @@ def pliki():
     for key, m in B.items():   # bloki vanilla podmienione u wszystkich
         ns, path = key.split(':')
         files['assets/%s/models/%s.json' % (ns, path)] = _json({'parent': 'minecraft:block/block', **m.json()})
+        if hasattr(m, 'texture'):   # własna tekstura bloku (blocks.py)
+            files['assets/axon/textures/item/%s.png' % m.name] = _png(m.texture)
     for key, img in CHEST.items():
         ns, path = key.split(':')
         files['assets/%s/textures/%s.png' % (ns, path)] = _png(img)

@@ -30,6 +30,9 @@ def sprawdz(path):
             d=json.loads(z.read(n))
             for o in d.get('overrides',[]): roots.add(o['model'])
             if d.get('parent'): roots.add(d['parent'])
+    for n in names:   # podmienione modele vanilla (bloki, narzędzia) też muszą mieć tekstury
+        m = re.match(r'assets/minecraft/models/(.*)\.json$', n)
+        if m: roots.add('minecraft:' + m[1])
     def resolve(r):
         ns,p=rl(r); n=mpath(r)
         if n not in names:
