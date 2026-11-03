@@ -177,6 +177,9 @@ def main():
             zout.writestr(zi, data)
     sha = hashlib.sha1(open(DST, 'rb').read()).hexdigest()
     print('wrote', DST, 'sha1', sha, 'elements', report)
+    from sprawdz_paczke import main as sprawdz   # nie zostawiaj uszkodzonej paczki
+    if sprawdz([DST]):
+        raise SystemExit('paczka nie przeszła sprawdz_paczke.py')
 
 
 if __name__ == '__main__':

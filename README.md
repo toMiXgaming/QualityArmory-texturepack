@@ -29,6 +29,10 @@ Zmienione pliki względem oryginału:
 - `assets/minecraft/atlases/blocks.json` – dodane źródło `axon/` (bez tego tekstury byłyby fioletowo-czarne).
 - `pack.mcmeta` – opis zaczyna się od „AXON”, żeby w grze było widać, która paczka jest wczytana; formaty 34–75 i nakładki (overlays) dla starszych wersji.
 
+## Budowanie i sprawdzanie paczki
+
+Paczkę buduje się zawsze pełnym `zrodla/build_pack.py` (po uruchomieniu generatorów `gen*.py`, które zapisują do `zrodla/build/`), a potem `zrodla/buduj_1_21_11.py`. Skrypty `dodaj_*.py` łatają gotowy zip i nie przywracają niczego, co wcześniejsza przebudowa zgubiła, więc nie używaj ich do wydawania paczki. Oba skrypty budujące kończą się `zrodla/sprawdz_paczke.py`, który zgłasza błąd, gdy brakuje modelu, tekstury, skina albo numeru broni na kuszy. Zip można sprawdzić ręcznie: `python3 zrodla/sprawdz_paczke.py plik.zip`.
+
 ## Wersje Minecrafta (1.21–1.21.11)
 
 Jedna paczka działa na wszystkich wersjach 1.21.x. `pack.mcmeta` deklaruje formaty 34–75 w obu zapisach (stary `pack_format` + `supported_formats` i nowy `min_format`/`max_format` od 1.21.9), a różnice między wersjami załatwiają nakładki (`overlays`), które gra wczytuje tylko na pasujących wersjach:
