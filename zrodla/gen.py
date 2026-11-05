@@ -1283,7 +1283,7 @@ def _gun_skins(base, first, sc, themes):
              'awp': 'AWP', 'm16': 'M16', 'mac10': 'MAC-10', 'sks': 'SKS',
              'deagle': 'Desert Eagle', 'sw1911': 'SW1911', 'p30': 'P30', 'mp5': 'MP5', 'uzi': 'Uzi',
              'sg553': 'SG553', 'famas': 'FAMAS', 'dragunov': 'Dragunov', 'kar98k': 'Kar98k',
-             'spas': 'SPAS-12'}[base]
+             'spas': 'SPAS-12', 'asval': 'AS Val', 'ppsh41': 'PPSh-41', 'glock': 'Glock 17', 'rpg': 'RPG-7'}[base]
     return {'%s_%s' % (base, t): (base, generic_skin(t, sc), first + i, '%s [%s]' % (title, names[t]))
             for i, t in enumerate(themes)}
 
@@ -1319,6 +1319,9 @@ SKINS.update(_gun_skins('famas', 241, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka'
 SKINS.update(_gun_skins('dragunov', 251, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 SKINS.update(_gun_skins('kar98k', 261, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 SKINS.update(_gun_skins('spas', 271, 1.0, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
+# AS Val 281-, PPSh-41 291-, Glock 17 301-, RPG-7 311-
+for _b, _f, _sc in (('asval', 281, 1.0), ('ppsh41', 291, 1.0), ('glock', 301, 0.35), ('rpg', 311, 1.0)):
+    SKINS.update(_gun_skins(_b, _f, _sc, ('zloto', 'neon', 'lawa', 'galaktyka', 'damast', 'polar', 'holo')))
 
 def build_awp():
     L = 56.0

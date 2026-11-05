@@ -1,0 +1,12 @@
+invalid: false
+name: asval_damast
+displayname: '&6AS Val &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 285
+material: CROSSBOW
+baseGun: asval
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

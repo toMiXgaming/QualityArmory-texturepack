@@ -1,0 +1,12 @@
+invalid: false
+name: rpg_galaktyka
+displayname: '&6RPG-7 &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 314
+material: CROSSBOW
+baseGun: rpg
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

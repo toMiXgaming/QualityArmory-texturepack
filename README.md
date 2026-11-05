@@ -27,7 +27,7 @@ Paczka zasobów do QualityArmory na Paper 1.21.4, działa na klientach od 1.21 d
 | RPG-7 | crossbow | 9 | `qualityarmory:gun/rpg` |
 | Glock 17 | crossbow | 86 (nowy, QA nie ma tej broni) | `qualityarmory:gun/glock` |
 
-Cztery ostatnie bronie (AS Val 41 elementów, PPSh-41 44, RPG-7 47, Glock 33) są tylko w wersji bazowej, bez skinów. Glock ma w paczce numer 86 (wolny, oryginalne numery QA kończą się na 85), więc w configu QualityArmory trzeba ustawić mu `id: 86` i materiał CROSSBOW. Dopisanie do gotowych zipów: `zrodla/dodaj_bronie_4.py`, pełna przebudowa `build_pack.py` też je uwzględnia.
+Cztery ostatnie bronie (AS Val 41 elementów, PPSh-41 44, RPG-7 47, Glock 33) mają też po 7 skinów premium (numery 281–317, tabela niżej). Glock ma w paczce numer 86 (wolny, oryginalne numery QA kończą się na 85), więc w configu QualityArmory trzeba ustawić mu `id: 86` i materiał CROSSBOW. Dopisanie do gotowych zipów: `zrodla/dodaj_bronie_4.py`, pełna przebudowa `build_pack.py` też je uwzględnia.
 
 Zmienione pliki względem oryginału:
 - `assets/qualityarmory/models/gun/<broń>.json` – nowe modele (AK 75 elementów, M4 76, Remington 56, Makarov 30, AWP 119, MAC-10 35, M16 63, SKS 59, Desert Eagle 34, SW1911 44, P30 34, MP5 54, Uzi 33, SG 553 50, FAMAS 39, Dragunov 94, Kar98k 49, SPAS-12 26).
@@ -102,6 +102,10 @@ Motywy: Złoto (złoto z grawerem, heban), Neon (czarny mat i karbon, świecące
 | Dragunov | 251–257 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `dragunov_<motyw>` |
 | Kar98k | 261–267 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `kar98k_<motyw>` |
 | SPAS-12 | 271–277 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `spas_<motyw>` |
+| AS Val | 281–287 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `asval_<motyw>` |
+| PPSh-41 | 291–297 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `ppsh41_<motyw>` |
+| Glock 17 | 301–307 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `glock_<motyw>` |
+| RPG-7 | 311–317 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `rpg_<motyw>` |
 
 `<motyw>` to `zloto`, `neon`, `lawa`, `galaktyka`, `polar`, `damast` albo `holo` (np. `deagle_holo`, numer 187).
 

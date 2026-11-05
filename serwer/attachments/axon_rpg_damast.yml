@@ -1,0 +1,12 @@
+invalid: false
+name: rpg_damast
+displayname: '&6RPG-7 &e[Damast]'
+lore:
+- '&7Skin premium AXON'
+id: 315
+material: CROSSBOW
+baseGun: rpg
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

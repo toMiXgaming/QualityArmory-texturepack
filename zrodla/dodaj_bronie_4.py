@@ -5,7 +5,7 @@ Glock (QualityArmory nie ma jego modelu) dostaje nowy wpis w crossbow.json: cust
 Sprawdza modele tą samą walidacją co build_pack.py. build_pack.py robi to samo przy pełnej przebudowie."""
 import hashlib, json, os, sys, zipfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from gen import NEW_GUNS
+from gen import NEW_GUNS, SKINS
 from build_pack import validate
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -20,12 +20,21 @@ def pliki():
     for n in NAZWY:
         mj = open(os.path.join(HERE, 'build', n + '.json'), 'rb').read()
         png = open(os.path.join(HERE, 'build', n + '.png'), 'rb').read()
-        need = json.load(open(os.path.join(HERE, 'display_qa.json')))[n].keys()
+        need = list(json.load(open(os.path.join(HERE, 'display_qa.json')))[n].keys())
         errs, _ = validate(mj, png, n, set(need) | {'firstperson_lefthand'})
         if errs:
             raise SystemExit('%s: %s' % (n, errs))
         files['assets/qualityarmory/models/gun/%s.json' % n] = mj
         files['assets/qualityarmory/textures/axon/%s.png' % n] = png
+    for n, (base, _, cmd, _) in SKINS.items():     # skiny premium nowych broni (7 motywów każda)
+        if base in NAZWY:
+            errs, _ = validate(open(os.path.join(HERE, 'build', n + '.json'), 'rb').read(),
+                               open(os.path.join(HERE, 'build', n + '.png'), 'rb').read(), n,
+                               set(json.load(open(os.path.join(HERE, 'display_qa.json')))[base]) | {'firstperson_lefthand'})
+            if errs:
+                raise SystemExit('%s: %s' % (n, errs))
+            for fn in ('assets/qualityarmory/models/gun/%s.json', 'assets/qualityarmory/textures/axon/%s.png'):
+                files[fn % n] = open(os.path.join(HERE, 'build', fn.split('/')[-1] % n), 'rb').read()
     return files
 
 
@@ -36,6 +45,9 @@ def main():
         zin = zipfile.ZipFile(path)
         items = json.loads(zin.read(ITEMS))
         ent = items['model']['entries']
+        for n, (base, _, cmd, _) in SKINS.items():
+            if base in NAZWY:
+                NEW_GUNS[n] = cmd
         for n, cmd in NEW_GUNS.items():
             ref = 'qualityarmory:gun/' + n
             if any(e['threshold'] == cmd and e['model'].get('model') != ref for e in ent):
@@ -55,8 +67,8 @@ def main():
                 zi.external_attr = 0o644 << 16
                 zout.writestr(zi, data)
         print(zn, hashlib.sha1(open(path, 'rb').read()).hexdigest())
-    for n in NAZWY:
-        for ext in ('.json', '.png', '.meta.json'):
+    for n in NAZWY + [k for k, v in SKINS.items() if v[0] in NAZWY]:
+        for ext in ('.json', '.png') + (('.meta.json',) if n in NAZWY else ()):
             open(os.path.join(ROOT, 'modele', n + ext), 'wb').write(open(os.path.join(HERE, 'build', n + ext), 'rb').read())
 
 

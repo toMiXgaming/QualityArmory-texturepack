@@ -1,0 +1,12 @@
+invalid: false
+name: glock_lawa
+displayname: '&6Glock 17 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 303
+material: CROSSBOW
+baseGun: glock
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
