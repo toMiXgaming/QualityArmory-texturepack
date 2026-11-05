@@ -12,6 +12,7 @@ import os
 import sys
 import zipfile
 
+from dodaj_barrier import patch as dodaj_barrier
 from sprawdz_paczke import sprawdz
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -35,6 +36,7 @@ def main():
             with open(os.path.join(SHADERS, name), 'rb') as f:
                 dst.writestr(TARGET + name, f.read())
     print('zapisano', os.path.basename(OUT))
+    dodaj_barrier(OUT)
     errs = sprawdz(OUT)
     if errs:
         raise SystemExit('\n'.join(errs))

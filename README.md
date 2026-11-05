@@ -29,6 +29,8 @@ Zmienione pliki względem oryginału:
 - `assets/minecraft/atlases/blocks.json` – dodane źródło `axon/` (bez tego tekstury byłyby fioletowo-czarne).
 - `pack.mcmeta` – opis zaczyna się od „AXON”, żeby w grze było widać, która paczka jest wczytana; formaty 34–75 i nakładki (overlays) dla starszych wersji.
 
+Stanowiska i inne przedmioty z Axon-items mogą być w świecie przedmiotem `minecraft:barrier` z `custom_model_data` = `abs(hashCode("axon:<nazwa>")) % 100000 + 1` (np. `axon:warsztat_t3` to 93667), a nie komponentem `item_model`. `zrodla/dodaj_barrier.py` dopisuje do zipów `assets/minecraft/items/barrier.json` z tymi numerami dla każdego `axon:<nazwa>` (woła go `buduj_1_21_11.py`); bez tego taki warsztat był fioletowo-czarną kostką.
+
 ## Wersje Minecrafta (1.21–1.21.11)
 
 Jedna paczka działa na wszystkich wersjach 1.21.x. `pack.mcmeta` deklaruje formaty 34–75 w obu zapisach (stary `pack_format` + `supported_formats` i nowy `min_format`/`max_format` od 1.21.9), a różnice między wersjami załatwiają nakładki (`overlays`), które gra wczytuje tylko na pasujących wersjach:
