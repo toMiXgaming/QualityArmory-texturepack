@@ -22,6 +22,12 @@ Paczka zasobów do QualityArmory na Paper 1.21.4, działa na klientach od 1.21 d
 | Dragunov SVD | crossbow | 16 | `qualityarmory:gun/dragunov` |
 | Kar98k | crossbow | 60 | `qualityarmory:gun/kar98k` |
 | SPAS-12 | crossbow | 17 | `qualityarmory:gun/spas` |
+| AS Val | crossbow | 58 | `qualityarmory:gun/asval` |
+| PPSh-41 | crossbow | 54 | `qualityarmory:gun/ppsh41` |
+| RPG-7 | crossbow | 9 | `qualityarmory:gun/rpg` |
+| Glock 17 | crossbow | 86 (nowy, QA nie ma tej broni) | `qualityarmory:gun/glock` |
+
+Cztery ostatnie bronie (AS Val 41 elementów, PPSh-41 44, RPG-7 47, Glock 33) są tylko w wersji bazowej, bez skinów. Glock ma w paczce numer 86 (wolny, oryginalne numery QA kończą się na 85), więc w configu QualityArmory trzeba ustawić mu `id: 86` i materiał CROSSBOW. Dopisanie do gotowych zipów: `zrodla/dodaj_bronie_4.py`, pełna przebudowa `build_pack.py` też je uwzględnia.
 
 Zmienione pliki względem oryginału:
 - `assets/qualityarmory/models/gun/<broń>.json` – nowe modele (AK 75 elementów, M4 76, Remington 56, Makarov 30, AWP 119, MAC-10 35, M16 63, SKS 59, Desert Eagle 34, SW1911 44, P30 34, MP5 54, Uzi 33, SG 553 50, FAMAS 39, Dragunov 94, Kar98k 49, SPAS-12 26).
