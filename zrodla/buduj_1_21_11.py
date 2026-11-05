@@ -12,6 +12,8 @@ import os
 import sys
 import zipfile
 
+from sprawdz_paczke import sprawdz
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SRC = os.path.join(ROOT, 'QualityArmory-21-axon.zip')
@@ -33,6 +35,9 @@ def main():
             with open(os.path.join(SHADERS, name), 'rb') as f:
                 dst.writestr(TARGET + name, f.read())
     print('zapisano', os.path.basename(OUT))
+    errs = sprawdz(OUT)
+    if errs:
+        raise SystemExit('\n'.join(errs))
 
 
 if __name__ == '__main__':
