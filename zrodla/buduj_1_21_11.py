@@ -12,6 +12,7 @@ import os
 import sys
 import zipfile
 
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 SRC = os.path.join(ROOT, 'QualityArmory-21-axon.zip')
@@ -33,6 +34,10 @@ def main():
             with open(os.path.join(SHADERS, name), 'rb') as f:
                 dst.writestr(TARGET + name, f.read())
     print('zapisano', os.path.basename(OUT))
+    from atlas_bloku import patch as atlas_bloku
+    from dodaj_barrier import patch as dodaj_barrier
+    atlas_bloku(OUT)
+    dodaj_barrier(OUT)
     sys.path.insert(0, HERE)
     from sprawdz_paczke import main as sprawdz
     return sprawdz([SRC, OUT])

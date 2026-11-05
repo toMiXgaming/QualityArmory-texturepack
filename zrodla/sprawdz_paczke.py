@@ -86,6 +86,18 @@ def sprawdz(path):
     if len(set(thr)) != len(cb): bad.append(('powtórzone custom_model_data na kuszy',))
     for f in ('assets/minecraft/items/crossbow_arrow.json',):
         if f in names: bad.append(('zbędny plik', f))
+    # modele zwykłych bloków są rysowane z atlasu bloków; od 1.21.9 nie czyta on katalogu item/, więc taka tekstura
+    # musi być wpisana w atlases/blocks.json (inaczej blok jest fioletowo-czarny, np. beczka)
+    src = json.loads(z.read('assets/minecraft/atlases/blocks.json'))['sources']
+    singles = {s['resource'] for s in src if 'single' in s.get('type', '')}
+    prefixes = [s['prefix'] for s in src if 'directory' in s.get('type', '') and s.get('prefix')]
+    for n in sorted(names):
+        m = re.match(r'assets/minecraft/models/block/.*\.json$', n)
+        if not m: continue
+        for r in {v for v in (json.loads(z.read(n)).get('textures') or {}).values() if not v.startswith('#')}:
+            ns, p = rl(r)
+            if ns != 'minecraft' and not p.startswith('block/') and r not in singles and not any(p.startswith(x) for x in prefixes):
+                bad.append(('tekstura bloku spoza atlasu bloków', n, r))
     return sorted(set(bad), key=str), checked
 
 
