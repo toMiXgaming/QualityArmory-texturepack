@@ -1,0 +1,12 @@
+invalid: false
+name: asval_galaktyka
+displayname: '&6AS Val &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 284
+material: CROSSBOW
+baseGun: asval
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

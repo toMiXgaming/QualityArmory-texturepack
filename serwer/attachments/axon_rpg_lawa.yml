@@ -1,0 +1,12 @@
+invalid: false
+name: rpg_lawa
+displayname: '&6RPG-7 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 313
+material: CROSSBOW
+baseGun: rpg
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

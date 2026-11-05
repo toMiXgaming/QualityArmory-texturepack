@@ -19,10 +19,10 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = sys.argv[1] if len(sys.argv) > 1 else '/tmp/qa/QA21.zip'
 DST = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, 'QualityArmory-21-axon.zip')
 GUNS = ['ak47', 'm4a1s', 'remmington', 'makarov', 'awp', 'mac10', 'm16', 'sks',
-        'deagle', 'sw1911', 'p30', 'mp5', 'uzi', 'sg553', 'famas', 'dragunov', 'kar98k', 'spas'] + list(SKINS)
+        'deagle', 'sw1911', 'p30', 'mp5', 'uzi', 'sg553', 'famas', 'dragunov', 'kar98k', 'spas',
+        'asval', 'ppsh41', 'glock', 'rpg'] + list(SKINS)
 ITEMS = 'assets/minecraft/items/crossbow.json'
 ATLAS = 'assets/minecraft/atlases/blocks.json'
-BLOCK_ATLAS_SINGLES = ['axon:item/beczka']   # tekstury z item/ używane przez modele zwykłych bloków (sprawdz_paczke.py to pilnuje)
 DROP = ('assets/minecraft/shaders/',   # base pack shaders from an older build: now in overlays only
         'assets/minecraft/items/crossbow_arrow.json')   # a stray model file in QA's items/ (load error on 1.21.4+)
 LEGACY = 'axon_1_21_0/'
@@ -113,11 +113,6 @@ def main():
     atlas = json.loads(zin.read(ATLAS))
     if not any(s.get('source') == 'axon' for s in atlas['sources']):
         atlas['sources'].append({'type': 'directory', 'source': 'axon', 'prefix': 'axon/'})
-    # Beczka z Minecrafta to blok: jej model bierze teksturę axon:item/beczka z atlasu bloków. Od 1.21.9 ten atlas
-    # nie czyta katalogu item/ (przedmioty mają osobny atlas), więc bez tego blok jest fioletowo-czarny.
-    for res in BLOCK_ATLAS_SINGLES:
-        if not any(s.get('resource') == res for s in atlas['sources']):
-            atlas['sources'].append({'type': 'single', 'resource': res})
     repl[ATLAS] = json.dumps(atlas, indent=4).encode()
     # premium skins: new custom_model_data entries on the crossbow (QA's own ids end at 85)
     items = json.loads(zin.read(ITEMS))
@@ -183,6 +178,13 @@ def main():
             zout.writestr(zi, data)
     sha = hashlib.sha1(open(DST, 'rb').read()).hexdigest()
     print('wrote', DST, 'sha1', sha, 'elements', report)
+    from atlas_bloku import patch as atlas_bloku   # tekstury z item/ użyte przez modele zwykłych bloków (atlas_bloku.py)
+    atlas_bloku(DST)
+    from dodaj_barrier import patch as dodaj_barrier   # definicja items/barrier.json dla stanowisk (dodaj_barrier.py)
+    dodaj_barrier(DST)
+    from sprawdz_paczke import main as sprawdz   # nie zostawiaj uszkodzonej paczki
+    if sprawdz([DST]):
+        raise SystemExit('paczka nie przeszła sprawdz_paczke.py')
 
 
 if __name__ == '__main__':

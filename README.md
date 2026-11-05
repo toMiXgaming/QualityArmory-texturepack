@@ -22,12 +22,22 @@ Paczka zasobów do QualityArmory na Paper 1.21.4, działa na klientach od 1.21 d
 | Dragunov SVD | crossbow | 16 | `qualityarmory:gun/dragunov` |
 | Kar98k | crossbow | 60 | `qualityarmory:gun/kar98k` |
 | SPAS-12 | crossbow | 17 | `qualityarmory:gun/spas` |
+| AS Val | crossbow | 58 | `qualityarmory:gun/asval` |
+| PPSh-41 | crossbow | 54 | `qualityarmory:gun/ppsh41` |
+| RPG-7 | crossbow | 9 | `qualityarmory:gun/rpg` |
+| Glock 17 | crossbow | 86 (nowy, QA nie ma tej broni) | `qualityarmory:gun/glock` |
+
+Cztery ostatnie bronie (AS Val 41 elementów, PPSh-41 44, RPG-7 47, Glock 33) mają też po 7 skinów premium (numery 281–317, tabela niżej). Glock ma w paczce numer 86 (wolny, oryginalne numery QA kończą się na 85), więc w configu QualityArmory trzeba ustawić mu `id: 86` i materiał CROSSBOW. Dopisanie do gotowych zipów: `zrodla/dodaj_bronie_4.py`, pełna przebudowa `build_pack.py` też je uwzględnia.
 
 Zmienione pliki względem oryginału:
 - `assets/qualityarmory/models/gun/<broń>.json` – nowe modele (AK 75 elementów, M4 76, Remington 56, Makarov 30, AWP 119, MAC-10 35, M16 63, SKS 59, Desert Eagle 34, SW1911 44, P30 34, MP5 54, Uzi 33, SG 553 50, FAMAS 39, Dragunov 94, Kar98k 49, SPAS-12 26).
 - `assets/qualityarmory/textures/axon/<broń>.png` – tekstury 128×128 (małe bronie mają gęstsze teksele).
 - `assets/minecraft/atlases/blocks.json` – dodane źródło `axon/` (bez tego tekstury byłyby fioletowo-czarne).
 - `pack.mcmeta` – opis zaczyna się od „AXON”, żeby w grze było widać, która paczka jest wczytana; formaty 34–75 i nakładki (overlays) dla starszych wersji.
+
+## Budowanie i sprawdzanie paczki
+
+Paczkę buduje się zawsze pełnym `zrodla/build_pack.py` (po uruchomieniu generatorów `gen*.py`, które zapisują do `zrodla/build/`), a potem `zrodla/buduj_1_21_11.py`. Skrypty `dodaj_*.py` łatają gotowy zip i nie przywracają niczego, co wcześniejsza przebudowa zgubiła, więc nie używaj ich do wydawania paczki. Oba skrypty budujące kończą się `zrodla/sprawdz_paczke.py`, który zgłasza błąd, gdy brakuje modelu, tekstury, skina albo numeru broni na kuszy. Zip można sprawdzić ręcznie: `python3 zrodla/sprawdz_paczke.py plik.zip`. Sprawdza też, że modele zwykłych bloków (np. beczka) używają tylko tekstur z atlasu bloków: od 1.21.9 atlas bloków nie czyta katalogu `item/`, więc tekstury z `item/` użyte przez modele bloków (beczka, stół rzemieślniczy, piec, ognisko) są dopisywane do `atlases/blocks.json` jako osobne źródła przez `zrodla/atlas_bloku.py`; bez tego te bloki były fioletowo-czarnymi kostkami.
 
 Stanowiska i inne przedmioty z Axon-items mogą być w świecie przedmiotem `minecraft:barrier` z `custom_model_data` = `abs(hashCode("axon:<nazwa>")) % 100000 + 1` (np. `axon:warsztat_t3` to 93667), a nie komponentem `item_model`. `zrodla/dodaj_barrier.py` dopisuje do zipów `assets/minecraft/items/barrier.json` z tymi numerami dla każdego `axon:<nazwa>` (woła go `buduj_1_21_11.py`); bez tego taki warsztat był fioletowo-czarną kostką.
 
@@ -98,6 +108,10 @@ Motywy: Złoto (złoto z grawerem, heban), Neon (czarny mat i karbon, świecące
 | Dragunov | 251–257 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `dragunov_<motyw>` |
 | Kar98k | 261–267 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `kar98k_<motyw>` |
 | SPAS-12 | 271–277 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `spas_<motyw>` |
+| AS Val | 281–287 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `asval_<motyw>` |
+| PPSh-41 | 291–297 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `ppsh41_<motyw>` |
+| Glock 17 | 301–307 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `glock_<motyw>` |
+| RPG-7 | 311–317 | Złoto, Neon, Lawa, Galaktyka, Damast, Polar, Holo | `rpg_<motyw>` |
 
 `<motyw>` to `zloto`, `neon`, `lawa`, `galaktyka`, `polar`, `damast` albo `holo` (np. `deagle_holo`, numer 187).
 

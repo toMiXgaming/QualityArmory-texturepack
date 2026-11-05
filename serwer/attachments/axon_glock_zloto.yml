@@ -1,0 +1,12 @@
+invalid: false
+name: glock_zloto
+displayname: '&6Glock 17 &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 301
+material: CROSSBOW
+baseGun: glock
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

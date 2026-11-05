@@ -1,0 +1,12 @@
+invalid: false
+name: ppsh41_zloto
+displayname: '&6PPSh-41 &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 291
+material: CROSSBOW
+baseGun: ppsh41
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

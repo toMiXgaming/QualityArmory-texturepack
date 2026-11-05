@@ -1,0 +1,12 @@
+invalid: false
+name: asval_zloto
+displayname: '&6AS Val &e[Złoto]'
+lore:
+- '&7Skin premium AXON'
+id: 281
+material: CROSSBOW
+baseGun: asval
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

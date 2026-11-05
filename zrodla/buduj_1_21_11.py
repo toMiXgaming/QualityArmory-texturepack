@@ -12,8 +12,6 @@ import os
 import sys
 import zipfile
 
-from dodaj_barrier import patch as dodaj_barrier
-from sprawdz_paczke import sprawdz
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
@@ -36,10 +34,13 @@ def main():
             with open(os.path.join(SHADERS, name), 'rb') as f:
                 dst.writestr(TARGET + name, f.read())
     print('zapisano', os.path.basename(OUT))
+    from atlas_bloku import patch as atlas_bloku
+    from dodaj_barrier import patch as dodaj_barrier
+    atlas_bloku(OUT)
     dodaj_barrier(OUT)
-    errs = sprawdz(OUT)
-    if errs:
-        raise SystemExit('\n'.join(errs))
+    sys.path.insert(0, HERE)
+    from sprawdz_paczke import main as sprawdz
+    return sprawdz([SRC, OUT])
 
 
 if __name__ == '__main__':

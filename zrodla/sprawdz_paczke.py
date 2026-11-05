@@ -1,62 +1,114 @@
 #!/usr/bin/env python3
-"""Sprawdza zip paczki: modele bloków nie mogą używać tekstur spoza atlasu bloków.
-
-Modele nadpisujące zwykłe bloki (assets/minecraft/models/block/*.json) są rysowane z atlasu bloków. Od 1.21.9
-atlas bloków czyta tylko katalog block/ (plus źródła z assets/minecraft/atlases/blocks.json), więc tekstura z item/
-daje fioletowo-czarną kostkę, o ile nie ma jej na liście atlasu. Brakujący plik tekstury też jest błędem.
-Użycie: python3 zrodla/sprawdz_paczke.py plik.zip [...]
-"""
-import json
-import sys
-import zipfile
-
-
-def tex_refs(z, model, seen=()):
-    """Tekstury z modelu i jego rodziców zapisanych w paczce (rodzice z vanilli pomijamy)."""
-    d = json.loads(z.read(model))
-    out = {k: v for k, v in d.get('textures', {}).items() if not v.startswith('#')}
-    par = d.get('parent', '')
-    ns, _, p = par.rpartition(':') if ':' in par else ('minecraft', '', par)
-    ppath = 'assets/%s/models/%s.json' % (ns or 'minecraft', p)
-    if ppath in z.namelist() and ppath not in seen:
-        for k, v in tex_refs(z, ppath, seen + (ppath,)).items():
-            out.setdefault(k, v)
-    return out
+"""Sprawdza gotowy zip paczki (python3 sprawdz_paczke.py plik.zip ...), kod wyjścia 1 przy błędach.
+Wywoływany na końcu build_pack.py i buduj_1_21_11.py, żeby przebudowa nigdy nie zgubiła broni ani tekstur:
+- każdy model z items/ (i z nakładki axon_1_21_0) istnieje, ma parenta i tekstury (po rozwiązaniu #kluczy),
+- każdy plik items/*.json ma klucz "model",
+- każda broń z GUNS i każdy skin z SKINS ma model, teksturę i wpis custom_model_data na kuszy,
+- numery 1-85 z QualityArmory na kuszy wskazują na swoje modele (nie na model sąsiada)."""
+import json, os, re, sys, zipfile
+HERE = os.path.dirname(os.path.abspath(__file__))
 
 
 def sprawdz(path):
-    errs = []
-    with zipfile.ZipFile(path) as z:
-        names = set(z.namelist())
-        atlas = json.loads(z.read('assets/minecraft/atlases/blocks.json'))['sources']
-        singles = {s['resource'] for s in atlas if s.get('type') in ('single', 'minecraft:single')}
-        dirs = [(s['source'], s.get('prefix', '')) for s in atlas if 'directory' in s.get('type', '')]
-        for m in sorted(n for n in names if n.startswith('assets/minecraft/models/block/') and n.endswith('.json')):
-            for key, ref in tex_refs(z, m).items():
-                ns, _, p = ref.rpartition(':') if ':' in ref else ('minecraft', '', ref)
-                ns = ns or 'minecraft'
-                if ns == 'minecraft':
-                    continue   # tekstury vanilli
-                if 'assets/%s/textures/%s.png' % (ns, p) not in names:
-                    errs.append('%s: brak pliku tekstury %s' % (m, ref))
-                    continue
-                in_atlas = p.startswith('block/') or ref in singles or any(
-                    p.startswith(pre) and ('%s/%s' % (src, p[len(pre):])) for src, pre in dirs if pre)
-                if not in_atlas:
-                    errs.append('%s: tekstura %s nie jest w atlasie bloków (fioletowo-czarny blok)' % (m, ref))
-    return sorted(set(errs))
+    z = zipfile.ZipFile(path); names = set(z.namelist())
+    def rl(r): return r.split(':', 1) if ':' in r else ['minecraft', r]
+    def mpath(r): ns, p = rl(r); return 'assets/%s/models/%s.json' % (ns, p)
+    def walk(o, out):
+        if isinstance(o, dict):
+            if isinstance(o.get('model'), str): out.add(o['model'])
+            for v in o.values(): walk(v, out)
+        elif isinstance(o, list):
+            for v in o: walk(v, out)
+    bad = []
+    roots = set()
+
+    for n in names:
+        if re.match(r'(axon_1_21_0/)?assets/[^/]+/items/.*\.json$',n):
+            walk(json.loads(z.read(n)),roots)
+    for n in names:   # legacy overlay overrides
+        if n.startswith('axon_1_21_0/') and '/models/item/' in n:
+            d=json.loads(z.read(n))
+            for o in d.get('overrides',[]): roots.add(o['model'])
+            if d.get('parent'): roots.add(d['parent'])
+    for n in names:   # podmienione modele vanilla (bloki, narzędzia) też muszą mieć tekstury
+        m = re.match(r'assets/minecraft/models/(.*)\.json$', n)
+        if m: roots.add('minecraft:' + m[1])
+    def resolve(r):
+        ns,p=rl(r); n=mpath(r)
+        if n not in names:
+            if ns=='minecraft': return None  # vanilla model, assume ok
+            bad.append(('brak modelu',r)); return None
+        d=json.loads(z.read(n)); t=dict(d.get('textures') or {}); els=d.get('elements')
+        par=d.get('parent')
+        if par and not par.startswith('builtin/') and par not in ('minecraft:builtin/generated',):
+            pr=resolve(par)
+            if pr: pt,pe=pr; pt.update(t); t=pt; els=els or pe
+        return t,els
+    checked=0
+    for r in sorted(roots):
+        res=resolve(r)
+        if not res: continue
+        t,els=res; checked+=1
+        used=set()
+        for e in els or []:
+            for fn,f in e['faces'].items(): used.add(f['texture'])
+        for k in list(used)+[v for k,v in t.items() if k=='particle']:
+            x=k; seen=set()
+            while x.startswith('#'):
+                if x[1:] in seen or x[1:] not in t: bad.append(('nierozwiazana tekstura',r,k)); x=None; break
+                seen.add(x[1:]); x=t[x[1:]]
+            if x:
+                ns,p=rl(x)
+                if ns!='minecraft' and f'assets/{ns}/textures/{p}.png' not in names: bad.append(('brak tekstury',r,x))
+        for k,v in t.items():
+            if not v.startswith('#') and rl(v)[0]!='minecraft' and f'assets/{rl(v)[0]}/textures/{rl(v)[1]}.png' not in names: bad.append(('brak tekstury',r,v))
+
+    for n in sorted(names):
+        if re.match(r'assets/[^/]+/items/.*\.json$', n) and 'model' not in json.loads(z.read(n)):
+            bad.append(('items/ bez klucza model', n))
+    sys.path.insert(0, HERE)
+    from gen import SKINS
+    cb = json.loads(z.read('assets/minecraft/items/crossbow.json'))['model']['entries']
+    thr = {e['threshold']: e['model']['model'] for e in cb}
+    guns = ['ak47', 'm4a1s', 'remmington', 'makarov', 'awp', 'mac10', 'm16', 'sks', 'deagle', 'sw1911', 'p30',
+            'mp5', 'uzi', 'sg553', 'famas', 'dragunov', 'kar98k', 'spas'] + list(SKINS)
+    for g in guns:
+        for f in ('assets/qualityarmory/models/gun/%s.json' % g, 'assets/qualityarmory/textures/axon/%s.png' % g):
+            if f not in names: bad.append(('brak pliku broni', f))
+    for g, (base, _, cmd, _) in SKINS.items():
+        if thr.get(cmd) != 'qualityarmory:gun/' + g: bad.append(('skin bez wpisu na kuszy', g, cmd, thr.get(cmd)))
+    for cmd, m in thr.items():   # numer QA nie może wskazywać na model innej broni niż w README (1-85 = własne nazwy QA)
+        if cmd > 85: continue
+    for cmd, g in {4: 'ak47', 7: 'remmington', 25: 'm4a1s', 53: 'makarov', 20: 'awp', 48: 'mac10', 6: 'm16', 51: 'sks',
+                   78: 'deagle', 11: 'sw1911', 1: 'p30', 3: 'mp5', 49: 'uzi', 27: 'sg553', 64: 'famas',
+                   16: 'dragunov', 60: 'kar98k', 17: 'spas'}.items():
+        if thr.get(cmd) != 'qualityarmory:gun/' + g: bad.append(('zły model broni', cmd, g, thr.get(cmd)))
+    if len(set(thr)) != len(cb): bad.append(('powtórzone custom_model_data na kuszy',))
+    for f in ('assets/minecraft/items/crossbow_arrow.json',):
+        if f in names: bad.append(('zbędny plik', f))
+    # modele zwykłych bloków są rysowane z atlasu bloków; od 1.21.9 nie czyta on katalogu item/, więc taka tekstura
+    # musi być wpisana w atlases/blocks.json (inaczej blok jest fioletowo-czarny, np. beczka)
+    src = json.loads(z.read('assets/minecraft/atlases/blocks.json'))['sources']
+    singles = {s['resource'] for s in src if 'single' in s.get('type', '')}
+    prefixes = [s['prefix'] for s in src if 'directory' in s.get('type', '') and s.get('prefix')]
+    for n in sorted(names):
+        m = re.match(r'assets/minecraft/models/block/.*\.json$', n)
+        if not m: continue
+        for r in {v for v in (json.loads(z.read(n)).get('textures') or {}).values() if not v.startswith('#')}:
+            ns, p = rl(r)
+            if ns != 'minecraft' and not p.startswith('block/') and r not in singles and not any(p.startswith(x) for x in prefixes):
+                bad.append(('tekstura bloku spoza atlasu bloków', n, r))
+    return sorted(set(bad), key=str), checked
 
 
-def main(argv):
-    bad = 0
-    for path in argv:
-        errs = sprawdz(path)
-        for e in errs:
-            print('%s: %s' % (path, e))
-        bad += len(errs)
-        if not errs:
-            print('%s: OK' % path)
-    return 1 if bad else 0
+def main(paths):
+    code = 0
+    for p in paths:
+        bad, n = sprawdz(p)
+        for b in bad: print('  BŁĄD', b)
+        print('%s: modele %d, błędy %d' % (os.path.basename(p), n, len(bad)))
+        code |= bool(bad)
+    return code
 
 
 if __name__ == '__main__':

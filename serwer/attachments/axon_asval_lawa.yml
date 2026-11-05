@@ -1,0 +1,12 @@
+invalid: false
+name: asval_lawa
+displayname: '&6AS Val &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 283
+material: CROSSBOW
+baseGun: asval
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
