@@ -1764,7 +1764,6 @@ def build_deagle():
     D(stripes('K', 'a', 99, 0.2, a=(-0.14, 0.14), els=['rs_base'], mul=0.4))
     # markings
     D(text('L', 'AXON', 1.2, 0.35, els=['barrel'], col=(40, 40, 44), snap=True))
-    D(text('L', '.50 AE', 7.0, 0.55, els=['slide'], col=(40, 40, 44), snap=True))
     D(oval('RL', 12.85, 0.62, 0.08, 0.08, els=['hammer_spur']))
     D(stripes('K', 'b', 0.14, 0.06, els=['hammer_spur'], mul=0.6))
     for (a, b) in ((7.6, -1.05), (10.0, -0.95), (11.8, -1.0)):
@@ -1846,7 +1845,7 @@ def build_sw1911():
     D(paint('K', (-0.34, -0.22), (1.0, 1.1), (236, 236, 232), els=['rs_l']))
     D(paint('K', (0.22, 0.34), (1.0, 1.1), (236, 236, 232), els=['rs_r']))
     D(stripes('K', 'a', 99, 0.2, a=(-0.14, 0.14), els=['rs_base'], mul=0.4))
-    D(text('L', 'AXON 1911', 2.4, 0.3, els=['slide'], col=(170, 172, 176), snap=True))
+    D(text('L', 'AXON', 2.4, 0.3, els=['slide'], col=(170, 172, 176), snap=True))
     # hammer, safety, slide stop
     D(oval('RL', 10.2, 0.45, 0.07, 0.07, els=['hammer_spur']))
     D(stripes('K', 'b', 0.12, 0.05, els=['hammer_spur'], mul=0.6))
@@ -1998,7 +1997,7 @@ def build_mp5():
     D(stripes('T', 'a', 1.6, 0.3, a=(11.0, 18.5), els=['receiver'], mul=0.6, offset=0.4))
     D(stripes('RL', 'b', 99, 0.08, b=(-0.15, -0.05), a=(10.6, 20.8), els=['receiver'], mul=0.65))
     D(recess('R', (11.0, 13.2), (0.0, 1.2), els=['receiver']))
-    D(text('L', 'AXON MP5', 11.2, 1.35, els=['receiver'], col=(150, 152, 156), snap=True))
+    D(text('L', 'AXON', 11.2, 1.35, els=['receiver'], col=(150, 152, 156), snap=True))
     D(paint('L', (17.0, 17.25), (-0.5, -0.3), (220, 220, 214), els=['receiver']))
     D(paint('L', (17.55, 17.8), (-0.5, -0.3), (200, 40, 30), els=['receiver']))
     D(stripes('RL', 'a', 0.8, 0.25, a=(3.7, 10.0), b=(-1.4, 0.5), els=['handguard'], mul=0.6))
@@ -2073,7 +2072,7 @@ def build_uzi():
     D(recess('R', (12.6, 15.0), (-0.2, 0.75), els=['receiver']))
     D(recess('T', (6.0, 15.0), (-0.1, 0.1), els=['cover'], lip=False))
     D(stripes('TRLF', 'b', 0.15, 0.06, els=['ch_knob'], mul=0.7))
-    D(text('L', 'AXON 9MM', 5.0, 0.45, els=['receiver'], col=(150, 152, 156), snap=True))
+    D(text('L', 'AXON', 5.0, 0.45, els=['receiver'], col=(150, 152, 156), snap=True))
     D(stripes('RL', 'a', 0.5, 0.18, a=(4.8, 10.6), els=['forend'], mul=0.6))
     D(stripes('B', 'a', 0.5, 0.18, a=(4.8, 10.6), els=['forend'], mul=0.6))
     D(paint('K', (-0.08, 0.08), (2.2, 2.35), (236, 236, 232), els=['fs_post']))
@@ -2224,7 +2223,7 @@ def build_famas():
     D(stripes('RL', 'a', 0.7, 0.25, a=(5.0, 12.5), b=(-1.3, 0.7), els=['hg'], mul=0.6))
     D(recess('R', (23.0, 26.0), (-0.6, 0.6), els=['body']))
     D(recess('L', (23.0, 26.0), (-0.6, 0.6), els=['body'], col=(36, 36, 38)))
-    D(text('L', 'AXON F1', 26.6, 0.4, els=['body'], col=(140, 142, 146), snap=True))
+    D(text('L', 'AXON', 26.6, 0.4, els=['body'], col=(140, 142, 146), snap=True))
     D(recess('B', (6.5, 20.5), (-0.12, 0.12), els=['ch_bar'], lip=False))
     D(paint('K', (-0.07, 0.07), (4.1, 4.25), (236, 236, 232), els=['fs_post']))
     D(stripes('RL', 'b', 0.2, 0.08, els=['cock_lever'], mul=0.7))
@@ -2542,7 +2541,7 @@ def build_asval():
     D(recess('R', (26.2, 29.6), (0.0, 0.7), els=['receiver']))      # ejection port
     D(stripes('T', 'a', 0.5, 0.15, a=(22.0, 32.4), els=['cover'], mul=0.6))
     D(stripes('RL', 'a', 0.3, 0.12, a=(22.0, 31.0), els=['rail_plate'], mul=0.55))
-    D(text('L', 'AXON 9X39', 24.0, 0.7, els=['receiver'], col=(150, 152, 156), snap=True))
+    D(text('L', 'AXON', 24.0, 0.7, els=['receiver'], col=(150, 152, 156), snap=True))
     D(paint('K', (-0.04, 0.04), (2.2, 2.45), (236, 236, 232), els=['fs_post']))
     D(stripes('K', 'a', 99, 0.2, a=(-0.12, 0.12), els=['rs_base'], mul=0.4))
     D(hatch('RL', els=['grip_*'], period=0.28, mul=0.74, b=(-6.6, -1.6)))
@@ -2607,7 +2606,7 @@ def build_ppsh41():
     D(stripes('RL', 'a', 0.9, 0.5, a=(0.3, 2.7), b=(-0.4, 0.5), els=['brake_a'], mul=0.4))
     D(stripes('T', 'a', 0.6, 0.3, a=(15.0, 23.5), els=['receiver_b'], mul=0.55))
     D(recess('R', (17.0, 20.0), (-0.1, 0.3), els=['receiver_a']))   # cocking slot
-    D(text('L', 'AXON PPS 41', 14.0, 0.6, els=['receiver_a'], col=(150, 152, 156), snap=True))
+    D(text('L', 'AXON', 14.0, 0.6, els=['receiver_a'], col=(150, 152, 156), snap=True))
     D(paint('K', (-0.04, 0.04), (1.95, 2.2), (236, 236, 232), els=['fs_post']))
     D(stripes('K', 'a', 99, 0.2, a=(-0.12, 0.12), els=['rs_ap'], mul=0.4))
     D(stripes('RL', 'a', 0.6, 0.22, els=['drum_a', 'drum_b'], mul=0.72, b=(-7.4, -2.0)))
@@ -2675,7 +2674,7 @@ def build_glock():
     D(paint('K', (-0.05, 0.05), (0.95, 1.07), (236, 236, 232), els=['fs_post']))
     D(paint('K', (-0.32, -0.22), (0.95, 1.07), (236, 236, 232), els=['rs_l']))
     D(paint('K', (0.22, 0.32), (0.95, 1.07), (236, 236, 232), els=['rs_r']))
-    D(text('L', 'AXON G17', 1.4, 0.3, els=['slide'], col=(150, 152, 156), snap=True))
+    D(text('L', 'AXON', 1.4, 0.3, els=['slide'], col=(150, 152, 156), snap=True))
     D(stripes('B', 'a', 0.45, 0.18, a=(1.0, 3.6), b=(-0.45, 0.45), els=['frame_nose'], mul=0.5))
     for (a, b) in ((4.0, -0.9), (7.1, -0.9)):
         D(rivet('RL', a, b, 0.09, els=['frame']))
@@ -2743,7 +2742,6 @@ def build_rpg():
     D(stripes('TBRL', 'a', 0.5, 0.14, a=(18.0, 32.5), els=['shield_f_*'], mul=0.72))
     D(stripes('TBRL', 'a', 0.5, 0.14, a=(38.5, 52.5), els=['shield_r_*'], mul=0.72))
     D(stripes('TBRL', 'a', 0.9, 0.3, a=(55.2, 62.3), els=['vent_*'], mul=0.7))
-    D(text('L', 'RPG-7', 41.0, 0.5, els=['shield_r_a'], col=(220, 220, 214), snap=True))
     D(paint('K', (-0.04, 0.04), (2.6, 2.9), (236, 236, 232), els=['fs_post']))
     D(stripes('K', 'a', 99, 0.2, a=(-0.12, 0.12), els=['rs_base'], mul=0.4))
     D(oval('F', -1.55, 1.95, 0.4, 0.4, els=['pgo_lens'], col=(40, 70, 90)))
