@@ -1919,7 +1919,6 @@ def build_p30():
     D(paint('K', (-0.32, -0.22), (0.95, 1.05), (236, 236, 232), els=['rs_l']))
     D(paint('K', (0.22, 0.32), (0.95, 1.05), (236, 236, 232), els=['rs_r']))
     D(stripes('K', 'a', 99, 0.2, a=(-0.14, 0.14), els=['rs_base'], mul=0.4))
-    D(text('L', 'AXON P30', 2.0, 0.3, els=['slide'], col=(150, 152, 156), snap=True))
     # rail slots under the dust cover, frame pins
     D(stripes('B', 'a', 0.45, 0.18, a=(1.1, 3.8), els=['frame_nose'], mul=0.5))
     D(stripes('RL', 'a', 0.45, 0.18, a=(1.1, 3.8), b=(-1.2, -1.0), els=['frame_nose'], mul=0.6))
