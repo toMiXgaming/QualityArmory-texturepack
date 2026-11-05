@@ -1,0 +1,12 @@
+invalid: false
+name: asval_neon
+displayname: '&6AS Val &e[Neon]'
+lore:
+- '&7Skin premium AXON'
+id: 282
+material: CROSSBOW
+baseGun: asval
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

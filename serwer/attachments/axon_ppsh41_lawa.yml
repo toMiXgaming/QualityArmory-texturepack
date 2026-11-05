@@ -1,0 +1,12 @@
+invalid: false
+name: ppsh41_lawa
+displayname: '&6PPSh-41 &e[Lawa]'
+lore:
+- '&7Skin premium AXON'
+id: 293
+material: CROSSBOW
+baseGun: ppsh41
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

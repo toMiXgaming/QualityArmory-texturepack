@@ -1,0 +1,12 @@
+invalid: false
+name: asval_holo
+displayname: '&6AS Val &e[Holo]'
+lore:
+- '&7Skin premium AXON'
+id: 287
+material: CROSSBOW
+baseGun: asval
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0

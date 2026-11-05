@@ -19,7 +19,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SRC = sys.argv[1] if len(sys.argv) > 1 else '/tmp/qa/QA21.zip'
 DST = sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, 'QualityArmory-21-axon.zip')
 GUNS = ['ak47', 'm4a1s', 'remmington', 'makarov', 'awp', 'mac10', 'm16', 'sks',
-        'deagle', 'sw1911', 'p30', 'mp5', 'uzi', 'sg553', 'famas', 'dragunov', 'kar98k', 'spas'] + list(SKINS)
+        'deagle', 'sw1911', 'p30', 'mp5', 'uzi', 'sg553', 'famas', 'dragunov', 'kar98k', 'spas',
+        'asval', 'ppsh41', 'glock', 'rpg'] + list(SKINS)
 ITEMS = 'assets/minecraft/items/crossbow.json'
 ATLAS = 'assets/minecraft/atlases/blocks.json'
 DROP = ('assets/minecraft/shaders/',   # base pack shaders from an older build: now in overlays only

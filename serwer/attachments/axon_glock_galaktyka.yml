@@ -1,0 +1,12 @@
+invalid: false
+name: glock_galaktyka
+displayname: '&6Glock 17 &e[Galaktyka]'
+lore:
+- '&7Skin premium AXON'
+id: 304
+material: CROSSBOW
+baseGun: glock
+craftingRequirements: []
+allowCrafting: false
+allowInShop: false
+price: 0
