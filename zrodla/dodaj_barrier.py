@@ -4,7 +4,8 @@
 Plugin Axon-items stawia stanowiska (warsztaty, piece, recykler...) jako ItemDisplay z przedmiotem
 minecraft:barrier i custom_model_data = abs(hashCode("axon:<nazwa>")) % 100000 + 1 (np. axon:warsztat_t3 -> 93667),
 a nie z komponentem item_model. Bez tej definicji gra nie ma modelu dla takiego przedmiotu i rysuje
-fioletowo-czarną kostkę. Wpis jest dla każdego axon:<nazwa> z assets/axon/items/.
+fioletowo-czarną kostkę. Wpis jest dla każdego axon:<nazwa> z assets/axon/items/, którego model używa tylko tekstur z item/
+(jedna definicja przedmiotu nie może mieszać atlasów, inaczej klient 1.21.11 odrzuca całego barriera).
 Użycie: python3 zrodla/dodaj_barrier.py plik.zip [...]  (buduj_1_21_11.py woła to sam).
 """
 import json
@@ -48,8 +49,18 @@ def definicja(names):
 
 def patch(path):
     with zipfile.ZipFile(path) as z:
-        names = [n[len('assets/axon/items/'):-5] for n in z.namelist()
-                 if n.startswith('assets/axon/items/') and n.endswith('.json')]
+        names = []
+        for n in z.namelist():
+            if not (n.startswith('assets/axon/items/') and n.endswith('.json')):
+                continue
+            name = n[len('assets/axon/items/'):-5]
+            mp = 'assets/axon/models/block/%s.json' % name
+            if mp not in z.namelist():
+                continue
+            tex = [v for v in (json.loads(z.read(mp)).get('textures') or {}).values() if not v.startswith('#')]
+            # jedna definicja przedmiotu może używać tylko jednego atlasu: bierzemy modele z samym item/
+            if tex and all(v.split(':', 1)[-1].startswith('item/') for v in tex):
+                names.append(name)
     data = (json.dumps(definicja(names), indent=2) + '\n').encode()
     tmp = path + '.tmp'
     with zipfile.ZipFile(path) as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:

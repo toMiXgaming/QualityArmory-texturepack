@@ -86,18 +86,22 @@ def sprawdz(path):
     if len(set(thr)) != len(cb): bad.append(('powtórzone custom_model_data na kuszy',))
     for f in ('assets/minecraft/items/crossbow_arrow.json',):
         if f in names: bad.append(('zbędny plik', f))
-    # modele zwykłych bloków są rysowane z atlasu bloków; od 1.21.9 nie czyta on katalogu item/, więc taka tekstura
-    # musi być wpisana w atlases/blocks.json (inaczej blok jest fioletowo-czarny, np. beczka)
-    src = json.loads(z.read('assets/minecraft/atlases/blocks.json'))['sources']
-    singles = {s['resource'] for s in src if 'single' in s.get('type', '')}
-    prefixes = [s['prefix'] for s in src if 'directory' in s.get('type', '') and s.get('prefix')]
+    # od 1.21.9 atlas bloków (block/) i przedmiotów (item/) są osobne: model zwykłego bloku może używać tylko block/,
+    # a definicja przedmiotu tylko jednego atlasu (klient: „outside of supported atlas”, „Multiple atlases”)
+    def kinds(model):
+        d = json.loads(z.read(mpath(model)))
+        return {rl(v)[1].split('/')[0] for v in (d.get('textures') or {}).values()
+                if not v.startswith('#') and rl(v)[0] != 'minecraft'}
     for n in sorted(names):
-        m = re.match(r'assets/minecraft/models/block/.*\.json$', n)
-        if not m: continue
-        for r in {v for v in (json.loads(z.read(n)).get('textures') or {}).values() if not v.startswith('#')}:
-            ns, p = rl(r)
-            if ns != 'minecraft' and not p.startswith('block/') and r not in singles and not any(p.startswith(x) for x in prefixes):
-                bad.append(('tekstura bloku spoza atlasu bloków', n, r))
+        if re.match(r'assets/minecraft/models/block/[^/]+\.json$', n):
+            bad_k = kinds('minecraft:block/' + n.rsplit('/', 1)[1][:-5]) - {'block'}
+            if bad_k: bad.append(('model bloku z teksturą spoza block/', n, ', '.join(sorted(bad_k))))
+        if re.match(r'assets/[^/]+/items/.*\.json$', n):
+            refs = set(); walk(json.loads(z.read(n)), refs)
+            ks = set()
+            for r in refs:
+                if mpath(r) in names: ks |= {k for k in kinds(r) if k in ('block', 'item')}
+            if len(ks) > 1: bad.append(('definicja przedmiotu miesza atlasy', n, ', '.join(sorted(ks))))
     return sorted(set(bad), key=str), checked
 
 
