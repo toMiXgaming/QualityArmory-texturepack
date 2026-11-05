@@ -33,6 +33,9 @@ def main():
             with open(os.path.join(SHADERS, name), 'rb') as f:
                 dst.writestr(TARGET + name, f.read())
     print('zapisano', os.path.basename(OUT))
+    sys.path.insert(0, HERE)
+    from sprawdz_paczke import main as sprawdz
+    return sprawdz([SRC, OUT])
 
 
 if __name__ == '__main__':

@@ -1,15 +1,46 @@
 """Bloki podmieniane globalnie (nadpisują modele vanilla)."""
 from .model import Model
 from .barrels import barrel
+from .surface import SolidModel
 
 BLOCK_DISPLAY = None  # bloki dziedziczą wyświetlanie z block/block przez "parent"
 B = {}
 
-def block():
-    return Model(display=None, rotation=None, gui_light=None)
+# Materiały starych kafelków atlasu → materiały proceduralne z surface.py
+_MAT = {'stone': 'concrete'}
+
+
+class BlockModel(SolidModel):
+    """Blok vanilla z własną teksturą 4 px/jednostkę (jak stanowiska), zamiast kafelka 8×8 rozciąganego na ścianę.
+    Ognisko ma dodatkowo płomień z vanilla (#fire), który nie wchodzi do tekstury modelu."""
+
+    def __init__(self, name):
+        super().__init__(display=None, gui_light=None)
+        self.name = name
+        self.fire = []
+
+    def box(self, frm, to, tex, **faces):
+        if tex == 'fire' or 'fire' in faces.values():
+            self.fire.append({'from': list(frm), 'to': list(to),
+                              'faces': {f: {'uv': [0, 0, 16, 16], 'texture': '#fire'} for f in faces if f not in ('rot',) and faces[f] == 'fire'},
+                              'rotation': faces['rot']})
+            return self
+        conv = lambda v: _MAT.get(v, v) if isinstance(v, str) else v
+        return self.solid(frm, to, conv(tex), **{k: conv(v) for k, v in faces.items()})
+
+    def json(self):
+        out = super().json()
+        if self.fire:
+            out['textures']['fire'] = 'minecraft:block/campfire_fire'
+            out['elements'] = out['elements'] + self.fire
+        return out
+
+
+def block(name):
+    return BlockModel(name)
 
 # --- stół rzemieślniczy T0: blat z desek obity blachą, imadło, młotek, półka
-m = block()
+m = block('blok_stol_rzemieslniczy')
 # Podłoga z desek: stół podmienia pełny blok vanilla, więc gra nie rysuje górnej ściany bloku pod spodem.
 # Bez niej między nogami widać dziurę w ziemi.
 m.box((0, 0, 0), (16, 0.5, 16), 'plank_dark', up='plank')
@@ -30,7 +61,7 @@ B['minecraft:block/crafting_table'] = m
 
 # --- piec: blaszana skrzynia na kamieniach, drzwiczki z kratką, komin
 def furnace(lit):
-    m = block()
+    m = block('blok_piec_on' if lit else 'blok_piec')
     m.box((0, 0, 0), (16, 3, 16), 'stone', up='stone_dark')
     m.box((1, 3, 1), (15, 14, 15), 'rust_heavy', north='steel_dark', up='steel_dark')
     m.box((0.6, 13.5, 0.6), (15.4, 14.5, 15.4), 'steel')                 # rant
@@ -46,7 +77,7 @@ B['minecraft:block/furnace_on'] = furnace(True)
 
 # --- ognisko: krąg kamieni, polana, rożen z garnkiem
 def campfire(lit):
-    m = block()
+    m = block('blok_ognisko' if lit else 'blok_ognisko_off')
     for x, z in ((1, 1), (6, 0), (11, 1), (0, 6), (13, 6), (1, 11), (6, 13), (11, 11)):
         m.box((x, 0, z), (x + 4, 2.5, z + 3), 'stone', up='stone_dark')
     m.box((3, 0, 5), (13, 2, 7), 'wood_dark', up='wood')
