@@ -360,3 +360,7 @@ Narzędzia vanilla (drewniane i kamienne), narzędzia Axon (`steel_*`, `hardened
 Uruchomienie: `python3 zrodla/gen_narzedzia.py [nazwa ...]` (zapis do `zrodla/build/`), potem `python3 zrodla/podmien_narzedzia.py` wstawia je do trzech zipów i uruchamia `sprawdz_paczke.py`. `gen_axoncore.py` bierze modele narzędzi z `build/`, a `gen_bronie_biale.py` woła teraz `gen_narzedzia.py`. Podgląd: `zrodla/preview_narzedzia.py wyjscie.png model ...`.
 
 ![Narzędzia i bronie białe](podglady/narzedzia-bronie-biale-8.png)
+
+## Wyposażenie: granaty, mina, apteczka, torba z amunicją, kanister
+
+`zrodla/gen_przedmioty.py` (silnik z `gen_narzedzia.py`) robi od nowa dziewięć modeli `qualityarmory:misc/*`: `grenade`, `smokegrenade`, `incendarygrenade`, `flashbang`, `molotov`, `proxymine`, `medkit`, `ammobag`, `fueltank`. Każdy ma własną teksturę 256×256 (`qualityarmory:axon/misc_<nazwa>`), a układ `display` jest ten sam co w oryginale (`zrodla/display_misc.json`), więc pozycje w ręce i na ziemi się nie zmieniają. Uruchomienie: `python3 zrodla/gen_przedmioty.py`, potem `python3 zrodla/podmien_przedmioty.py` (podmienia modele i dopisuje tekstury w trzech zipach, sprawdza paczkę). Gotowe pliki są w `modele/misc/`, podgląd w `podglady/przedmioty-wyposazenie.png`.
