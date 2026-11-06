@@ -49,9 +49,13 @@ def k_wood(m, G, side, el, seed):
         S = np.array([2.2, 0.05, 2.2])
         end = side in 'TB'
         r = np.hypot(G[:, 0] - cc[0], G[:, 2] - cc[2]) * m.get('rings', 2.0)
-    else:
-        S = np.array([2.2, 2.2, 0.05])
+    elif ax == 'u':                       # włókna wzdłuż x (u): końce to ściany F/K
+        S = np.array([0.05, 2.2, 2.2])
         end = side in 'FK'
+        r = np.hypot(G[:, 1] - cc[1], G[:, 2] - cc[2]) * m.get('rings', 2.0)
+    else:                                 # włókna wzdłuż z (w): końce to ściany R/L
+        S = np.array([2.2, 2.2, 0.05])
+        end = side in 'RL'
         r = np.hypot(G[:, 0] - cc[0], G[:, 1] - cc[1]) * m.get('rings', 2.0)
     if end:
         n2 = fbm(G * S * 0.5 + 11.7, 2, seed + 7)

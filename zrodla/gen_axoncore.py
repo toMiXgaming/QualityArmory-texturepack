@@ -88,6 +88,8 @@ def pliki():
         _przedmiot(files, name, m.json())
         if hasattr(m, 'texture'):   # stanowiska: własna tekstura na model (surface.py)
             files['assets/axon/textures/item/%s.png' % name] = _png(m.texture)
+    from gen_pojemniki import pliki as pliki_pojemnikow   # beczki i skrzynie z build/ (python3 gen_pojemniki.py)
+    files.update(pliki_pojemnikow())
     return files
 
 
