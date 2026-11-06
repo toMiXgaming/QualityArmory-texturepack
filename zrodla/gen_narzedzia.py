@@ -40,40 +40,35 @@ def _lerp(a, b, t):
 
 
 def k_wood(m, G, side, el, seed):
-    """Drewno: włókna wzdłuż osi (domyślnie v), słoje na przekroju, spękania, szare wyschnięcie."""
+    """Drewno: gładkie, płynące słoje wzdłuż osi (cienkie ciemniejsze linie warstwic), spokojne przejścia tonów,
+    na przekroju koncentryczne słoje. Bez plam i kropek."""
     L, D = _c(m['light']), _c(m['dark'])
-    w, v, u = G[:, 0], G[:, 1], G[:, 2]
     ax = m.get('axis', 'v')
+    cc = (el.lo + el.hi) / 2
     if ax == 'v':
-        S = np.array([6.0, 0.22, 6.0])
+        S = np.array([2.6, 0.16, 2.6])
         end = side in 'TB'
-        cc = (el.lo + el.hi) / 2
-        r = np.hypot(w - cc[0], u - cc[2]) * m.get('rings', 2.2)
+        r = np.hypot(G[:, 0] - cc[0], G[:, 2] - cc[2]) * m.get('rings', 2.0)
     else:
-        S = np.array([6.0, 6.0, 0.22])
+        S = np.array([2.6, 2.6, 0.16])
         end = side in 'FK'
-        cc = (el.lo + el.hi) / 2
-        r = np.hypot(w - cc[0], v - cc[1]) * m.get('rings', 2.2)
-    warp = fbm(G * np.array([0.5, 0.18, 0.5]) if ax == 'v' else G * np.array([0.5, 0.5, 0.18]), 3, seed) * 1.6
+        r = np.hypot(G[:, 0] - cc[0], G[:, 1] - cc[1]) * m.get('rings', 2.0)
+    n = fbm(G * S, 3, seed)
+    n2 = fbm(G * S * np.array([0.5, 0.5, 0.5]) + 11.7, 2, seed + 7)
     if end:
-        ring = (0.5 + 0.5 * np.sin((r + warp) * 2 * math.pi)) ** 1.6
-        t = 0.25 + 0.6 * ring
+        ring = 0.5 + 0.5 * np.sin((r + n2 * 1.3) * 2 * math.pi)
+        t = 0.3 + 0.45 * ring
+        line = 0.0 * t
     else:
-        fib = fbm(G * S, 3, seed + 5)
-        band = (0.5 + 0.5 * np.sin((G[:, 0] * 1.9 + G[:, 2] * 1.7 + warp * 2.0) * 2 * math.pi * 0.55)) ** 2
-        t = 0.2 + 0.45 * band + 0.5 * (fib - 0.5)
-    t = np.clip(t, 0, 1)
+        t = np.clip(0.5 + (n - 0.5) * 1.5, 0, 1)
+        t = np.round(t * 4) / 4 * 0.6 + t * 0.4          # lekko schodkowe tony: czytelne smugi
+        # linie słojów: warstwice zniekształconego szumu
+        ph = n2 * 9.0 + n * 3.0
+        line = np.clip(1 - np.abs(np.sin(ph * math.pi)) * 7.0, 0, 1)
     col = _lerp(L, D, t)
-    # wyschnięcie: szary, matowy nalot w płatach
-    age = m.get('age', 0.35)
-    gray = fbm(G * np.array([0.7, 0.25, 0.7]), 3, seed + 9)
-    gm = np.clip((gray - (0.75 - 0.4 * age)) * 5, 0, 1) * 0.6
-    col = _lerp(col, _c(m.get('gray', (150, 138, 120))), gm)
-    # spękania i ciemne pory
-    crack = np.abs(fbm(G * (np.array([2.0, 0.35, 2.0]) if ax == 'v' else np.array([2.0, 2.0, 0.35])), 2, seed + 21) - 0.5) < 0.018
-    col[crack] *= 0.45
-    pores = white(G * (np.array([1, 0.3, 1]) if ax == 'v' else np.array([1, 1, 0.3])), seed + 3, 5.0) > 0.93
-    col[pores] *= 0.8
+    col = col * (1 - 0.22 * line)[:, None] if not end else col
+    # delikatne rozjaśnienie włókien
+    col = col * (1 + 0.04 * (white(G * (np.array([1, 0.15, 1]) if ax == 'v' else np.array([1, 1, 0.15])), seed + 2, 6.0) - 0.5))[:, None]
     return col
 
 
@@ -157,17 +152,18 @@ def k_rope(m, G, side, el, seed):
 
 
 def k_leather(m, G, side, el, seed):
-    """Skóra: przeszycia, spękania, wytarcie jasne w płatach."""
+    """Skóra: spokojny, lekko cieniowany kolor z delikatnym przetarciem; bez drobnych kropek."""
     L, D = _c(m['light']), _c(m['dark'])
-    w, v, u = G[:, 0], G[:, 1], G[:, 2]
-    n = fbm(G * 2.4, 3, seed)
-    band = (0.5 + 0.5 * np.sin((v * 1.7 + (w + u) * 0.7) * 2 * math.pi * 0.5)) ** 2
-    t = np.clip(0.35 + 0.45 * (n - 0.5) * 2 + 0.25 * band, 0, 1)
+    n = fbm(G * 1.1, 3, seed)
+    t = np.clip(0.35 + 0.9 * (n - 0.5), 0, 1)
     col = _lerp(L, D, t)
-    crk = np.abs(fbm(G * 5.0, 2, seed + 3) - 0.5) < 0.025
-    col[crk] *= 0.6
-    wear = np.clip((fbm(G * 0.8, 3, seed + 8) - 0.6) * 5, 0, 1) * 0.55
-    return _lerp(col, _c(m.get('wear_col', (150, 112, 74))), wear)
+    wear = np.clip((fbm(G * 0.7, 3, seed + 8) - 0.62) * 4, 0, 1) * 0.4
+    col = _lerp(col, _c(m.get('wear_col', (150, 112, 74))), wear)
+    # linia szwu / zgięcia pasa
+    v = G[:, 1]
+    fold = (0.5 + 0.5 * np.sin(v * 2 * math.pi / 0.5)) < 0.12
+    col[fold] *= 0.78
+    return col
 
 
 def k_tape(m, G, side, el, seed):
@@ -200,15 +196,17 @@ for _k, _f in (('t_wood', k_wood), ('t_metal', k_metal), ('t_stone', k_stone), (
 
 MATS.update({
     # drewno: jasne (deska), ciemne (stare), popielate (hartowane)
-    'w_light': dict(kind='t_wood', light=(196, 152, 98), dark=(132, 94, 56), wear=(214, 178, 128), edge=0.4, age=0.4),
-    'w_dark': dict(kind='t_wood', light=(120, 86, 54), dark=(70, 48, 30), wear=(160, 124, 88), edge=0.4, age=0.3),
-    'w_ash': dict(kind='t_wood', light=(214, 190, 152), dark=(150, 124, 90), wear=(232, 214, 180), edge=0.4, age=0.25),
-    'w_old': dict(kind='t_wood', light=(150, 116, 78), dark=(86, 62, 40), wear=(180, 150, 112), edge=0.4, age=0.45, gray=(128, 112, 92)),
-    'w_flat': dict(kind='t_wood', light=(120, 86, 54), dark=(70, 48, 30), wear=(160, 124, 88), edge=0.4, age=0.5, axis='u'),
+    'w_light': dict(kind='t_wood', light=(204, 160, 104), dark=(158, 114, 68), wear=(226, 190, 140), edge=0.35),
+    'w_h': dict(kind='t_wood', light=(204, 160, 104), dark=(158, 114, 68), wear=(226, 190, 140), edge=0.35, axis='u'),
+    'w_dark': dict(kind='t_wood', light=(128, 90, 56), dark=(84, 58, 36), wear=(168, 128, 90), edge=0.35),
+    'w_dark_h': dict(kind='t_wood', light=(128, 90, 56), dark=(84, 58, 36), wear=(168, 128, 90), edge=0.35, axis='u'),
+    'w_ash': dict(kind='t_wood', light=(222, 198, 158), dark=(176, 148, 108), wear=(238, 220, 186), edge=0.35),
+    'w_old': dict(kind='t_wood', light=(168, 126, 82), dark=(116, 82, 50), wear=(198, 160, 116), edge=0.35),
+    'w_flat': dict(kind='t_wood', light=(116, 82, 50), dark=(78, 54, 34), wear=(160, 124, 88), edge=0.35, axis='u'),
     'cord': dict(kind='t_rope', light=(184, 160, 116), dark=(104, 84, 56), wear=(200, 178, 136), edge=0.3, period=0.5),
     'cord_d': dict(kind='t_rope', light=(130, 108, 76), dark=(70, 56, 38), wear=(160, 136, 100), edge=0.3, period=0.45),
-    'leather': dict(kind='t_leather', light=(112, 74, 46), dark=(66, 42, 26), wear=(150, 110, 74), edge=0.4),
-    'leather_d': dict(kind='t_leather', light=(78, 50, 32), dark=(44, 28, 18), wear=(120, 84, 56), edge=0.4),
+    'leather': dict(kind='t_leather', light=(118, 78, 48), dark=(84, 54, 34), wear=(150, 110, 74), edge=0.4),
+    'leather_d': dict(kind='t_leather', light=(86, 56, 36), dark=(56, 36, 24), wear=(120, 84, 56), edge=0.4),
     'tape': dict(kind='t_tape', base=(70, 72, 74), wear=(110, 112, 114), edge=0.3),
     'tape_g': dict(kind='t_tape', base=(150, 152, 148), wear=(190, 192, 188), edge=0.3),
     'cloth': dict(kind='t_cloth', base=(124, 106, 82), wear=(156, 138, 110), edge=0.3),
@@ -224,7 +222,7 @@ MATS.update({
     'black': dict(kind='t_metal', base=(38, 38, 42), wear=(108, 110, 116), edge=0.8, rust=0.12, var=0.07),
     'black_e': dict(kind='t_metal', base=(66, 68, 74), wear=(156, 158, 164), edge=0.7, rust=0.06),
     'forged': dict(kind='t_metal', base=(60, 62, 68), wear=(150, 152, 158), edge=0.8, rust=0.1),
-    'rail': dict(kind='t_metal', base=(98, 74, 62), wear=(160, 130, 108), edge=0.7, rust=0.55),
+    'rail': dict(kind='t_metal', base=(92, 86, 84), wear=(160, 150, 144), edge=0.7, rust=0.3),
     'leaf': dict(kind='t_metal', base=(52, 54, 58), wear=(130, 132, 138), edge=0.8, rust=0.32),
     'brass': dict(kind='t_metal', base=(196, 158, 74), wear=(240, 214, 140), edge=0.6, rust=0.0, var=0.07),
     'rust': dict(kind='t_metal', base=(128, 72, 40), wear=(170, 110, 66), edge=0.5, rust=0.9),
@@ -292,21 +290,23 @@ class Tool:
 
 
 # ------------------------------------------------------------------ szczegóły wspólne
-def handle(t, top, wood, wrap=None, wrap_to=4.5, cap=None, x=8.0, z=8.0, taper=0.06):
-    """Trzonek: lekko zwężający się walec, sęk, pęknięcie, gałka na dole."""
-    n = max(2, int(top / 3.5))
+def handle(t, top, wood, wrap=None, wrap_to=4.5, cap=None, x=8.0, z=8.0, taper=0.07):
+    """Trzonek: gładki, lekko zwężający się walec (8 kształtów w pionie), gałka i równa owijka."""
+    n = max(3, int(top / 2.2))
     h = (top - 0.5) / n
     for i in range(n):
         r = 0.52 - taper * i / max(1, n - 1)
         t.vcyl(x, z, 0.5 + i * h, 0.5 + (i + 1) * h + 0.02, r, wood, tag='handle')
-    t.box((x - 0.62, 0.0, z - 0.5), (x + 0.62, 0.6, z + 0.5), cap or wood, 'butt')
-    t.box((x - 0.5, 0.3, z - 0.6), (x + 0.5, 0.7, z + 0.6), cap or wood, 'butt')
+    t.box((x - 0.64, 0.0, z - 0.52), (x + 0.64, 0.6, z + 0.52), cap or wood, 'butt')
+    t.box((x - 0.52, 0.2, z - 0.64), (x + 0.52, 0.65, z + 0.64), cap or wood, 'butt')
     if wrap:
-        t.wrap(x, z, 1.0, wrap_to, 0.52, wrap[0], 0.4, wrap[1] if len(wrap) > 1 else None)
-        t.box((x - 0.7, wrap_to, z - 0.3), (x + 0.7, wrap_to + 0.25, z + 0.3), wrap[0], 'wend')
-    # sęk i zadziory
-    t.box((x + 0.45, 6.2, z - 0.2), (x + 0.75, 6.9, z + 0.2), wood, 'knot')
-    t.box((x - 0.78, 9.1, z - 0.18), (x - 0.5, 9.7, z + 0.18), wood, 'knot')
+        y, i = 1.0, 0
+        while y < wrap_to - 1e-6:
+            yy = min(y + 0.5, wrap_to)
+            t.vcyl(x, z, y, yy, 0.52 + 0.1 + (0.03 if i % 2 else 0), wrap[0] if i % 2 == 0 else (wrap[1] if len(wrap) > 1 else wrap[0]), tag='wrap')
+            y += 0.5
+            i += 1
+        t.box((x - 0.68, wrap_to, z - 0.3), (x + 0.68, wrap_to + 0.22, z + 0.3), wrap[0], 'wend')
 
 
 def lash(t, x, z, y0, y1, r=0.58, mat='cord', turns=None):
@@ -350,47 +350,64 @@ def v_axe(name, head, lash_m, stick, head_dark, stone):
     return t
 
 
+PICK = [(8.0, 9.6, 12.4, 14.6, 0.62), (9.6, 11.2, 12.2, 14.2, 0.55), (11.2, 12.6, 11.7, 13.6, 0.48),
+        (12.6, 13.6, 11.1, 12.9, 0.40), (13.6, 14.3, 10.6, 12.0, 0.30)]
+
+
+def pick_head(t, mat, tip, rib=None, under=None, tipn=2):
+    """Łukowata głowica kilofa: symetryczne segmenty opadające ku końcom, groty w osobnym materiale."""
+    for i, (x0, x1, y0, y1, hz) in enumerate(PICK):
+        m = tip if i >= len(PICK) - tipn else mat
+        for sx in (1, -1):
+            a, b = (x0, x1) if sx > 0 else (16 - x1, 16 - x0)
+            t.box((a, y0, 8 - hz), (b, y1, 8 + hz), m, 'ph')
+        if i < len(PICK) - tipn:       # grzbiet i wewnętrzna krawędź (płytsze, jaśniejsze żebro)
+            for sx in (1, -1):
+                a, b = (x0, x1) if sx > 0 else (16 - x1, 16 - x0)
+                t.box((a, y1, 8 - hz * 0.55), (b, y1 + 0.28, 8 + hz * 0.55), rib or mat, 'prib')
+                if under:
+                    t.box((a, y0 - 0.22, 8 - hz * 0.5), (b, y0, 8 + hz * 0.5), under, 'pund')
+    t.box((7.35, 12.0, 7.3), (8.65, 14.9, 8.7), mat, 'peye')     # oko / nasada
+
+
 def v_pickaxe(name, head, lash_m, stick, head_dark, stone):
     t = Tool(name)
     handle(t, 12.6, stick, wrap=('leather', 'leather_d'), wrap_to=4.4)
-    t.box((3.0, 12.5, 7.5), (13.0, 14.0, 8.5), head, 'head')
-    t.box((7.0, 12.0, 7.3), (9.0, 14.5, 8.7), head, 'eye')
-    t.box((13.0, 12.7, 7.65), (13.5, 13.8, 8.35), head, 'armR')
-    t.box((13.5, 12.9, 7.8), (13.8, 13.6, 8.2), head_dark if not stone else 'flint', 'tipR')
-    t.box((2.5, 12.7, 7.65), (3.0, 13.8, 8.35), head, 'armL')
-    t.box((2.2, 12.9, 7.8), (2.5, 13.6, 8.2), head_dark if not stone else 'flint', 'tipL')
-    t.box((3.5, 14.0, 7.7), (12.5, 14.3, 8.3), head, 'crown')
-    for x in (4.2, 5.8, 10.2, 11.8):                                         # rysy / fasety na głowicy
-        t.box((x, 12.9, 7.4), (x + 0.5, 13.5, 7.5), head_dark, 'facet')
-        t.box((x + 0.2, 13.1, 8.5), (x + 0.7, 13.7, 8.6), head_dark, 'facet')
-    lash(t, 8, 8, 11.3, 12.4, 0.6, lash_m)
-    t.box((6.4, 12.4, 7.35), (9.6, 12.8, 7.5), lash_m, 'strap')
-    t.box((6.4, 12.4, 8.5), (9.6, 12.8, 8.65), lash_m, 'strap')
-    if not stone:
-        nail(t, 6.8, 13.2, 8.0, 1)
-        nail(t, 9.2, 13.2, 8.0, -1)
+    hm = 'w_h' if head == 'w_light' else head
+    pick_head(t, hm, 'flint' if stone else 'w_dark_h', rib=head_dark if stone else 'w_old', under=head_dark)
+    lash(t, 8, 8, 11.2, 12.0, 0.64, lash_m)
+    lash(t, 8, 8, 14.6, 15.2, 0.6, lash_m)
+    t.box((6.9, 12.3, 7.28), (9.1, 12.7, 7.42), lash_m, 'strap')
+    t.box((6.9, 12.3, 8.58), (9.1, 12.7, 8.72), lash_m, 'strap')
+    for x in (4.4, 11.6):               # dodatkowe opaski mocujące głowicę (drewno) / wyszczerbienia (kamień)
+        if stone:
+            t.box((x, 11.9, 8.45), (x + 0.4, 12.3, 8.56), 'flint', 'chip')
+        else:
+            t.box((x - 0.1, 12.2, 7.36), (x + 0.5, 14.2, 7.44), 'cord', 'strap')
     return t
 
 
 def v_shovel(name, head, lash_m, stick, head_dark, stone):
     t = Tool(name)
-    handle(t, 10.8, stick, wrap=('leather', 'leather_d'), wrap_to=4.0)
-    t.box((6.0, 10.5, 7.6), (10.0, 14.2, 8.4), head, 'blade')
-    t.box((6.6, 14.2, 7.65), (9.4, 15.2, 8.35), head, 'blade2')
-    t.box((7.1, 15.2, 7.72), (8.9, 15.8, 8.28), head, 'blade3')
-    t.box((7.5, 15.8, 7.85), (8.5, 16.1, 8.15), head_dark if not stone else 'flint', 'tip')
-    t.box((5.7, 10.9, 7.7), (6.0, 13.6, 8.3), head_dark, 'edgeL')
-    t.box((10.0, 10.9, 7.7), (10.3, 13.6, 8.3), head_dark, 'edgeR')
-    t.box((7.2, 10.5, 7.4), (8.8, 13.4, 7.6), head_dark, 'spine')       # żebro wzmacniające
-    t.box((7.2, 10.5, 8.4), (8.8, 13.4, 8.6), head_dark, 'spine')
+    handle(t, 10.4, stick, wrap=('leather', 'leather_d'), wrap_to=4.0)
+    hm = 'w_h' if head == 'w_light' else head
+    rows = [(10.6, 11.8, 0.9), (11.8, 13.0, 1.5), (13.0, 14.2, 1.9), (14.2, 15.4, 2.0), (15.4, 16.2, 1.9),
+            (16.2, 16.8, 1.4), (16.8, 17.1, 0.7)]
+    for i, (y0, y1, hw) in enumerate(rows):
+        m = ('flint' if stone else 'w_dark_h') if i == len(rows) - 1 else hm
+        t.box((8 - hw, y0, 7.62), (8 + hw, y1, 8.38), m, 'blade')
+        if 1 <= i <= len(rows) - 2:     # unoszące się brzegi: łyżka łopaty
+            t.box((8 - hw - 0.15, y0 + 0.1, 7.7), (8 - hw, y1 - 0.1, 8.45), head_dark, 'rimL')
+            t.box((8 + hw, y0 + 0.1, 7.7), (8 + hw + 0.15, y1 - 0.1, 8.45), head_dark, 'rimR')
+    t.box((7.6, 11.6, 7.45), (8.4, 16.4, 7.62), hm, 'spine')       # środkowe żebro
+    t.box((7.6, 11.6, 8.38), (8.4, 16.4, 8.55), hm, 'spine')
     t.box((7.3, 9.6, 7.3), (8.7, 10.8, 8.7), stick, 'socket')
-    lash(t, 8, 8, 9.2, 10.4, 0.6, lash_m)
-    for yy in (11.8, 13.2):
-        t.box((6.3, yy, 8.4), (6.7, yy + 0.4, 8.5), head_dark, 'chip')
-        t.box((9.3, yy + 0.2, 7.5), (9.7, yy + 0.6, 7.6), head_dark, 'chip')
-    if not stone:
-        nail(t, 7.2, 11.0, 8.0, 1)
-        nail(t, 8.8, 11.0, 8.0, -1)
+    t.box((7.1, 10.3, 7.1), (8.9, 10.9, 8.9), stick, 'socket')
+    lash(t, 8, 8, 9.0, 10.2, 0.6, lash_m)
+    lash(t, 8, 8, 10.5, 11.2, 0.62, lash_m)
+    for yy in (12.4, 14.0):
+        t.box((6.4, yy, 8.38), (6.9, yy + 0.4, 8.46), head_dark, 'chip')
+        t.box((9.2, yy + 0.3, 7.54), (9.7, yy + 0.7, 7.62), head_dark, 'chip')
     return t
 
 
@@ -460,52 +477,44 @@ def a_steel_axe():
 
 def a_steel_pickaxe():
     t = Tool('narz_steel_pickaxe')
-    handle(t, 12.0, 'w_old', wrap=('leather', 'leather_d'), wrap_to=4.4)
-    # fragment szyny: stopka, środnik, łeb
-    t.box((4.0, 11.6, 7.1), (12.0, 12.2, 8.9), 'rail', 'foot')
-    t.box((3.0, 12.2, 7.6), (13.0, 13.4, 8.4), 'rail', 'web')
-    t.box((2.5, 13.4, 7.2), (13.5, 14.6, 8.8), 'rail', 'headr')
-    t.box((3.2, 13.45, 7.0), (12.8, 13.8, 7.2), 'rail', 'lip')
-    t.box((3.2, 13.45, 8.8), (12.8, 13.8, 9.0), 'rail', 'lip')
-    t.box((1.9, 12.9, 7.6), (2.5, 14.1, 8.4), 'steel', 'tipL')
-    t.box((1.6, 13.2, 7.78), (1.9, 13.8, 8.22), 'edge', 'tipL')
-    t.box((13.5, 12.9, 7.6), (14.1, 14.1, 8.4), 'steel', 'tipR')
-    t.box((14.1, 13.2, 7.78), (14.4, 13.8, 8.22), 'edge', 'tipR')
-    t.box((7.2, 12.4, 7.0), (8.8, 13.0, 9.0), 'brass', 'collar')
-    t.box((6.8, 11.4, 7.3), (9.2, 11.7, 8.7), 'steel_d', 'strap')
-    for x in (4.2, 5.6, 10.4, 11.8):                                # otwory po śrubach podkładek
-        t.box((x, 12.5, 7.55), (x + 0.5, 13.1, 7.6), 'black', 'hole')
-        t.box((x, 12.5, 8.4), (x + 0.5, 13.1, 8.45), 'black', 'hole')
-    for x in (4.0, 9.0, 11.2):
-        rust_patch(t, x, x + 1.2, 12.3, 13.3, 8.4, 1)
-    rust_patch(t, 5.0, 7.0, 12.4, 13.2, 7.6, -1)
-    t.box((3.0, 13.4, 7.5), (13.0, 13.6, 8.5), 'rail', 'seam')
+    handle(t, 12.2, 'w_old', wrap=('leather', 'leather_d'), wrap_to=4.4)
+    pick_head(t, 'rail', 'steel', rib='steel_d', under='steel_d')
+    t.box((7.15, 11.6, 7.1), (8.85, 12.2, 8.9), 'brass', 'collar')
+    t.box((7.15, 14.6, 7.1), (8.85, 15.1, 8.9), 'steel_d', 'cap')
+    t.box((6.8, 12.2, 7.28), (9.2, 12.5, 8.72), 'steel_d', 'strap')
+    for x in (5.0, 6.4, 9.6, 11.0):                                 # otwory po śrubach
+        t.box((x, 13.0, 7.37), (x + 0.45, 13.5, 7.42), 'black', 'hole')
+        t.box((x, 13.0, 8.58), (x + 0.45, 13.5, 8.63), 'black', 'hole')
+    for x in (4.6, 9.4, 11.4):
+        rust_patch(t, x, x + 1.2, 12.5, 13.6, 8.52, 1)
+    rust_patch(t, 5.4, 7.2, 12.6, 13.6, 7.48, -1)
+    for sx in (1, -1):
+        a = 13.9 if sx > 0 else 16 - 14.3
+        t.box((a, 11.0, 7.88), (a + 0.4, 11.7, 8.12), 'edge', 'edge')
     return t
 
 
 def a_steel_shovel():
     t = Tool('narz_steel_shovel')
-    handle(t, 9.5, 'w_old', wrap=('leather', 'leather_d'), wrap_to=3.5)
-    t.box((7.3, 9.0, 7.3), (8.7, 10.5, 8.7), 'paint_olive', 'socket')
-    t.box((5.0, 10.5, 7.75), (11.0, 15.0, 8.25), 'paint_olive', 'plate')
-    t.box((6.0, 15.0, 7.75), (10.0, 16.0, 8.25), 'paint_olive', 'plate')
-    t.box((5.0, 10.5, 8.25), (11.0, 10.9, 8.5), 'paint_olive', 'rim')
-    t.box((4.75, 10.9, 7.78), (5.0, 14.6, 8.22), 'steel_l', 'edgeL')
-    t.box((11.0, 10.9, 7.78), (11.25, 14.6, 8.22), 'steel_l', 'edgeR')
-    t.box((5.5, 15.0, 7.7), (6.0, 15.8, 8.3), 'steel_l', 'edgeTL')
-    t.box((10.0, 15.0, 7.7), (10.5, 15.8, 8.3), 'steel_l', 'edgeTR')
-    t.box((6.4, 16.0, 7.8), (9.6, 16.3, 8.2), 'edge', 'tip')
-    t.box((7.55, 11.0, 7.5), (8.45, 15.2, 7.75), 'paint_olive', 'rib')       # żebro tłoczenia
-    t.box((7.55, 11.0, 8.25), (8.45, 15.2, 8.5), 'paint_olive', 'rib')
-    t.box((7.6, 10.8, 7.45), (8.4, 11.6, 8.55), 'steel', 'rivbase')
-    for x, y in ((6.0, 11.6), (10.0, 11.6), (6.2, 13.6), (9.8, 13.6)):
-        t.box((x - 0.2, y - 0.2, 8.5), (x + 0.2, y + 0.2, 8.62), 'steel_l', 'rivet')
-        t.box((x - 0.2, y - 0.2, 7.38), (x + 0.2, y + 0.2, 7.5), 'steel_l', 'rivet')
-    rust_patch(t, 5.2, 7.0, 10.6, 11.6, 8.5, 1)
-    rust_patch(t, 8.6, 10.6, 13.8, 15.2, 7.75, -1)
-    rust_patch(t, 9.4, 10.8, 11.0, 12.4, 8.5, 1)
-    t.box((7.55, 9.9, 8.7), (8.45, 10.5, 9.0), 'steel_d', 'bolt')
-    t.box((7.55, 9.9, 7.0), (8.45, 10.5, 7.3), 'steel_d', 'bolt')
+    handle(t, 9.8, 'w_old', wrap=('leather', 'leather_d'), wrap_to=3.6)
+    t.box((7.3, 9.2, 7.3), (8.7, 10.7, 8.7), 'paint_olive', 'socket')
+    t.box((7.1, 10.2, 7.1), (8.9, 10.8, 8.9), 'steel', 'ferrule')
+    rows = [(10.6, 11.8, 1.0), (11.8, 13.0, 1.7), (13.0, 14.2, 2.1), (14.2, 15.4, 2.2), (15.4, 16.2, 2.1),
+            (16.2, 16.8, 1.5), (16.8, 17.1, 0.8)]
+    for i, (y0, y1, hw) in enumerate(rows):
+        last = i == len(rows) - 1
+        t.box((8 - hw, y0, 7.72), (8 + hw, y1, 8.28), 'edge' if last else 'paint_olive', 'plate')
+        if 1 <= i <= len(rows) - 2:
+            t.box((8 - hw - 0.15, y0 + 0.05, 7.76), (8 - hw, y1 - 0.05, 8.45), 'steel_l', 'rimL')
+            t.box((8 + hw, y0 + 0.05, 7.76), (8 + hw + 0.15, y1 - 0.05, 8.45), 'steel_l', 'rimR')
+    t.box((7.55, 11.2, 7.5), (8.45, 15.6, 7.72), 'paint_olive', 'rib')
+    t.box((7.55, 11.2, 8.28), (8.45, 15.6, 8.5), 'paint_olive', 'rib')
+    for x, y in ((6.2, 12.0), (9.8, 12.0)):
+        t.box((x - 0.2, y - 0.2, 8.28), (x + 0.2, y + 0.2, 8.4), 'steel_l', 'rivet')
+        t.box((x - 0.2, y - 0.2, 7.6), (x + 0.2, y + 0.2, 7.72), 'steel_l', 'rivet')
+    rust_patch(t, 5.8, 7.4, 12.2, 13.4, 8.28, 1)
+    rust_patch(t, 8.6, 10.4, 13.6, 15.2, 7.72, -1)
+    rust_patch(t, 8.8, 10.2, 11.4, 12.4, 8.28, 1)
     return t
 
 
@@ -537,24 +546,20 @@ def a_hardened_axe():
 
 def a_hardened_pickaxe():
     t = Tool('narz_hardened_pickaxe')
-    handle(t, 12.0, 'w_ash', wrap=('leather', 'leather_d'), wrap_to=4.4)
-    t.box((3.0, 12.0, 7.3), (13.0, 14.0, 8.7), 'forged', 'head')
-    t.box((6.5, 11.5, 7.1), (9.5, 14.5, 8.9), 'steel', 'boss')
-    t.box((2.2, 12.4, 7.5), (3.0, 13.6, 8.5), 'tempered', 'tipL')
-    t.box((13.0, 12.4, 7.5), (13.8, 13.6, 8.5), 'tempered', 'tipR')
-    t.box((1.9, 12.7, 7.7), (2.2, 13.3, 8.3), 'gem', 'gemL')
-    t.box((13.8, 12.7, 7.7), (14.1, 13.3, 8.3), 'gem', 'gemR')
-    t.box((3.4, 14.0, 7.5), (12.6, 14.25, 8.5), 'forged', 'crown')
-    t.box((3.4, 11.8, 7.5), (12.6, 12.0, 8.5), 'forged', 'under')
-    for x in (4.2, 5.2, 10.8, 11.8):
-        t.box((x, 12.5, 8.7), (x + 0.4, 13.5, 8.78), 'steel_d', 'groove')
-        t.box((x, 12.5, 7.22), (x + 0.4, 13.5, 7.3), 'steel_d', 'groove')
-    for x, y in ((7.0, 12.0), (9.0, 12.0), (7.0, 14.0), (9.0, 14.0)):
-        t.box((x - 0.2, y - 0.2, 8.9), (x + 0.2, y + 0.2, 9.02), 'brass', 'rivet')
-        t.box((x - 0.2, y - 0.2, 6.98), (x + 0.2, y + 0.2, 7.1), 'brass', 'rivet')
-    t.box((7.2, 11.2, 7.3), (8.8, 11.6, 8.7), 'brass', 'collar')
-    rust_patch(t, 3.5, 5.6, 12.2, 13.2, 8.7, 1)
-    rust_patch(t, 10.4, 12.4, 12.4, 13.6, 7.3, -1)
+    handle(t, 12.2, 'w_ash', wrap=('leather', 'leather_d'), wrap_to=4.4)
+    pick_head(t, 'forged', 'tempered', rib='steel_d', under='black_e')
+    t.box((6.6, 11.8, 7.0), (9.4, 14.8, 9.0), 'steel', 'boss')
+    t.box((7.0, 12.2, 8.98), (9.0, 14.4, 9.1), 'steel_d', 'bossp')
+    t.box((7.0, 12.2, 6.9), (9.0, 14.4, 7.02), 'steel_d', 'bossp')
+    t.box((7.15, 11.2, 7.15), (8.85, 11.8, 8.85), 'brass', 'collar')
+    for sx in (1, -1):
+        a = 14.3 if sx > 0 else 16 - 14.55
+        t.box((a, 10.9, 7.78), (a + 0.25, 11.7, 8.22), 'gem', 'gem')
+    for x, y in ((7.2, 12.3), (8.8, 12.3), (7.2, 14.2), (8.8, 14.2)):
+        t.box((x - 0.2, y - 0.2, 9.1), (x + 0.2, y + 0.2, 9.2), 'brass', 'rivet')
+        t.box((x - 0.2, y - 0.2, 6.8), (x + 0.2, y + 0.2, 6.9), 'brass', 'rivet')
+    rust_patch(t, 3.8, 5.6, 12.4, 13.4, 8.55, 1)
+    rust_patch(t, 10.4, 12.0, 12.2, 13.2, 7.45, -1)
     return t
 
 
