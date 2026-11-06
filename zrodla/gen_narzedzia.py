@@ -46,29 +46,30 @@ def k_wood(m, G, side, el, seed):
     ax = m.get('axis', 'v')
     cc = (el.lo + el.hi) / 2
     if ax == 'v':
-        S = np.array([2.6, 0.16, 2.6])
+        S = np.array([3.0, 0.07, 3.0])
         end = side in 'TB'
         r = np.hypot(G[:, 0] - cc[0], G[:, 2] - cc[2]) * m.get('rings', 2.0)
     else:
-        S = np.array([2.6, 2.6, 0.16])
+        S = np.array([3.0, 3.0, 0.07])
         end = side in 'FK'
         r = np.hypot(G[:, 0] - cc[0], G[:, 1] - cc[1]) * m.get('rings', 2.0)
-    n = fbm(G * S, 3, seed)
-    n2 = fbm(G * S * np.array([0.5, 0.5, 0.5]) + 11.7, 2, seed + 7)
+    n = fbm(G * S, 2, seed)
+    n2 = fbm(G * S * 0.5 + 11.7, 2, seed + 7)
     if end:
         ring = 0.5 + 0.5 * np.sin((r + n2 * 1.3) * 2 * math.pi)
         t = 0.3 + 0.45 * ring
-        line = 0.0 * t
-    else:
-        t = np.clip(0.5 + (n - 0.5) * 1.5, 0, 1)
-        t = np.round(t * 4) / 4 * 0.6 + t * 0.4          # lekko schodkowe tony: czytelne smugi
-        # linie słojów: warstwice zniekształconego szumu
-        ph = n2 * 9.0 + n * 3.0
-        line = np.clip(1 - np.abs(np.sin(ph * math.pi)) * 7.0, 0, 1)
+        col = _lerp(L, D, t)
+        return col
+    # szerokie pasma tonu o twardych krawędziach (jak deski w grze) + cienkie ciemne słoje + jasne włókna
+    band = np.floor(np.clip(n, 0, 1) * 3.999) / 3.0
+    t = 0.12 + 0.62 * band
+    ph = n2 * 7.0 + n * 2.0
+    s_ = np.abs(np.sin(ph * math.pi))
+    line = (s_ < 0.07).astype(float)
+    hi = (np.abs(s_ - 0.2) < 0.05).astype(float)
     col = _lerp(L, D, t)
-    col = col * (1 - 0.22 * line)[:, None] if not end else col
-    # delikatne rozjaśnienie włókien
-    col = col * (1 + 0.04 * (white(G * (np.array([1, 0.15, 1]) if ax == 'v' else np.array([1, 1, 0.15])), seed + 2, 6.0) - 0.5))[:, None]
+    col = col * (1 - 0.28 * line)[:, None]
+    col = col * (1 + 0.07 * hi)[:, None]
     return col
 
 
