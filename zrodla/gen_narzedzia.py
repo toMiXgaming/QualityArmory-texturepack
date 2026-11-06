@@ -46,41 +46,26 @@ def k_wood(m, G, side, el, seed):
     ax = m.get('axis', 'v')
     cc = (el.lo + el.hi) / 2
     if ax == 'v':
-        S = np.array([3.0, 0.07, 3.0])
+        S = np.array([2.2, 0.05, 2.2])
         end = side in 'TB'
         r = np.hypot(G[:, 0] - cc[0], G[:, 2] - cc[2]) * m.get('rings', 2.0)
     else:
-        S = np.array([3.0, 3.0, 0.07])
+        S = np.array([2.2, 2.2, 0.05])
         end = side in 'FK'
         r = np.hypot(G[:, 0] - cc[0], G[:, 1] - cc[1]) * m.get('rings', 2.0)
     if end:
         n2 = fbm(G * S * 0.5 + 11.7, 2, seed + 7)
         ring = 0.5 + 0.5 * np.sin((r + n2 * 1.3) * 2 * math.pi)
         return _lerp(L, D, 0.3 + 0.45 * ring)
-    # pikselowe włókna: wąskie pasy wzdłuż osi, każdy dzieli się na odcinki o losowym tonie (4 poziomy)
-    if ax == 'v':
-        across = G[:, 0] * 1.0 + G[:, 2] * 1.7
-        along = G[:, 1]
-    else:
-        across = G[:, 0] * 1.0 + G[:, 1] * 1.7
-        along = G[:, 2]
-    lane = np.floor(across * 5.0).astype(np.int64)
-
-    def hsh(a, b):
-        h = (a * 73856093) ^ (b * 19349663) ^ (seed * 83492791)
-        h = (h ^ (h >> 13)) * 1274126177
-        return ((h ^ (h >> 16)) & 0xFFFF) / 65535.0
-    off = hsh(lane, np.zeros_like(lane)) * 9.0
-    seg = np.floor(along * 0.9 + off).astype(np.int64)
-    tone = hsh(lane, seg + 101)
-    t = np.array([0.08, 0.3, 0.5, 0.72])[np.minimum((tone * 4).astype(int), 3)]
-    dark = hsh(lane, np.full_like(lane, 7)) < 0.16            # od czasu do czasu ciemny słój przez całą długość
-    t = np.where(dark, 0.95, t)
-    col = _lerp(L, D, t)
-    # ciemna krawędź pasa (cieńszy kontur) i rzadkie jasne przebłyski
-    fr = across * 5.0 - lane
-    col = col * (1 - 0.1 * (fr < 0.22))[:, None]
-    return col
+    # gładkie, długie włókna: szum mocno rozciągnięty wzdłuż osi, mały kontrast, bez twardych przerw
+    n = fbm(G * S, 3, seed)
+    n2 = fbm(G * S * 0.45 + 11.7, 2, seed + 7)
+    t = np.clip(0.5 + (n - 0.5) * 1.1 + (n2 - 0.5) * 0.5, 0, 1)
+    col = _lerp(L, D, t * 0.75)
+    # cienkie, miękkie ciemniejsze słoje (warstwice), tylko lekko widoczne
+    ph = n2 * 6.0 + n * 1.5
+    line = np.clip(1 - np.abs(np.sin(ph * math.pi)) * 5.0, 0, 1)
+    return col * (1 - 0.12 * line)[:, None]
 
 
 def k_metal(m, G, side, el, seed):
