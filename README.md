@@ -206,7 +206,7 @@ Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.p
 |---|---|---|
 | Ikony 2D | `scrap`, `metal_fragments`, `steel`, `hqm`, `gunpowder`, `cloth`, `pipe`, `spring`, `stock`, `screw`, `rivet`, `silencer`, `scope`, `body_pistol`, `pump_mechanism`, `body_smg`, `body_semi`, `body_rifle`, `body_sniper`, `rusty_tools`, `gears`, `repair_kit`, `tech_notes`, `blueprint` | Axon-items ustawia `item_model` = `axon:<id>` z `items.yml` |
 | Narzędzia 3D | `steel_axe`, `steel_pickaxe`, `steel_shovel`, `hardened_axe`, `hardened_pickaxe` | jak wyżej |
-| Narzędzia vanilla | drewniane i kamienne: siekiera, kilof, łopata, motyka | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
+| Narzędzia vanilla | drewniane i kamienne: siekiera, kilof, łopata, motyka (po ok. 45–55 elementów, własna tekstura 256×256, lekki klimat rdzy) | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
 | Bloki vanilla | stół rzemieślniczy, piec (zwykły i zapalony), ognisko (zapalone i zgaszone), beczka (zamknięta i otwarta), skrzynia pojedyncza i podwójna | nadpisane modele bloków i tekstura `entity/chest`, u wszystkich |
 | Stanowiska | `warsztat_t1`, `warsztat_t2`, `warsztat_t3` (każdy też z `_zuzycie1`, `_zuzycie2`, `_zuzycie3`), `piec_hutniczy`, `piec_hutniczy_on`, `recykler`, `recykler_kolo`, `stol_badan` | wyświetlacz przedmiotu, jedna kratka, przód na południe |
 | Pojemniki | `beczka`, `beczka_paliwa`, `beczka_rdza` (każda też jako `_rozbita`), `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa` (2 kratki), `skrzynia_elitarna`, `spadochron` | wyświetlacz przedmiotu, przód na południe |
@@ -352,3 +352,11 @@ Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Re
 ## Podmiana modeli broni w gotowych zipach
 
 Po `python3 zrodla/gen.py` (można równolegle: `gen.py ak47 awp ...`) `python3 zrodla/podmien_bronie.py` wstawia nowe modele i tekstury wszystkich broni i skinów do trzech zipów w katalogu głównym, waliduje je i uruchamia `sprawdz_paczke.py`. Numery `custom_model_data`, skiny, ADS i pozycje w ręce nie zmieniają się.
+
+## Narzędzia i bronie białe: nowy silnik (`zrodla/gen_narzedzia.py`)
+
+Narzędzia vanilla (drewniane i kamienne), narzędzia Axon (`steel_*`, `hardened_*`) i dziesięć broni białych mają nowe modele (45–55 elementów na narzędzie, 25–55 na broń) z własną teksturą 256×256 na model, malowaną tym samym silnikiem co bronie palne z `gen.py`: równa gęstość pikseli na każdej ścianie, ambient occlusion w załamaniach, wytarte krawędzie. Stare modele rozciągały jeden kafelek na całą ścianę, stąd rozmyty wygląd. Klimat: lekko zardzewiała stal (plamy, wżery), wyschnięte spękane drewno, wytarta skóra i sznur, odprysnięta farba, odłupany kamień. Narzędzia leżą w tych samych współrzędnych co wcześniej (obrót -45°), więc pozycje w ręce i w slocie się nie zmieniają, a bronie białe stoją pionowo jak dotąd. Bez żadnych napisów na modelach. Tekstury narzędzi: `axon:item/narz_<nazwa>`.
+
+Uruchomienie: `python3 zrodla/gen_narzedzia.py [nazwa ...]` (zapis do `zrodla/build/`), potem `python3 zrodla/podmien_narzedzia.py` wstawia je do trzech zipów i uruchamia `sprawdz_paczke.py`. `gen_axoncore.py` bierze modele narzędzi z `build/`, a `gen_bronie_biale.py` woła teraz `gen_narzedzia.py`. Podgląd: `zrodla/preview_narzedzia.py wyjscie.png model ...`.
+
+![Narzędzia i bronie białe](podglady/narzedzia-bronie-biale-8.png)

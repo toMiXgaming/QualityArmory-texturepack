@@ -64,12 +64,16 @@ def pliki():
     for name, img in ITEMS.items():   # ikony 2D, nazwy jak w items.yml pluginu Axon-items
         files['assets/axon/textures/item/%s.png' % name] = _png(img)
         _przedmiot(files, name, {'parent': 'minecraft:item/generated', 'textures': {'layer0': 'axon:item/' + name}})
-    for key, m in T.items():   # narzędzia Axon jako przedmioty, drewniane i kamienne podmieniają vanilla
+    for key, m in T.items():   # narzędzia Axon jako przedmioty (items/*.json); modele i tekstury daje gen_narzedzia.py
         ns, name = key.split(':')
         if ns == 'axon':
-            _przedmiot(files, name, m.json())
-        else:
-            files['assets/minecraft/models/item/%s.json' % name] = _json(m.json())
+            files['assets/axon/items/%s.json' % name] = _json(
+                {'model': {'type': 'minecraft:model', 'model': 'axon:block/' + name}})
+    from gen_narzedzia import pliki as pliki_narzedzi   # nowe modele narzędzi z build/ (python3 gen_narzedzia.py)
+    for fn, data in pliki_narzedzi().items():
+        if 'models/item/' in fn or fn.startswith('assets/axon/models/block/') and fn.split('/')[-1][:-5] in NARZEDZIA \
+                or 'textures/item/narz_' in fn:
+            files[fn] = data
     for key, m in B.items():   # bloki vanilla podmienione u wszystkich
         ns, path = key.split(':')
         files['assets/%s/models/%s.json' % (ns, path)] = _json({'parent': 'minecraft:block/block', **m.json()})

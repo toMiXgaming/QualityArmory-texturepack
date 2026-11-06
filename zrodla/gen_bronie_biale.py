@@ -286,6 +286,10 @@ def build(name, fn):
 
 
 def main():
+    """Od teraz bronie białe buduje gen_narzedzia.py (te same nazwy plików w build/, lepsze tekstury i modele)."""
+    import gen_narzedzia
+    gen_narzedzia.main([n for n, _ in BRONIE])
+    return
     os.makedirs(OUT, exist_ok=True)
     for name, fn in BRONIE:
         m, tex = build(name, fn)

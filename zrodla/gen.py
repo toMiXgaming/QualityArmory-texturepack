@@ -287,8 +287,13 @@ MATS = {
 }
 
 
+EXTRA_KINDS = {}   # kind -> fn(m, G, side, el, seed): extra material painters (gen_narzedzia.py)
+
+
 def base_color(mat, G, side, el):
     m = MATS[mat]
+    if m['kind'] in EXTRA_KINDS:
+        return EXTRA_KINDS[m['kind']](m, G, side, el, zlib.crc32(el.name.encode()) & 0xFFFF)
     if 'sc' in m:            # skins on small guns: pattern size in AK-sized units
         G = G / m['sc']
     w, v, u = G[:, 0], G[:, 1], G[:, 2]
