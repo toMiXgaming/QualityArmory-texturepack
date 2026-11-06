@@ -27,11 +27,11 @@ Paczka zasobów do QualityArmory na Paper 1.21.4, działa na klientach od 1.21 d
 | RPG-7 | crossbow | 9 | `qualityarmory:gun/rpg` |
 | Glock 17 | crossbow | 86 (nowy, QA nie ma tej broni) | `qualityarmory:gun/glock` |
 
-Cztery ostatnie bronie (AS Val 41 elementów, PPSh-41 44, RPG-7 47, Glock 33) mają też po 7 skinów premium (numery 281–317, tabela niżej). Glock ma w paczce numer 86 (wolny, oryginalne numery QA kończą się na 85), więc w configu QualityArmory trzeba ustawić mu `id: 86` i materiał CROSSBOW. Dopisanie do gotowych zipów: `zrodla/dodaj_bronie_4.py`, pełna przebudowa `build_pack.py` też je uwzględnia.
+Cztery ostatnie bronie (AS Val, PPSh-41, RPG-7, Glock) mają też po 7 skinów premium (numery 281–317, tabela niżej). Glock ma w paczce numer 86 (wolny, oryginalne numery QA kończą się na 85), więc w configu QualityArmory trzeba ustawić mu `id: 86` i materiał CROSSBOW. Dopisanie do gotowych zipów: `zrodla/dodaj_bronie_4.py`, pełna przebudowa `build_pack.py` też je uwzględnia.
 
 Zmienione pliki względem oryginału:
-- `assets/qualityarmory/models/gun/<broń>.json` – nowe modele (AK 75 elementów, M4 76, Remington 56, Makarov 30, AWP 119, MAC-10 35, M16 63, SKS 59, Desert Eagle 34, SW1911 44, P30 34, MP5 54, Uzi 33, SG 553 50, FAMAS 39, Dragunov 94, Kar98k 49, SPAS-12 26).
-- `assets/qualityarmory/textures/axon/<broń>.png` – tekstury 128×128 (małe bronie mają gęstsze teksele).
+- `assets/qualityarmory/models/gun/<broń>.json` – nowe modele (AK 271 elementów, M4 230, Remington 159, Makarov 89, AWP 276, MAC-10 124, M16 209, SKS 172, Desert Eagle 119, SW1911 111, P30 95, MP5 145, Uzi 132, SG 553 166, FAMAS 171, Dragunov 280, Kar98k 150, SPAS-12 168, AS Val 219, PPSh-41 198, RPG-7 227, Glock 99). Szczegóły dokładane przez `zrodla/detail.py`: nacięcia zamków, żebra magazynków i chwytów, zęby szyn, śruby, nity, otwory wentylacyjne i wyrzutu, pierścienie na lufach. Bez nazw broni na modelach (zostaje samo „AXON”).
+- `assets/qualityarmory/textures/axon/<broń>.png` – tekstury 256×256 (małe bronie mają gęstsze teksele).
 - `assets/minecraft/atlases/blocks.json` – dodane źródło `axon/` (bez tego tekstury byłyby fioletowo-czarne).
 - `pack.mcmeta` – opis zaczyna się od „AXON”, żeby w grze było widać, która paczka jest wczytana; formaty 34–75 i nakładki (overlays) dla starszych wersji.
 
@@ -347,3 +347,8 @@ Do sprawdzenia w grze: celowanie broni z punktu 8 (zwłaszcza widok przez lunet�
 - `zrodla/` – generator broni (`gen.py`), reaktora (`gen_reactor.py`) i modeli AxonCore (`gen_axoncore.py` z pakietem `axoncore/`), renderer podglądów (`render.py`, `preview.py`), dopasowanie celowania (`tune_ads.py`), szukanie dziur (`gaps.py`) i budowanie zipa (`build_pack.py`).
 
 Przebudowa: pobierz oryginał `https://github.com/ZombieStriker/QualityArmory-Resourcepack/releases/download/latest/QualityArmory-21.zip`, rozpakuj go do `/tmp/qa/pack` i zapisz zip jako `/tmp/qa/QA21.zip` (albo podaj ścieżkę jako argument `build_pack.py`), potem w `zrodla/`: `python3 gen.py && python3 gen_zrzut.py && python3 gen_rekwizyty.py && python3 gen_meble.py && python3 gen_auta.py && python3 gen_pancerze.py && python3 gen_bronie_biale.py && python3 gen_axoncore.py && python3 preview.py && python3 preview.py skiny-ak47 skiny-deagle (itd.) && python3 build_pack.py`. `gen.py makarov` generuje tylko wybraną broń. Opis paczki bierze się z `zrodla/pack.mcmeta`. Remington w `modele/` różni się od świeżo wygenerowanego tylko zapisem PNG i liczb, więc przy budowaniu można skopiować go z `modele/` do `zrodla/build/`. Skrypty mogą wymagać poprawienia ścieżek wyjściowych.
+
+
+## Podmiana modeli broni w gotowych zipach
+
+Po `python3 zrodla/gen.py` (można równolegle: `gen.py ak47 awp ...`) `python3 zrodla/podmien_bronie.py` wstawia nowe modele i tekstury wszystkich broni i skinów do trzech zipów w katalogu głównym, waliduje je i uruchamia `sprawdz_paczke.py`. Numery `custom_model_data`, skiny, ADS i pozycje w ręce nie zmieniają się.

@@ -60,7 +60,7 @@ def validate(model, tex_png, name, need):
     errs = []
     m = json.loads(model)
     im = Image.open(io.BytesIO(tex_png))
-    if im.size not in ((64, 64), (128, 128)):
+    if im.size not in ((64, 64), (128, 128), (256, 256)):
         errs.append('texture size %s' % (im.size,))
     tex = m['textures']
     for k, v in tex.items():
