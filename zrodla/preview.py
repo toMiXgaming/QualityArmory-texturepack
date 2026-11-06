@@ -124,7 +124,7 @@ def sheet(name):
     # texture atlas
     tex = Image.open(os.path.join(HERE, 'build', name + '.png')).convert('RGB').resize((256, 256), Image.NEAREST)
     out.paste(tex, (680, 1085 + 37))
-    label(out, 'tekstura 128x128', 15, (680, 1090))
+    label(out, 'tekstura 256x256', 15, (680, 1090))
     return out
 
 

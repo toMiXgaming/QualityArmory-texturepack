@@ -20,7 +20,7 @@ from PIL import Image
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, 'build')
-TEX = 128
+TEX = 256
 CUR_DENS = 4.0
 DENSITY = 4.0          # texels per gun unit (tries lower if the atlas is full)
 
@@ -2994,6 +2994,19 @@ BUILDERS = {'ak47': build_ak, 'm4a1s': build_m4, 'remmington': build_870, 'makar
             'mp5': build_mp5, 'uzi': build_uzi, 'sg553': build_sg553, 'famas': build_famas,
             'dragunov': build_dragunov, 'kar98k': build_kar98k, 'spas': build_spas,
             'asval': build_asval, 'ppsh41': build_ppsh41, 'glock': build_glock, 'rpg': build_rpg}
+
+import detail      # extra real geometry (ribs, rail teeth, screws, vents ...) on top of every build_<gun>()
+
+
+def _with_detail(fn):
+    def build():
+        g = fn()
+        detail.apply(g)
+        return g
+    return build
+
+
+BUILDERS = {k: _with_detail(v) for k, v in BUILDERS.items()}
 
 # guns that QualityArmory's own pack has no model for: custom_model_data on the crossbow for the new entry
 NEW_GUNS = {'glock': 86}
