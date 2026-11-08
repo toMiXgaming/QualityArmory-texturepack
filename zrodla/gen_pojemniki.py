@@ -44,15 +44,19 @@ MATS.update({
 })
 
 
-def disc(t, cx, cz, y0, y1, R, mat, tag='disc', bands=None):
-    """Walec o przekroju stopniowanego okręgu: pasy wzdłuż z o różnej szerokości (bez nakładania)."""
+def disc(t, cx, cz, y0, y1, R, mat, tag='disc', bands=None, shift=0.0):
+    """Walec o przekroju stopniowanego okręgu: pasy wzdłuż z o różnej szerokości (bez nakładania).
+
+    shift (0..1 kroku) przesuwa podział na pasy: warstwy leżące jedna na drugiej (korpus, żebra, pas)
+    dostają różny shift, żeby ich krawędzie nie wypadały w tej samej płaszczyźnie i nie migały (z-fighting)."""
     n = bands or max(6, int(R * 1.6))
     h = 2 * R / n
-    for i in range(n):
-        z0 = -R + i * h
-        zm = z0 + h / 2
+    cuts = [-R + (i + shift) * h for i in range(n)] if shift else [-R + i * h for i in range(n)]
+    cuts = [-R] + [c for c in cuts if c > -R + 1e-6] + [R]
+    for z0, z1 in zip(cuts, cuts[1:]):
+        zm = (z0 + z1) / 2
         hw = math.sqrt(max(R * R - zm * zm, 0.04))
-        t.box((cx - hw, y0, cz + z0), (cx + hw, y1, cz + z0 + h), mat, tag)
+        t.box((cx - hw, y0, cz + z0), (cx + hw, y1, cz + z1), mat, tag)
 
 
 def beczka(mat='drum_blue', band=False, open_=False):
@@ -67,10 +71,10 @@ def beczka(mat='drum_blue', band=False, open_=False):
     else:
         disc(t, x, z, 15.9, 16.0, 6.3, mat, 'lid')
     for y in (4.2, 7.6, 11.0):                                           # żebra tłoczone w korpusie
-        disc(t, x, z, y, y + 0.9, 6.95, 'drum_hoop', 'rib')
+        disc(t, x, z, y, y + 0.9, 6.95, 'drum_hoop', 'rib', shift=0.5)
     if band:
-        disc(t, x, z, 5.6, 7.4, 6.72, 'drum_band', 'band')
-        disc(t, x, z, 7.4, 8.0, 6.76, 'black', 'bandline')
+        disc(t, x, z, 5.6, 7.4, 6.88, 'drum_band', 'band', shift=0.4)
+        disc(t, x, z, 7.4, 8.0, 6.64, 'black', 'bandline', shift=0.7)
     return t
 
 
@@ -79,9 +83,9 @@ def rozbita(mat='drum_blue', band=False):
     x, z = 8.0, 8.0
     disc(t, x, z, 0.0, 0.7, 7.1, 'drum_hoop', 'chime')
     disc(t, x, z, 0.7, 7.0, 6.6, mat, 'body')
-    disc(t, x, z, 4.2, 5.1, 6.95, 'drum_hoop', 'rib')
+    disc(t, x, z, 4.2, 5.1, 6.95, 'drum_hoop', 'rib', shift=0.5)
     if band:
-        disc(t, x, z, 2.2, 3.6, 6.72, 'drum_band', 'band')
+        disc(t, x, z, 2.2, 3.6, 6.88, 'drum_band', 'band', shift=0.4)
     disc(t, x, z, 6.4, 6.6, 6.0, 'drum_in', 'inner')
     # poszarpany górny brzeg: pionowe płaty blachy o różnej wysokości
     n = 14
@@ -103,8 +107,8 @@ def rozbita(mat='drum_blue', band=False):
     t.box((5.4, 6.4, 8.8), (9.0, 7.6, 11.4), 'cloth', 'loot')
     t.box((6.0, 7.6, 9.4), (8.0, 8.1, 10.8), 'cloth', 'loot')
     # wieko leżące obok
-    disc(t, -3.2, 8.0, 0.0, 0.7, 5.4, mat, 'lid', bands=8)
-    disc(t, -3.2, 8.0, 0.7, 0.85, 5.9, 'drum_hoop', 'lidrim', bands=8)
+    disc(t, -5.6, 8.0, 0.0, 0.7, 5.4, mat, 'lid', bands=8)
+    disc(t, -5.6, 8.0, 0.7, 0.85, 5.9, 'drum_hoop', 'lidrim', bands=8)
     return t
 
 

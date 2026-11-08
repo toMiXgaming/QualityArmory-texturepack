@@ -48,7 +48,7 @@ def warsztat_t1(w):
     m.part((0.5, 0, 12), (2, 26, 13.5), 'plank_dark')                            # słupki tablicy
     m.part((14, 0, 12), (15.5, 26, 13.5), 'plank_dark')
     m.part((1, 12, 12.6), (15, 25, 13.2), 'cardboard')                           # tablica (płyta pilśniowa)
-    m.part((0, 25, 12), (16, 26.5, 13.8), 'plank')                               # daszek tablicy
+    m.part((0, 25, 11.9), (16, 26.5, 13.8), 'plank')                               # daszek tablicy
     # narzędzia na tablicy
     m.part((3, 15, 12), (3.8, 22, 12.6), 'wood', fragile=True)                   # młotek
     m.part((2, 20.5, 11.8), (4.8, 22.5, 12.6), 'steel_dark', fragile=True)
