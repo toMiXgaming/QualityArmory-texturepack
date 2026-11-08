@@ -206,7 +206,7 @@ Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.p
 |---|---|---|
 | Ikony 2D | `scrap`, `metal_fragments`, `steel`, `hqm`, `gunpowder`, `cloth`, `pipe`, `spring`, `stock`, `screw`, `rivet`, `silencer`, `scope`, `body_pistol`, `pump_mechanism`, `body_smg`, `body_semi`, `body_rifle`, `body_sniper`, `rusty_tools`, `gears`, `repair_kit`, `tech_notes`, `blueprint` | Axon-items ustawia `item_model` = `axon:<id>` z `items.yml` |
 | Narzędzia 3D | `steel_axe`, `steel_pickaxe`, `steel_shovel`, `hardened_axe`, `hardened_pickaxe` | jak wyżej |
-| Narzędzia vanilla | drewniane i kamienne: siekiera, kilof, łopata, motyka (po ok. 45–55 elementów, własna tekstura 256×256, lekki klimat rdzy) | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
+| Narzędzia vanilla | drewniane, kamienne, żelazne i diamentowe: siekiera, kilof, łopata, motyka (po ok. 45–55 elementów, własna tekstura 256×256, lekki klimat rdzy) | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
 | Bloki vanilla | stół rzemieślniczy, piec (zwykły i zapalony), ognisko (zapalone i zgaszone), beczka (zamknięta i otwarta), skrzynia pojedyncza i podwójna | nadpisane modele bloków i tekstura `entity/chest`, u wszystkich |
 | Stanowiska | `warsztat_t1`, `warsztat_t2`, `warsztat_t3` (każdy też z `_zuzycie1`, `_zuzycie2`, `_zuzycie3`), `piec_hutniczy`, `piec_hutniczy_on`, `recykler`, `recykler_kolo`, `stol_badan` | wyświetlacz przedmiotu, jedna kratka, przód na południe |
 | Pojemniki | `beczka`, `beczka_paliwa`, `beczka_rdza` (każda też jako `_rozbita`), `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa` (2 kratki), `skrzynia_elitarna`, `spadochron` | wyświetlacz przedmiotu, przód na południe |
@@ -244,6 +244,7 @@ Wraki leżą w modelu w zmniejszonej skali, a plugin rysuje je z transformacją 
 ![Wraki](podglady/axoncore-wraki.png)
 ![Bloki vanilla](podglady/axoncore-bloki.png)
 ![Narzędzia](podglady/axoncore-narzedzia.png)
+![Narzędzia żelazne i diamentowe](podglady/narzedzia-zelazne-diamentowe.png)
 
 ## Wgranie na serwer
 

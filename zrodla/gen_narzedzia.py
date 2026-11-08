@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Narzędzia vanilla (drewniane i kamienne: siekiera, kilof, łopata, motyka), narzędzia Axon
+"""Narzędzia vanilla (drewniane, kamienne, żelazne i diamentowe: siekiera, kilof, łopata, motyka), narzędzia Axon
 (steel_*, hardened_*) i bronie białe AXON, w nowej, dużo bardziej szczegółowej wersji.
 
 Każdy model to kilkadziesiąt do ponad stu prostopadłościanów z własną teksturą 256x256 malowaną
@@ -227,6 +227,12 @@ MATS.update({
     'brass': dict(kind='t_metal', base=(196, 158, 74), wear=(240, 214, 140), edge=0.6, rust=0.0, var=0.07),
     'rust': dict(kind='t_metal', base=(128, 72, 40), wear=(170, 110, 66), edge=0.5, rust=0.9),
     'tempered': dict(kind='t_metal', base=(168, 140, 72), wear=(224, 200, 130), edge=0.6, rust=0.0, var=0.12),
+    # żelazo i diament do narzędzi vanilla (mniej rdzy niż stal)
+    'iron': dict(kind='t_metal', base=(136, 138, 146), wear=(204, 206, 212), edge=0.6, rust=0.1),
+    'iron_e': dict(kind='t_metal', base=(184, 186, 194), wear=(228, 230, 236), edge=0.5, rust=0.03),
+    'diamond': dict(kind='t_metal', base=(62, 196, 190), wear=(180, 250, 244), edge=0.6, rust=0.0, var=0.1),
+    'diamond_d': dict(kind='t_metal', base=(36, 128, 134), wear=(120, 214, 214), edge=0.6, rust=0.0, var=0.08),
+    'diamond_e': dict(kind='t_metal', base=(150, 244, 238), wear=(226, 255, 252), edge=0.5, rust=0.0, var=0.06),
     'gem': dict(kind='t_metal', base=(70, 200, 216), wear=(190, 250, 255), edge=0.5, rust=0.0, var=0.05),
     'paint_olive': dict(kind='t_metal', base=(82, 90, 60), wear=(150, 150, 140), edge=0.6, rust=0.2, paint=(84, 94, 58), chip=0.6),
     'paint_red': dict(kind='t_metal', base=(112, 112, 116), wear=(180, 180, 184), edge=0.5, rust=0.25, paint=(150, 44, 36), chip=0.6),
@@ -322,6 +328,11 @@ def nail(t, x, y, z, side=1, mat='steel_d', ln=0.5):
 
 
 # ------------------------------------------------------------------ vanilla: drewniane i kamienne
+def _tip(s):
+    """Materiał grotów/ostrzy: kamień -> krzemień, metal/diament -> podany materiał."""
+    return s if isinstance(s, str) else 'flint'
+
+
 def v_axe(name, head, lash_m, stick, head_dark, stone):
     t = Tool(name)
     handle(t, 13.8, stick, wrap=('leather', 'leather_d'), wrap_to=4.4)
@@ -329,7 +340,7 @@ def v_axe(name, head, lash_m, stick, head_dark, stone):
     x0 = 8.5
     t.box((x0, 9.6, 7.55), (x0 + 3.6, 14.6, 8.45), head, 'head')
     t.box((x0 + 3.6, 10.1, 7.7), (x0 + 4.3, 14.1, 8.3), head, 'headb')
-    t.box((x0 + 4.3, 10.5, 7.82), (x0 + 4.7, 13.7, 8.18), head_dark if not stone else 'flint', 'bit')
+    t.box((x0 + 4.3, 10.5, 7.82), (x0 + 4.7, 13.7, 8.18), head_dark if not stone else _tip(stone), 'bit')
     t.box((x0 + 0.6, 14.6, 7.7), (x0 + 3.0, 15.0, 8.3), head, 'topnib')
     t.box((x0 + 0.8, 9.2, 7.7), (x0 + 2.8, 9.6, 8.3), head, 'beard')
     t.box((x0 + 3.0, 8.9, 7.8), (x0 + 3.8, 9.6, 8.2), head, 'beard')
@@ -345,8 +356,8 @@ def v_axe(name, head, lash_m, stick, head_dark, stone):
         nail(t, 10.6, 12.3, 8.0, -1)
     else:
         for yy in (10.4, 13.4):
-            t.box((x0 + 1.6, yy, 7.45), (x0 + 2.0, yy + 0.35, 7.55), 'flint', 'chip')
-            t.box((x0 + 2.4, yy + 0.4, 8.45), (x0 + 2.8, yy + 0.75, 8.55), 'flint', 'chip')
+            t.box((x0 + 1.6, yy, 7.45), (x0 + 2.0, yy + 0.35, 7.55), _tip(stone), 'chip')
+            t.box((x0 + 2.4, yy + 0.4, 8.45), (x0 + 2.8, yy + 0.75, 8.55), _tip(stone), 'chip')
     return t
 
 
@@ -374,14 +385,14 @@ def v_pickaxe(name, head, lash_m, stick, head_dark, stone):
     t = Tool(name)
     handle(t, 12.6, stick, wrap=('leather', 'leather_d'), wrap_to=4.4)
     hm = 'w_h' if head == 'w_light' else head
-    pick_head(t, hm, 'flint' if stone else 'w_dark_h', rib=head_dark if stone else 'w_old', under=head_dark)
+    pick_head(t, hm, _tip(stone) if stone else 'w_dark_h', rib=head_dark if stone else 'w_old', under=head_dark)
     lash(t, 8, 8, 11.2, 12.0, 0.64, lash_m)
     lash(t, 8, 8, 14.6, 15.2, 0.6, lash_m)
     t.box((6.9, 12.3, 7.28), (9.1, 12.7, 7.42), lash_m, 'strap')
     t.box((6.9, 12.3, 8.58), (9.1, 12.7, 8.72), lash_m, 'strap')
     for x in (4.4, 11.6):               # dodatkowe opaski mocujące głowicę (drewno) / wyszczerbienia (kamień)
         if stone:
-            t.box((x, 11.9, 8.45), (x + 0.4, 12.3, 8.56), 'flint', 'chip')
+            t.box((x, 11.9, 8.45), (x + 0.4, 12.3, 8.56), _tip(stone), 'chip')
         else:
             t.box((x - 0.1, 12.2, 7.36), (x + 0.5, 14.2, 7.44), 'cord', 'strap')
     return t
@@ -394,7 +405,7 @@ def v_shovel(name, head, lash_m, stick, head_dark, stone):
     rows = [(10.6, 11.8, 0.9), (11.8, 13.0, 1.5), (13.0, 14.2, 1.9), (14.2, 15.4, 2.0), (15.4, 16.2, 1.9),
             (16.2, 16.8, 1.4), (16.8, 17.1, 0.7)]
     for i, (y0, y1, hw) in enumerate(rows):
-        m = ('flint' if stone else 'w_dark_h') if i == len(rows) - 1 else hm
+        m = (_tip(stone) if stone else 'w_dark_h') if i == len(rows) - 1 else hm
         t.box((8 - hw, y0, 7.62), (8 + hw, y1, 8.38), m, 'blade')
         if 1 <= i <= len(rows) - 2:     # unoszące się brzegi: łyżka łopaty
             t.box((8 - hw - 0.15, y0 + 0.1, 7.7), (8 - hw, y1 - 0.1, 8.45), head_dark, 'rimL')
@@ -417,8 +428,8 @@ def v_hoe(name, head, lash_m, stick, head_dark, stone):
     t.box((8.5, 12.7, 7.6), (12.2, 14.4, 8.4), head, 'blade')
     t.box((12.2, 12.4, 7.7), (13.0, 14.0, 8.3), head, 'blade2')
     t.box((11.2, 11.3, 7.72), (12.2, 12.7, 8.28), head, 'hook')
-    t.box((11.5, 10.7, 7.82), (12.1, 11.3, 8.18), head_dark if not stone else 'flint', 'hooktip')
-    t.box((12.6, 12.6, 7.82), (13.3, 13.5, 8.18), head_dark if not stone else 'flint', 'bit')
+    t.box((11.5, 10.7, 7.82), (12.1, 11.3, 8.18), head_dark if not stone else _tip(stone), 'hooktip')
+    t.box((12.6, 12.6, 7.82), (13.3, 13.5, 8.18), head_dark if not stone else _tip(stone), 'bit')
     t.box((7.3, 12.4, 7.3), (8.7, 14.6, 8.7), stick, 'eye')
     t.box((8.8, 14.4, 7.7), (11.6, 14.8, 8.3), head, 'top')
     t.box((9.0, 13.5, 7.45), (11.8, 13.8, 7.55), head_dark, 'seam')
@@ -436,6 +447,8 @@ VANILLA = {}
 for _kind, _fn in (('axe', v_axe), ('pickaxe', v_pickaxe), ('shovel', v_shovel), ('hoe', v_hoe)):
     VANILLA['wooden_' + _kind] = (lambda f=_fn, k=_kind: f('narz_wooden_' + k, 'w_light', 'cord', 'w_old', 'w_dark', False))
     VANILLA['stone_' + _kind] = (lambda f=_fn, k=_kind: f('narz_stone_' + k, 'stone', 'cord_d', 'w_dark', 'stone', True))
+    VANILLA['iron_' + _kind] = (lambda f=_fn, k=_kind: f('narz_iron_' + k, 'iron', 'leather_d', 'w_old', 'steel_d', 'iron_e'))
+    VANILLA['diamond_' + _kind] = (lambda f=_fn, k=_kind: f('narz_diamond_' + k, 'diamond', 'leather_d', 'w_dark', 'diamond_d', 'diamond_e'))
 
 
 
