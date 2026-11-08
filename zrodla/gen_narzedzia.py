@@ -789,9 +789,33 @@ def render_bron(name, out=OUT):
     print(name, 'elements', len(model['elements']), 'faces', nf, 'density', dens, flush=True)
 
 
+_SWAP_EW = {'east': 'west', 'west': 'east'}
+
+
+def mirror_x(model):
+    """Odbicie lustrzane modelu względem x=8 (przed obrotem -45° wokół z): głowica siekiery/motyki
+    ma patrzeć do przodu jak w vanilla (w ręce i w GUI ostrze po lewej stronie trzonka), nie do tyłu."""
+    for e in model['elements']:
+        a, b = 16 - e['to'][0], 16 - e['from'][0]
+        e['from'][0], e['to'][0] = round(a, 4), round(b, 4)
+        faces = {}
+        for k, f in e['faces'].items():
+            f = dict(f)
+            if k in _SWAP_EW:
+                k = _SWAP_EW[k]
+            else:
+                u0, v0, u1, v1 = f['uv']
+                f['uv'] = [u1, v0, u0, v1]
+            faces[k] = f
+        e['faces'] = faces
+    return model
+
+
 def render_tool(name, fn, out=OUT):
     t = fn()
     model, img, dens, nf = t.save('axon:item/' + name, HANDHELD)
+    if name.endswith(('_axe', '_hoe')):
+        mirror_x(model)
     json.dump(model, open(os.path.join(out, name + '.json'), 'w'), indent=1)
     Image.fromarray(img, 'RGBA').save(os.path.join(out, name + '.png'))
     print(name, 'elements', len(model['elements']), 'faces', nf, 'density', dens, flush=True)
