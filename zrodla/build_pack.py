@@ -9,7 +9,8 @@ One zip for every 1.21.x (pack.mcmeta lists formats 34-75 and the overlays):
   custom_model_data entries are written again as old-style "overrides" on the vanilla
   item models (legacy_1_21_0/), and axon:<name> gets a models/item/ model for item_model.
 - axon_shadery (1.21.2-1.21.5) and axon_shadery_1_21_0 (1.21-1.21.1): the AxonMap core
-  shaders. 1.21.6+ uses a different shader format, so there they are left out."""
+  shaders. 1.21.6+ uses a different shader format: axon_shadery_1_21_11 (format 75 only)
+  has the same shaders rewritten for 1.21.11 (zrodla/shadery_1_21_11); 1.21.6-1.21.10 get none."""
 import hashlib, io, json, os, sys, zipfile
 from PIL import Image
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -132,6 +133,9 @@ def main():
         # 1.21-1.21.1: shader names and #moj_import paths without a namespace
         old = data.replace(b'"minecraft:core/', b'"').replace(b'<minecraft:', b'<')
         repl['axon_shadery_1_21_0/assets/minecraft/shaders/core/' + fn] = old
+    shaders = os.path.join(HERE, 'shadery_1_21_11')   # the same shaders in the 1.21.11 format (UBO blocks)
+    for fn in sorted(os.listdir(shaders)):
+        repl['axon_shadery_1_21_11/assets/minecraft/shaders/core/' + fn] = open(os.path.join(shaders, fn), 'rb').read()
     from dodaj_reaktor import reactor_files   # reaktor AxonPlot (gen_reactor.py)
     repl.update(reactor_files())
     # AXON-Structure: zrzut (gen_zrzut.py), przedmiot axon:zrzut z modelem axon:block/zrzut

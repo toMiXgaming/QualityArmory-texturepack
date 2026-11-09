@@ -17,6 +17,7 @@ in vec4 vertexColor;
 in vec2 texCoord0;
 flat in int axonMap;
 flat in int axonTile;
+flat in int axonDensity;
 flat in vec2 axonCursor;
 flat in vec4 axonSpriteA[AXON_SPRITES];
 flat in vec4 axonSpriteB[AXON_SPRITES];
@@ -320,31 +321,64 @@ void axonSprite(inout vec3 base, vec2 p, float px, vec2 cursor, int i) {
     }
 }
 
+// Piksel obrazu mapy bez znacznika i tabeli sprite'ów (zastąpione sąsiednim wierszem).
+vec3 axonTexel(ivec2 pixel) {
+    pixel = clamp(pixel, ivec2(0), ivec2(127));
+    int markerWidth = axonDensity > 1 ? 32 : 24;
+    if (pixel.y == 0 && pixel.x < markerWidth) {
+        pixel.y = 1;
+    } else if (pixel.y == 127) {
+        // znacznik (x < 8) i tabela sprite'ów (reszta wiersza) nie są obrazem
+        pixel.y = 126;
+    }
+    return texelFetch(Sampler0, pixel, 0).rgb;
+}
+
+// Ostre skalowanie z wygładzonymi krawędziami: wewnątrz piksela obrazu kolor jest stały, a przejście
+// do sąsiada trwa jeden piksel ekranu. Przy niecałkowitej skali (np. 1280 px obrazu na 1920 px ekranu)
+// piksele nie są nierówne, a przy całkowitej obraz jest tak ostry jak przy texelFetch.
+vec3 axonSharp(vec2 uv) {
+    vec2 texel = uv * 128.0;
+    vec2 perScreen = max(fwidth(texel), vec2(1e-4));
+    vec2 scale = max(1.0 / perScreen, vec2(1.0));
+    vec2 base = floor(texel);
+    vec2 inside = texel - base - 0.5;
+    vec2 range = 0.5 - 0.5 / scale;
+    vec2 f = (inside - clamp(inside, -range, range)) * scale;
+    vec2 p = base + 0.5 + f - 0.5;
+    ivec2 i = ivec2(floor(p));
+    vec2 w = fract(p);
+    vec3 c00 = axonTexel(i);
+    vec3 c10 = axonTexel(i + ivec2(1, 0));
+    vec3 c01 = axonTexel(i + ivec2(0, 1));
+    vec3 c11 = axonTexel(i + ivec2(1, 1));
+    return mix(mix(c00, c10, w.x), mix(c01, c11, w.x), w.y);
+}
+
 void main() {
     if (axonMap == 1) {
-        // Mapa AxonMap: bez światła i mgły; piksele znacznika zastępujemy sąsiednim wierszem.
-        ivec2 pixel = clamp(ivec2(texCoord0 * 128.0), ivec2(0), ivec2(127));
-        if (pixel.y == 0 && pixel.x < 24) {
-            pixel.y = 1;
-        } else if (pixel.y == 127) {
-            // znacznik (x < 8) i tabela sprite'ów (reszta wiersza) nie są obrazem
-            pixel.y = 126;
+        // Mapa AxonMap: bez światła i mgły. Ostry ekran (gęstość 2) skalujemy gładko, zwykły jak dotąd.
+        if (axonDensity > 1) {
+            fragColor = vec4(axonSharp(texCoord0), 1.0);
+        } else {
+            fragColor = vec4(axonTexel(ivec2(texCoord0 * 128.0)), 1.0);
         }
-        fragColor = vec4(texelFetch(Sampler0, pixel, 0).rgb, 1.0);
 
-        // Sprity: rysowane w pikselach całej mapy, z wygładzaniem do rozdzielczości ekranu.
-        vec2 spritePixel = vec2(float(axonTile % AXON_COLS), float(axonTile / AXON_COLS)) * 128.0 + texCoord0 * 128.0;
-        float spriteAa = max(fwidth(spritePixel.x), 1e-3);
+        // Sprity i kursor są w pikselach logicznych ekranu 640x384, niezależnie od gęstości siatki.
+        int cols = AXON_COLS * axonDensity;
+        float density = float(axonDensity);
+        vec2 mapPixel = (vec2(float(axonTile % cols), float(axonTile / cols)) * 128.0 + texCoord0 * 128.0) / density;
+        vec2 cursorPixel = axonCursor * vec2(float(AXON_COLS), float(AXON_ROWS)) * 128.0;
+
+        // Sprity: rysowane w pikselach logicznych, z wygładzaniem do rozdzielczości ekranu.
+        float spriteAa = max(fwidth(mapPixel.x), 1e-3);
         vec3 spriteBase = fragColor.rgb;
-        vec2 spriteCursor = axonCursor * vec2(float(AXON_COLS), float(AXON_ROWS)) * 128.0;
         for (int i = 0; i < AXON_SPRITES; i++) {
-            axonSprite(spriteBase, spritePixel, spriteAa, spriteCursor, i);
+            axonSprite(spriteBase, mapPixel, spriteAa, cursorPixel, i);
         }
         fragColor = vec4(spriteBase, 1.0);
 
-        // Kursor: krzyżyk z obwódką, w pikselach całej mapy.
-        vec2 mapPixel = vec2(float(axonTile % AXON_COLS), float(axonTile / AXON_COLS)) * 128.0 + texCoord0 * 128.0;
-        vec2 cursorPixel = axonCursor * vec2(float(AXON_COLS), float(AXON_ROWS)) * 128.0;
+        // Kursor: krzyżyk z obwódką.
         vec2 d = abs(floor(mapPixel) - floor(cursorPixel));
         if ((d.x <= 5.0 && d.y <= 0.0) || (d.y <= 5.0 && d.x <= 0.0)) {
             fragColor = vec4(1.0);

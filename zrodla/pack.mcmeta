@@ -10,7 +10,8 @@
     "entries": [
       {"formats": [34, 45], "min_format": 34, "max_format": 45, "directory": "axon_1_21_0"},
       {"formats": [34, 41], "min_format": 34, "max_format": 41, "directory": "axon_shadery_1_21_0"},
-      {"formats": [42, 55], "min_format": 42, "max_format": 55, "directory": "axon_shadery"}
+      {"formats": [42, 55], "min_format": 42, "max_format": 55, "directory": "axon_shadery"},
+      {"formats": [75, 75], "min_format": 75, "max_format": 75, "directory": "axon_shadery_1_21_11"}
     ]
   }
 }
