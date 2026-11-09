@@ -206,7 +206,7 @@ Dopisanie do gotowego zipa (razem z kopią `-1.21.11`): `zrodla/dodaj_axoncore.p
 |---|---|---|
 | Ikony 2D | `scrap`, `metal_fragments`, `steel`, `hqm`, `gunpowder`, `cloth`, `pipe`, `spring`, `stock`, `screw`, `rivet`, `silencer`, `scope`, `body_pistol`, `pump_mechanism`, `body_smg`, `body_semi`, `body_rifle`, `body_sniper`, `rusty_tools`, `gears`, `repair_kit`, `tech_notes`, `blueprint` | Axon-items ustawia `item_model` = `axon:<id>` z `items.yml` |
 | Narzędzia 3D | `steel_axe`, `steel_pickaxe`, `steel_shovel`, `hardened_axe`, `hardened_pickaxe` | jak wyżej |
-| Narzędzia vanilla | drewniane i kamienne: siekiera, kilof, łopata, motyka (po ok. 45–55 elementów, własna tekstura 256×256, lekki klimat rdzy) | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
+| Narzędzia vanilla | drewniane, kamienne, żelazne i diamentowe: siekiera, kilof, łopata, motyka (po ok. 45–55 elementów, własna tekstura 256×256, lekki klimat rdzy) | nadpisane `minecraft:item/<narzędzie>`, u wszystkich |
 | Bloki vanilla | stół rzemieślniczy, piec (zwykły i zapalony), ognisko (zapalone i zgaszone), beczka (zamknięta i otwarta), skrzynia pojedyncza i podwójna | nadpisane modele bloków i tekstura `entity/chest`, u wszystkich |
 | Stanowiska | `warsztat_t1`, `warsztat_t2`, `warsztat_t3` (każdy też z `_zuzycie1`, `_zuzycie2`, `_zuzycie3`), `piec_hutniczy`, `piec_hutniczy_on`, `recykler`, `recykler_kolo`, `stol_badan` | wyświetlacz przedmiotu, jedna kratka, przód na południe |
 | Pojemniki | `beczka`, `beczka_paliwa`, `beczka_rdza` (każda też jako `_rozbita`), `skrzynia_drewniana`, `skrzynka_narzedziowa`, `szafka_medyczna`, `skrzynka_jedzenie`, `skrzynia_wojskowa` (2 kratki), `skrzynia_elitarna`, `spadochron` | wyświetlacz przedmiotu, przód na południe |
@@ -257,6 +257,21 @@ Wraki leżą w modelu w zmniejszonej skali, a plugin rysuje je z transformacją 
 ![Wraki](podglady/axoncore-wraki.png)
 ![Bloki vanilla](podglady/axoncore-bloki.png)
 ![Narzędzia](podglady/axoncore-narzedzia.png)
+![Narzędzia żelazne i diamentowe](podglady/narzedzia-zelazne-diamentowe.png)
+
+## Surowa Siarka (ruda w głazach i przedmiot)
+
+Na serwerze nie ma miedzi: ruda miedzi w głazach AxonOre (i w kopalniach AXON-Structure) daje tylko **Surową Siarkę**. Paczka pokazuje to w grze:
+
+| Co | Plik w paczce | Wygląd |
+|---|---|---|
+| Ruda w głazie | `minecraft:block/copper_ore`, `deepslate_copper_ore` (tekstury 16×16) | kamień (albo łupek) z cytrynowymi kryształami siarki i żółtym nalotem; złoto w vanilli jest pomarańczowe, więc się nie mylą |
+| Surowa Siarka | `assets/minecraft/items/yellow_dye.json`: `custom_model_data` 10001 → `axon:block/surowa_siarka` | żółta grudka z kryształowymi ściankami; zwykły żółty barwnik (bez liczby) wygląda jak w vanilli |
+| `axon:surowa_siarka` | `assets/axon/items/surowa_siarka.json` | ta sama grudka, gdyby plugin ustawiał `item_model` |
+
+Na 1.21–1.21.3 to samo jest w nakładce `axon_1_21_0` jako `overrides` (`legacy_1_21_0/yellow_dye.json`). Siarkę jako żółty barwnik z liczbą 10001 tworzą AxonOre i AxonPlot, a Axon-items przyjmuje ją jako składnik `minecraft:yellow_dye#10001`. Źródło: `zrodla/axoncore/siarka.py` (dodaje je też `gen_axoncore.py` przy pełnej przebudowie), dopisanie do gotowych zipów: `zrodla/dodaj_siarke.py`. Gotowe pliki: `modele/siarka/`, podgląd: `podglady/surowa-siarka.png`.
+
+![Surowa Siarka](podglady/surowa-siarka.png)
 
 ## Wgranie na serwer
 
