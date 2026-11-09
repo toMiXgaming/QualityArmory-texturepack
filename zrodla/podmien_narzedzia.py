@@ -29,11 +29,18 @@ def sprawdz_modele(files):
     return errs
 
 
+# żelazne narzędzia wracają do vanilla: usuwamy nadpisane modele i tekstury
+USUN = ['assets/minecraft/models/item/iron_%s.json' % k for k in ('axe', 'pickaxe', 'shovel', 'hoe')] + \
+       ['assets/axon/textures/item/narz_iron_%s.png' % k for k in ('axe', 'pickaxe', 'shovel', 'hoe')]
+
+
 def patch(path, files):
     tmp = path + '.tmp'
     with zipfile.ZipFile(path) as zin, zipfile.ZipFile(tmp, 'w', zipfile.ZIP_DEFLATED) as zout:
         have = set(zin.namelist())
         for info in zin.infolist():
+            if info.filename in USUN:
+                continue
             if info.filename in files:
                 zout.writestr(info, files[info.filename])
             else:

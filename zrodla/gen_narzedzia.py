@@ -447,7 +447,6 @@ VANILLA = {}
 for _kind, _fn in (('axe', v_axe), ('pickaxe', v_pickaxe), ('shovel', v_shovel), ('hoe', v_hoe)):
     VANILLA['wooden_' + _kind] = (lambda f=_fn, k=_kind: f('narz_wooden_' + k, 'w_light', 'cord', 'w_old', 'w_dark', False))
     VANILLA['stone_' + _kind] = (lambda f=_fn, k=_kind: f('narz_stone_' + k, 'stone', 'cord_d', 'w_dark', 'stone', True))
-    VANILLA['iron_' + _kind] = (lambda f=_fn, k=_kind: f('narz_iron_' + k, 'iron', 'leather_d', 'w_old', 'steel_d', 'iron_e'))
     VANILLA['diamond_' + _kind] = (lambda f=_fn, k=_kind: f('narz_diamond_' + k, 'diamond', 'leather_d', 'w_dark', 'diamond_d', 'diamond_e'))
 
 
@@ -576,7 +575,31 @@ def a_hardened_pickaxe():
     return t
 
 
+def a_steel_hoe():
+    t = Tool('narz_steel_hoe')
+    handle(t, 13.6, 'w_old', wrap=('leather', 'leather_d'), wrap_to=4.4)
+    t.box((7.15, 11.4, 7.1), (8.85, 12.0, 8.9), 'brass', 'collar')
+    t.box((7.1, 12.4, 7.1), (8.9, 14.9, 8.9), 'steel_d', 'eye')
+    # głowica z kawałka resoru: dwie warstwy, haczyk w dół i krawędź tnąca
+    t.box((8.9, 12.8, 7.7), (12.4, 14.3, 7.9), 'leaf', 'leaf1')
+    t.box((8.9, 13.0, 7.9), (11.8, 14.1, 8.3), 'leaf', 'leaf2')
+    t.box((12.4, 12.4, 7.8), (13.2, 14.1, 8.2), 'edge', 'edge')
+    t.box((11.4, 11.4, 7.78), (12.4, 12.8, 8.22), 'leaf', 'hook')
+    t.box((11.7, 10.8, 7.86), (12.3, 11.4, 8.14), 'edge', 'hooktip')
+    t.box((12.8, 12.6, 7.9), (13.5, 13.7, 8.1), 'steel_d', 'nick')
+    for x in (10.0, 11.0):
+        t.box((x, 13.0, 8.3), (x + 0.3, 13.9, 8.4), 'steel_d', 'dent')
+    for y in (13.2,):
+        t.box((9.5, y, 7.6), (10.1, y + 0.6, 8.4), 'brass', 'rivet')
+        t.box((9.6, y + 0.1, 8.4), (10.0, y + 0.5, 8.52), 'brass', 'rivet')
+        t.box((9.6, y + 0.1, 7.48), (10.0, y + 0.5, 7.6), 'brass', 'rivet')
+    rust_patch(t, 10.6, 12.0, 13.2, 14.0, 8.3, 1)
+    rust_patch(t, 9.6, 11.2, 12.9, 13.7, 7.7, -1)
+    return t
+
+
 AXON = {'steel_axe': a_steel_axe, 'steel_pickaxe': a_steel_pickaxe, 'steel_shovel': a_steel_shovel,
+        'steel_hoe': a_steel_hoe,
         'hardened_axe': a_hardened_axe, 'hardened_pickaxe': a_hardened_pickaxe}
 
 
@@ -854,6 +877,11 @@ def pliki(src=None):
     for name, mpath, tpath in wszystkie():
         files[mpath] = open(os.path.join(src, name + '.json'), 'rb').read()
         files[tpath] = open(os.path.join(src, name + '.png'), 'rb').read()
+    for k in AXON:        # definicje przedmiotów Axon (1.21.4+ i nakładka axon_1_21_0)
+        files['assets/axon/items/%s.json' % k] = json.dumps(
+            {'model': {'type': 'minecraft:model', 'model': 'axon:block/' + k}}, indent=2).encode()
+        files['axon_1_21_0/assets/axon/models/item/%s.json' % k] = json.dumps(
+            {'parent': 'axon:block/' + k}, indent=2).encode()
     return files
 
 
