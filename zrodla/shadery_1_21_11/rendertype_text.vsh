@@ -40,6 +40,7 @@ out vec4 vertexColor;
 out vec2 texCoord0;
 flat out int axonMap;
 flat out int axonTile;
+flat out int axonDensity;
 flat out vec2 axonCursor;
 flat out vec4 axonSpriteA[AXON_SPRITES];
 flat out vec4 axonSpriteB[AXON_SPRITES];
@@ -62,6 +63,10 @@ flat out float axonClock;
 // Znacznik: w pierwszym wierszu mapy piksele 0-7 to na przemian biały (A) i czarny (B),
 // w pikselach 8-23 liczba białych pikseli to numer kafelka, a w ostatnim wierszu
 // piksele 0-7 to znowu na przemian A i B. Zwykłe mapy prawie nigdy tak nie wyglądają.
+// Ostry ekran (gęstość 2, siatka 10x6 = 1280x768 px, OverlayGrid w AxonOverlay) ma w ostatnim
+// wierszu odwrócony wzór (B, A, ...), w pikselach 8-23 numer % 16, a w pikselach 24-31 numer / 16.
+int axonDensityOut = 1;
+
 int axonTileIndex() {
     if (textureSize(Sampler0, 0) != ivec2(128, 128)) {
         return -1;
@@ -71,10 +76,21 @@ int axonTileIndex() {
     if (min(a.r, min(a.g, a.b)) < 0.95 || max(b.r, max(b.g, b.b)) > 0.15) {
         return -1;
     }
+    // Gęstość z pierwszego piksela ostatniego wiersza: A = zwykły ekran 5x3, B = ostry 10x6.
+    vec3 last = texelFetch(Sampler0, ivec2(0, 127), 0).rgb;
+    int density;
+    if (last == a) {
+        density = 1;
+    } else if (last == b) {
+        density = 2;
+    } else {
+        return -1;
+    }
     for (int x = 0; x < 8; x++) {
         vec3 expected = (x % 2 == 0) ? a : b;
+        vec3 expectedLast = ((x % 2 == 0) == (density == 1)) ? a : b;
         if (texelFetch(Sampler0, ivec2(x, 0), 0).rgb != expected
-                || texelFetch(Sampler0, ivec2(x, 127), 0).rgb != expected) {
+                || texelFetch(Sampler0, ivec2(x, 127), 0).rgb != expectedLast) {
             return -1;
         }
     }
@@ -87,7 +103,20 @@ int axonTileIndex() {
             return -1;
         }
     }
-    return index < AXON_COLS * AXON_ROWS ? index : -1;
+    if (density == 2) {
+        int high = 0;
+        for (int x = 24; x < 32; x++) {
+            vec3 c = texelFetch(Sampler0, ivec2(x, 0), 0).rgb;
+            if (c == a) {
+                high++;
+            } else if (c != b) {
+                return -1;
+            }
+        }
+        index += high * 16;
+    }
+    axonDensityOut = density;
+    return index < AXON_COLS * AXON_ROWS * density * density ? index : -1;
 }
 
 int axonNibble(int i) {
@@ -190,6 +219,7 @@ void main() {
     texCoord0 = UV0;
     axonMap = 0;
     axonTile = 0;
+    axonDensity = 1;
     axonCursor = vec2(-1.0);
     axonClock = mod(GameTime * 24000.0 - 12000.0, AXON_CLOCK_PERIOD);
     for (int s = 0; s < AXON_SPRITES; s++) {
@@ -208,6 +238,7 @@ void main() {
     if (tile >= 0) {
         axonMap = 1;
         axonTile = tile;
+        axonDensity = axonDensityOut;
         axonReadSprites();
         // Kierunek kamery z ModelViewMat (świat -> widok): przód = -trzeci wiersz macierzy.
         vec3 forward = -vec3(ModelViewMat[0][2], ModelViewMat[1][2], ModelViewMat[2][2]);
@@ -215,9 +246,11 @@ void main() {
         float pitch = degrees(asin(clamp(-forward.y, -1.0, 1.0)));
         axonCursor = clamp(vec2(0.5 + yaw / AXON_YAW_RANGE, 0.5 + pitch / AXON_PITCH_RANGE), 0.0, 1.0);
         // Mapa wypełnia cały ekran (przy 16:9 jest lekko rozciągnięta w poziomie).
-        vec2 tileSize = vec2(2.0 / float(AXON_COLS), 2.0 / float(AXON_ROWS));
-        int tx = tile % AXON_COLS;
-        int ty = tile / AXON_COLS;
+        int cols = AXON_COLS * axonDensity;
+        int rows = AXON_ROWS * axonDensity;
+        vec2 tileSize = vec2(2.0 / float(cols), 2.0 / float(rows));
+        int tx = tile % cols;
+        int ty = tile / cols;
         vec2 topLeft = vec2(-1.0 + float(tx) * tileSize.x, 1.0 - float(ty) * tileSize.y);
         gl_Position = vec4(topLeft + vec2(UV0.x * tileSize.x, -UV0.y * tileSize.y), -0.99, 1.0);
         sphericalVertexDistance = 0.0;

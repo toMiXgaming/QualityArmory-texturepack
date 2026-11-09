@@ -50,8 +50,9 @@ Jedna paczka działa na wszystkich wersjach 1.21.x. `pack.mcmeta` deklaruje form
 | `axon_1_21_0/` | 1.21–1.21.3 | Te wersje nie czytają `assets/*/items/`, więc wszystkie numery `custom_model_data` (bronie, skiny, amunicja, czapki, pojazdy, reaktor) są tam jeszcze raz jako stare `overrides` w `models/item/*.json`, a modele z `assets/axon/items/` mają odpowiedniki w `models/item/` dla komponentu `item_model` (1.21.2–1.21.3). |
 | `axon_shadery/` | 1.21.2–1.21.5 | Shadery AxonMap. |
 | `axon_shadery_1_21_0/` | 1.21–1.21.1 | Te same shadery w zapisie sprzed 1.21.2 (nazwy bez `minecraft:`). |
+| `axon_shadery_1_21_11/` | 1.21.11 (format 75) | Te same shadery w formacie 1.21.11 (z `zrodla/shadery_1_21_11/`). Bez tego warsztat, skrzynie i mapa na 1.21.11 wiszą jako zwykłe mapy w ramkach dookoła gracza zamiast pełnego ekranu. |
 
-Od 1.21.6 shadery mają inny format, więc tam paczka ich nie dodaje (mapa AxonMap na cały ekran wymaga przepisania shaderów). Na 1.21–1.21.1 nie ma komponentu `item_model`, więc rekwizyty AXON-Structure (zrzut, meble, auta) wyświetlają się tylko od 1.21.2; bronie, skiny i reaktor działają wszędzie.
+Od 1.21.6 shadery mają inny format. Na 1.21.11 dodaje je nakładka `axon_shadery_1_21_11`, na 1.21.6–1.21.10 paczka nie ma shaderów (pełny ekran tam nie działa). Na 1.21–1.21.1 nie ma komponentu `item_model`, więc rekwizyty AXON-Structure (zrzut, meble, auta) wyświetlają się tylko od 1.21.2; bronie, skiny i reaktor działają wszędzie.
 
 Paczka była wczytana w prawdziwym kliencie 1.21.1, 1.21.3, 1.21.5 i 1.21.11 (bez błędów modeli i shaderów; na 1.21.1 i 1.21.3 sprawdzone, że nakładka z `overrides` się wczytuje). `QualityArmory-21-axon-1.21.11.zip` to teraz kopia tej samej paczki, zostawiona, żeby stare linki działały.
 
@@ -63,7 +64,7 @@ Domyślna paczka (`QualityArmory-21-axon.zip`) ma shadery AxonMap w starym forma
 - shadery z `zrodla/shadery_1_21_11/` zamiast tych z `zrodla/shadery/`: ta sama logika (mapa na cały ekran, kursor, sprity i zegar klienta z #29, chowanie HUD i wskaźnika cooldownu), zmienione tylko nagłówki na format 1.21.11 (bloki `DynamicTransforms`/`Projection`/`Globals` zamiast pojedynczych uniformów, `fog_spherical_distance`/`fog_cylindrical_distance` i `apply_fog` zamiast `fog_distance`/`linear_fog`), bez plików `.json`,
 - `pack.mcmeta` z `min_format`/`max_format` = 75 (tylko 1.21.11).
 
-Buduje ją `python3 zrodla/buduj_1_21_11.py` z aktualnej `QualityArmory-21-axon.zip`. Przy zmianie shaderów w `zrodla/shadery/` trzeba tę samą zmianę zrobić w `zrodla/shadery_1_21_11/` i przebudować zip. Domyślna paczka i `QualityArmory-21-axon-1.21.11.zip` zostają bez zmian.
+Od teraz te same shadery są też w domyślnej paczce jako nakładka `axon_shadery_1_21_11` (tylko format 75), więc osobna paczka nie jest już potrzebna; zostaje dla starych linków. Buduje ją `python3 zrodla/buduj_1_21_11.py` z aktualnej `QualityArmory-21-axon.zip`. Przy zmianie shaderów w `zrodla/shadery/` trzeba tę samą zmianę zrobić w `zrodla/shadery_1_21_11/` i przebudować zipy (`build_pack.py` albo szybciej `zrodla/dodaj_shadery.py`, potem `buduj_1_21_11.py`). Domyślna paczka i `QualityArmory-21-axon-1.21.11.zip` zostają bez zmian.
 
 ## Amunicja
 
