@@ -59,7 +59,7 @@ def disc(t, cx, cz, y0, y1, R, mat, tag='disc', bands=None, shift=0.0):
         t.box((cx - hw, y0, cz + z0), (cx + hw, y1, cz + z1), mat, tag)
 
 
-def beczka(mat='drum_blue', band=False, open_=False):
+def beczka(mat='drum_blue', band=False, open_=False, stage=0):
     t = Tool('poj_beczka')
     x, z = 8.0, 8.0
     disc(t, x, z, 0.0, 0.7, 7.1, 'drum_hoop', 'chime')                   # dolny kołnierz
@@ -75,7 +75,40 @@ def beczka(mat='drum_blue', band=False, open_=False):
     if band:
         disc(t, x, z, 5.6, 7.4, 6.88, 'drum_band', 'band', shift=0.4)
         disc(t, x, z, 7.4, 8.0, 6.64, 'black', 'bandline', shift=0.7)
+    if stage:
+        uszkodzenia(t, x, z, stage)
     return t
+
+
+def uszkodzenia(t, x, z, stage):
+    """Etapy zniszczenia beczki (1: <=66% HP, 2: <=33% HP): plamy rdzy i odprysków, wgniecenia i dziury z ciemnym wnętrzem,
+    na etapie 2 jeszcze rozerwany szew, krzywe wieko i kałuża oleju. Elementy leżą tuż nad powierzchnią korpusu (r=6,6)."""
+    # (kierunek, y0, y1, szerokość wzdłuż obwodu, materiał)
+    plamy = [('E', 3.0, 5.2, 3.4, 'rust'), ('S', 9.0, 11.6, 3.0, 'rust'), ('W', 5.5, 7.0, 2.6, 'rust'), ('N', 1.6, 3.4, 3.2, 'rust')]
+    dziury = [('E', 8.0, 9.4, 1.6), ('S', 4.4, 5.4, 1.2)]
+    if stage >= 2:
+        plamy += [('N', 8.4, 11.8, 3.8, 'rust'), ('W', 10.2, 13.0, 3.2, 'rust'), ('E', 11.2, 13.4, 2.8, 'rust'), ('S', 1.2, 3.0, 2.6, 'rust')]
+        dziury += [('W', 8.0, 10.0, 2.2), ('N', 5.0, 7.2, 2.0), ('E', 2.0, 3.2, 1.4)]
+    off = 6.62
+    def na(d, y0, y1, w, mat, tag, depth):
+        h = w / 2
+        if d == 'E':
+            t.box((x + off - depth, y0, z - h), (x + off + 0.12, y1, z + h), mat, tag)
+        elif d == 'W':
+            t.box((x - off - 0.12, y0, z - h), (x - off + depth, y1, z + h), mat, tag)
+        elif d == 'S':
+            t.box((x - h, y0, z + off - depth), (x + h, y1, z + off + 0.12), mat, tag)
+        else:
+            t.box((x - h, y0, z - off - 0.12), (x + h, y1, z - off + depth), mat, tag)
+    for d, y0, y1, w, mat in plamy:
+        na(d, y0, y1, w, mat, 'rustpatch', 0.0)
+    for d, y0, y1, w in dziury:                                          # wgniecenie z dziurą po uderzeniu
+        na(d, y0 - 0.4, y1 + 0.4, w + 0.8, 'drum_hoop', 'dent', 0.0)
+        na(d, y0, y1, w, 'drum_in', 'hole', 0.0)
+    if stage >= 2:
+        t.box((x - 0.5, 0.7, z + 6.55), (x + 0.5, 15.3, z + 6.75), 'drum_in', 'seam')      # rozerwany szew
+        t.box((x - 7.4, 0.0, z - 7.4), (x - 5.2, 0.1, z - 5.0), 'oil', 'puddle')            # wyciek oleju
+        t.box((x + 4.2, 0.0, z - 6.2), (x + 6.6, 0.1, z - 4.4), 'oil', 'puddle')
 
 
 def rozbita(mat='drum_blue', band=False):
@@ -121,6 +154,9 @@ CONTAINERS = {k: v for k, v in CONTAINERS.items() if v}
 CONTAINERS['beczka_rozbita'] = lambda: rozbita('drum_blue', False)
 CONTAINERS['beczka_paliwa_rozbita'] = lambda: rozbita('drum_red', True)
 CONTAINERS['beczka_rdza_rozbita'] = lambda: rozbita('drum_rust', False)
+for _n, (_m, _b) in VAR.items():                                         # etapy zniszczenia: plugin podmienia model wraz ze spadkiem HP
+    for _st in (1, 2):
+        CONTAINERS['%s_uszkodzona_%d' % (_n, _st)] = (lambda m=_m, b=_b, st=_st: beczka(m, b, False, st))
 CONTAINERS['beczka_otwarta'] = lambda: beczka('drum_blue', False, True)
 
 

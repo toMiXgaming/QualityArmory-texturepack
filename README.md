@@ -220,6 +220,19 @@ Stanowiska (warsztaty T1–T3 z trzema etapami zużycia, piec hutniczy, recykler
 
 Beczki przy drogach działają jak w Rust: gracz je niszczy, wtedy plugin podmienia model na `<beczka>_rozbita` (wgnieciony dół, wieko na ziemi, łup w środku), prawy klik otwiera łup, a po czasie beczka odnawia się w tym samym miejscu.
 
+### HP beczek
+
+Beczka ma pulę HP zamiast stałej liczby uderzeń. Paczka daje trzy stany wyglądu każdej beczki (`beczka`, `beczka_paliwa`, `beczka_rdza`), a liczenie HP należy do pluginu (AXON-Structure; w tym repo nie ma jego kodu):
+
+| HP | model |
+|---|---|
+| powyżej 66% | `<beczka>` |
+| 66% i mniej | `<beczka>_uszkodzona_1` (plamy rdzy, wgniecenia z dziurami) |
+| 33% i mniej | `<beczka>_uszkodzona_2` (więcej dziur, rozerwany szew, kałuże oleju) |
+| 0 | `<beczka>_rozbita` (łup jak dotąd) |
+
+Zasady po stronie pluginu: obrażenia sumują się do zniszczenia, odnowienie przywraca pełne HP i model `<beczka>`, a model zmienia się tylko przy przekroczeniu progu. Propozycja obrażeń (HP beczki 100): pięść 5, kij i narzędzia drewniane 15, łom, siekiera i bronie białe 25, pistolet 20, karabin szturmowy i SMG 34, strzelba 50, snajperka i RPG 100. Wartości, nazwa pliku konfiguracji i pasek HP (np. krótki napis nad beczką po trafieniu) ustawia się w pluginie. Generator: `zrodla/gen_pojemniki.py` (funkcja `uszkodzenia`), podgląd: `podglady/beczki-hp.png`.
+
 Skrzynia zrzutu to dalej `axon:zrzut` z `gen_zrzut.py`. `spadochron` to rozłożona czasza do zawieszenia nad nią w czasie spadania.
 
 Etapy zużycia warsztatów: 0 nowy, 1 porysowany, 2 zardzewiały, 3 rozbity (bez narzędzi i drobnych części). `recykler_kolo` to osobne koło zamachowe na zachodnim boku recyklera (oś X, środek w (-0,5, 8, 8)), plugin obraca je, kiedy recykler pracuje. `skrzynia_wojskowa` sięga od środka wyświetlacza 1,5 kratki na zachód i 0,5 na wschód.
