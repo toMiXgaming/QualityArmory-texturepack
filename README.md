@@ -246,6 +246,20 @@ Wraki leżą w modelu w zmniejszonej skali, a plugin rysuje je z transformacją 
 ![Narzędzia](podglady/axoncore-narzedzia.png)
 ![Narzędzia żelazne i diamentowe](podglady/narzedzia-zelazne-diamentowe.png)
 
+## Surowa Siarka (ruda w głazach i przedmiot)
+
+Na serwerze nie ma miedzi: ruda miedzi w głazach AxonOre (i w kopalniach AXON-Structure) daje tylko **Surową Siarkę**. Paczka pokazuje to w grze:
+
+| Co | Plik w paczce | Wygląd |
+|---|---|---|
+| Ruda w głazie | `minecraft:block/copper_ore`, `deepslate_copper_ore` (tekstury 16×16) | kamień (albo łupek) z cytrynowymi kryształami siarki i żółtym nalotem; złoto w vanilli jest pomarańczowe, więc się nie mylą |
+| Surowa Siarka | `assets/minecraft/items/yellow_dye.json`: `custom_model_data` 10001 → `axon:block/surowa_siarka` | żółta grudka z kryształowymi ściankami; zwykły żółty barwnik (bez liczby) wygląda jak w vanilli |
+| `axon:surowa_siarka` | `assets/axon/items/surowa_siarka.json` | ta sama grudka, gdyby plugin ustawiał `item_model` |
+
+Na 1.21–1.21.3 to samo jest w nakładce `axon_1_21_0` jako `overrides` (`legacy_1_21_0/yellow_dye.json`). Siarkę jako żółty barwnik z liczbą 10001 tworzą AxonOre i AxonPlot, a Axon-items przyjmuje ją jako składnik `minecraft:yellow_dye#10001`. Źródło: `zrodla/axoncore/siarka.py` (dodaje je też `gen_axoncore.py` przy pełnej przebudowie), dopisanie do gotowych zipów: `zrodla/dodaj_siarke.py`. Gotowe pliki: `modele/siarka/`, podgląd: `podglady/surowa-siarka.png`.
+
+![Surowa Siarka](podglady/surowa-siarka.png)
+
 ## Wgranie na serwer
 
 Repo musi być **publiczne**, inaczej gracze nie pobiorą paczki. W `plugins/QualityArmory/config.yml`:
