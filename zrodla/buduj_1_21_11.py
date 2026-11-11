@@ -37,6 +37,8 @@ def main():
     from atlas_bloku import patch as atlas_bloku
     from dodaj_barrier import patch as dodaj_barrier
     atlas_bloku(OUT)
+    from wnetrze_bloku import patch as wnetrze_bloku
+    wnetrze_bloku(OUT)
     dodaj_barrier(OUT)
     sys.path.insert(0, HERE)
     from sprawdz_paczke import main as sprawdz
