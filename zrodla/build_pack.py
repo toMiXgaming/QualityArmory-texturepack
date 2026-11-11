@@ -184,6 +184,8 @@ def main():
     print('wrote', DST, 'sha1', sha, 'elements', report)
     from atlas_bloku import patch as atlas_bloku   # tekstury z item/ użyte przez modele zwykłych bloków (atlas_bloku.py)
     atlas_bloku(DST)
+    from wnetrze_bloku import patch as wnetrze_bloku   # szpary w piecu, beczkach i stole bez błękitu nieba (wnetrze_bloku.py)
+    wnetrze_bloku(DST)
     from dodaj_barrier import patch as dodaj_barrier   # definicja items/barrier.json dla stanowisk (dodaj_barrier.py)
     dodaj_barrier(DST)
     from sprawdz_paczke import main as sprawdz   # nie zostawiaj uszkodzonej paczki
