@@ -399,3 +399,13 @@ Uruchomienie: `python3 zrodla/gen_narzedzia.py [nazwa ...]` (zapis do `zrodla/bu
 ## Beczki i skrzynie: nowy silnik
 
 `zrodla/gen_pojemniki.py` (silnik z `gen_narzedzia.py`) zastępuje beczki i skrzynie z `axoncore/barrels.py` i `crates.py`. Beczki są teraz okrągłe (stopniowany okrąg z pasów, żebra, kołnierze, wieko z korkami), a rozbite mają poszarpany brzeg, łup i wieko obok. Skrzynie to drewniana, narzędziowa, szafka medyczna, karton z puszkami, wojskowa i elitarna, każda z własną teksturą 256×256 (`axon:item/poj_<nazwa>`). Beczka i otwarta beczka z Minecrafta używają tych samych modeli (tekstury w `axon:block/vanilla/poj_*`). Uruchomienie: `python3 zrodla/gen_pojemniki.py`, potem `python3 zrodla/podmien_pojemniki.py` (podmienia trzy zipy i sprawdza paczkę). `gen_axoncore.py` dopisuje te pliki do swojego wyniku. Drewno w narzędziach ma teraz poprawnie ułożone włókna (wzdłuż osi elementu). Podglądy: `podglady/axoncore-beczki.png`, `podglady/axoncore-skrzynie.png`.
+
+## Pancerze na graczu: płaskie warstwy (`axon:<zestaw>`)
+
+Modele 3D pancerzy (`axon:<zestaw>_<element>`) służą w ekwipunku, w ręce i na ziemi. Na postaci gracza Minecraft rysuje tylko płaskie warstwy pancerza, które animują się razem z modelem gracza i zawsze się z nim pokrywają. Dlatego każdy zestaw ma też własną warstwę:
+
+- `assets/axon/equipment/<zestaw>.json` (format 1.21.4+, warstwy `humanoid` i `humanoid_leggings` z tekstury `axon:<zestaw>`),
+- `assets/axon/textures/entity/equipment/humanoid/<zestaw>.png` (hełm, kamizelka z naramiennikami i rękawicami, buty),
+- `assets/axon/textures/entity/equipment/humanoid_leggings/<zestaw>.png` (spodnie i pas).
+
+Tekstury mają 256×128 (czterokrotność vanilla 64×32). Zestawy: cien, lis, legion, bastion, ranger, ghillie, zlomiarz, lowca, tulacz. Kamizelka zakrywa tułów, ale ramiona mają skórkę gracza z naramiennikiem u góry i rękawicą na dole, a twarz jest odkryta. Przedmiot dostaje tę warstwę przez komponent `equippable` z `asset_id: axon:<zestaw>` (robi to plugin AxonArmor). Generator: `zrodla/gen_warstwy.py` (podgląd: `podglady/pancerze-warstwy.png`), dopisanie do gotowych zipów: `zrodla/dodaj_warstwy.py`, pełna przebudowa `build_pack.py` też je uwzględnia.
