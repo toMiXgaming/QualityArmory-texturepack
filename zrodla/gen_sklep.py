@@ -156,37 +156,43 @@ def chrome(im, d, b, rnd):
 
 
 def goods(kind):
+    """Front towaru na półce. Ściana w modelu ma 14x3.2 px, więc kafelek 16x16 jest mocno ściśnięty w pionie:
+    towar wypełnia prawie cały kafelek (ciemny jest tylko wąski cień u góry), a wyszabrowane miejsca są
+    rzadkie i nigdy dwa obok siebie. Inaczej półki wyglądały w grze jak czarne dziury."""
     def p(im, d, b, rnd):
         x0, y0, x1, y1 = b
-        noise(im, b, (36, 36, 38), 2, rnd)                       # cień w głębi półki
+        noise(im, b, (58, 54, 50), 3, rnd)                       # cień w głębi półki
         x = x0
+        gap = False
         while x < x1:
-            if rnd.random() < 0.22:                              # wyszabrowane miejsce
-                x += 3
+            if not gap and x > x0 and rnd.random() < 0.12:       # wyszabrowane miejsce
+                gap = True
+                x += 2
                 continue
+            gap = False
             if kind == 'puszki':
                 col = rnd.choice(((180, 40, 40), (200, 180, 60), (60, 110, 60), (190, 190, 196)))
-                rect(d, x, y0 + 7, min(x + 2, x1 - 1), y1 - 1, col)
-                d.line([(x, y0 + 7), (min(x + 2, x1 - 1), y0 + 7)], fill=(210, 210, 214, 255))
-                rect(d, x, y0 + 10, min(x + 2, x1 - 1), y0 + 12, (230, 226, 210))
+                rect(d, x, y0 + 2, min(x + 2, x1 - 1), y1 - 1, col)
+                d.line([(x, y0 + 2), (min(x + 2, x1 - 1), y0 + 2)], fill=(210, 210, 214, 255))
+                rect(d, x, y0 + 7, min(x + 2, x1 - 1), y0 + 10, (230, 226, 210))
                 x += 3
             elif kind == 'sloiki':
-                rect(d, x, y0 + 5, min(x + 3, x1 - 1), y1 - 1, rnd.choice(((180, 70, 40), (120, 30, 50), (200, 150, 40))))
-                rect(d, x, y0 + 4, min(x + 3, x1 - 1), y0 + 5, (200, 196, 60))                # zakrętka
-                rect(d, x, y0 + 9, min(x + 3, x1 - 1), y0 + 11, (236, 232, 216))             # etykieta
+                rect(d, x, y0 + 3, min(x + 3, x1 - 1), y1 - 1, rnd.choice(((180, 70, 40), (120, 30, 50), (200, 150, 40))))
+                rect(d, x, y0 + 1, min(x + 3, x1 - 1), y0 + 3, (200, 196, 60))                # zakrętka
+                rect(d, x, y0 + 7, min(x + 3, x1 - 1), y0 + 10, (236, 232, 216))             # etykieta
                 x += 4
             elif kind == 'kartony':
                 w = rnd.randint(4, 6)
                 col = rnd.choice(((170, 136, 88), (210, 200, 170), (200, 70, 60), (70, 110, 170)))
-                top = y0 + rnd.randint(1, 5)
+                top = y0 + rnd.randint(1, 3)
                 rect(d, x, top, min(x + w - 2, x1 - 1), y1 - 1, col)
-                d.line([(x + 1, top + 3), (min(x + w - 3, x1 - 1), top + 3)], fill=(240, 236, 220, 255))
-                x += w
+                d.line([(x + 1, top + 4), (min(x + w - 3, x1 - 1), top + 4)], fill=(240, 236, 220, 255))
+                x += w - 1
             else:                                                # butelki
                 col = rnd.choice(((60, 120, 60), (140, 80, 40), (200, 200, 210)))
-                rect(d, x + 1, y0 + 2, x + 1, y0 + 6, col)
-                rect(d, x, y0 + 6, min(x + 2, x1 - 1), y1 - 1, col)
-                rect(d, x, y0 + 10, min(x + 2, x1 - 1), y0 + 12, (226, 214, 170))
+                rect(d, x + 1, y0 + 1, x + 1, y0 + 4, col)
+                rect(d, x, y0 + 4, min(x + 2, x1 - 1), y1 - 1, col)
+                rect(d, x, y0 + 8, min(x + 2, x1 - 1), y0 + 11, (226, 214, 170))
                 x += 3
     return p
 
@@ -485,7 +491,8 @@ def regal_sklepowy():
         parts.append(([0, y + 0.6, 15.4], [16, y + 1.4, 16], 'metal', {'south': 'cenowki'}))
     parts.append(([0, 15.4, 0], [16, 16, 16], 'metal'))
     for y, kind, z in ((0.6, 'kartony', 14.5), (4.6, 'sloiki', 14), (8.6, 'puszki', 14.8), (12.6, 'butelki', 13.5)):
-        parts.append(([1, y, 1], [15, y + 3.2, z], 'ciemny', {'south': kind, 'up': 'gora'}))
+        # boki regału są otwarte, więc towar widać też z boku (dawniej czarne ściany)
+        parts.append(([1, y, 1], [15, y + 3.2, z], 'ciemny', {'south': kind, 'east': kind, 'west': kind, 'up': 'gora'}))
     model('regal_sklepowy', parts, P, 34)
 
 
