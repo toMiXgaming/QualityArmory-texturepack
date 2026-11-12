@@ -424,11 +424,259 @@ def gruz():
     model('gruz', parts, P, 116)
 
 
+# ---------------------------------------------------------------- czwarta partia: szpital, koszary, warsztat, dom
+
+
+def sheet(col):
+    def p(im, d, b, rnd):
+        x0, y0, x1, y1 = b
+        noise(im, b, col, 4, rnd)
+        for y in range(y0 + 3, y1, 5):
+            d.line([(x0, y), (x1 - 1, y)], fill=tuple(max(0, c - 22) for c in col) + (255,))
+        stains(im, b, (150, 60, 50, 255), 2, rnd, 1)       # krew
+        stains(im, b, DIRT, 3, rnd, 2)
+    return p
+
+
+def olive(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (84, 92, 62), 5, rnd)
+    d.rectangle([x0, y0, x1 - 1, y1 - 1], outline=(52, 58, 40, 255))
+    stains(im, b, RUST, 3, rnd, 1)
+
+
+def stencil(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    olive(im, d, b, rnd)
+    rect(d, x0 + 3, y0 + 5, x0 + 12, y0 + 6, (214, 190, 60))
+    rect(d, x0 + 3, y0 + 9, x0 + 9, y0 + 10, (214, 190, 60))
+
+
+def locker(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (76, 82, 86), 4, rnd)
+    for y in (y0 + 2, y0 + 4, y0 + 6):
+        for x in range(x0 + 3, x0 + 13, 2):
+            d.point((x, y), fill=(24, 26, 28, 255))        # kratki wentylacyjne
+    rect(d, x0 + 12, y0 + 9, x0 + 13, y0 + 11, (190, 190, 180))
+    stains(im, b, RUST, 3, rnd, 1)
+
+
+def pallet(im, d, b, rnd):
+    wood((150, 118, 76))(im, d, b, rnd)
+
+
+def shelf_post(im, d, b, rnd):
+    noise(im, b, (170, 100, 40), 4, rnd)
+    stains(im, b, RUST, 3, rnd, 1)
+
+
+def gas_bottle(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (170, 40, 36), 4, rnd)
+    rect(d, x0 + 3, y0 + 6, x0 + 12, y0 + 9, (226, 226, 220))
+    rect(d, x0 + 6, y0 + 7, x0 + 9, y0 + 8, (40, 40, 40))
+    stains(im, b, RUST, 3, rnd, 1)
+
+
+def lathe_body(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (214, 170, 40), 5, rnd)
+    rect(d, x0 + 2, y0 + 10, x0 + 13, y0 + 12, (60, 60, 60))
+    stains(im, b, (60, 56, 50, 255), 2, rnd, 1)
+
+
+def map_top(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (196, 184, 140), 4, rnd)
+    d.line([(x0 + 1, y0 + 4), (x0 + 6, y0 + 8), (x0 + 10, y0 + 6), (x0 + 14, y0 + 11)], fill=(60, 90, 160, 255))
+    rect(d, x0 + 4, y0 + 2, x0 + 5, y0 + 3, (200, 50, 50))
+    rect(d, x0 + 11, y0 + 11, x0 + 12, y0 + 12, (200, 50, 50))
+    stains(im, b, (120, 90, 60, 255), 2, rnd, 2)
+
+
+def fridge_door(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    enamel(1)(im, d, b, rnd)
+    rect(d, x0 + 12, y0 + 3, x0 + 13, y0 + 10, (150, 150, 150))
+    d.line([(x0, y0 + 8), (x1 - 1, y0 + 8)], fill=(170, 168, 160, 255))
+
+
+def lamp_shade(im, d, b, rnd):
+    x0, y0, x1, y1 = b
+    noise(im, b, (222, 196, 130), 6, rnd)
+    stains(im, b, (150, 110, 60, 255), 4, rnd, 2)
+
+
+def steel_bright(im, d, b, rnd):
+    noise(im, b, (190, 194, 198), 5, rnd)
+
+
+def stol_operacyjny():
+    """Stalowy stół operacyjny z lampą cieniową na wysięgniku."""
+    P = [('stal', steel_bright), ('podstawa', plain((90, 94, 98), 4, 1)), ('lampa', lamp_shade)]
+    parts = [([6, 0, 5], [10, 2, 11], 'podstawa'), ([7, 2, 7], [9, 10, 9], 'podstawa'),
+             ([1, 10, 2], [15, 11.5, 14], 'stal'),
+             ([12, 11.5, 12], [13.5, 16, 13.5], 'podstawa')]
+    model('stol_operacyjny', parts, P, 201)
+
+
+def lozko_szpitalne():
+    """Szpitalne łóżko na kółkach z pomiętym prześcieradłem i uniesionym zagłówkiem (zagłówek przy z = 0)."""
+    P = [('poscel', sheet((214, 218, 214))), ('rama', plain((150, 154, 158), 4, 2)), ('kolka', plain((30, 30, 34), 3))]
+    parts = [([1, 0, 1], [3, 2, 3], 'kolka'), ([13, 0, 1], [15, 2, 3], 'kolka'),
+             ([1, 0, 13], [3, 2, 3 + 10], 'kolka'), ([13, 0, 13], [15, 2, 15], 'kolka'),
+             ([1, 2, 0.5], [15, 4, 15.5], 'rama'), ([1.4, 4, 3], [14.6, 6.5, 15], 'poscel'),
+             ([1.4, 4, 1], [14.6, 9, 3], 'poscel'), ([0.5, 4, 0], [15.5, 11, 1], 'rama'),
+             ([0.5, 4, 15], [15.5, 8, 15.6], 'rama')]
+    model('lozko_szpitalne', parts, P, 202)
+
+
+def wozek_inwalidzki():
+    """Wózek inwalidzki: duże koła, siedzisko z ceraty, rączki z tyłu (z = 0)."""
+    P = [('cerata', fabric((60, 60, 70))), ('rama', plain((150, 154, 158), 4, 2)), ('opona', rubber)]
+    parts = [([0.5, 1, 4], [2, 11, 12], 'opona'), ([14, 1, 4], [15.5, 11, 12], 'opona'),
+             ([2, 6, 3], [14, 7, 13], 'cerata'), ([2, 7, 3], [14, 17, 4.4], 'cerata'),
+             ([2, 8, 1.5], [3.2, 12, 3], 'rama'), ([12.8, 8, 1.5], [14, 12, 3], 'rama'),
+             ([2, 2, 12], [3, 5, 14], 'rama'), ([13, 2, 12], [14, 5, 14], 'rama'),
+             ([3, 7, 4], [13, 8, 5], 'rama')]
+    model('wozek_inwalidzki', parts, P, 203)
+
+
+def spind():
+    """Metalowy spind (dwie kratki wysokości): szafka na ubrania z kratkami wentylacyjnymi."""
+    P = [('drzwi', locker), ('korpus', plain((70, 76, 80), 4, 2))]
+    parts = [([1, 0, 2], [15, 31, 15.5], 'korpus', {'south': 'drzwi'}),
+             ([1, 31, 2], [15, 32, 15.5], 'korpus'),
+             ([7.7, 1, 15.5], [8.3, 30, 15.9], 'korpus')]
+    model('spind', parts, P, 204)
+
+
+def paleta_towaru():
+    """Drewniana paleta z foliowanym towarem."""
+    P = [('deski', pallet), ('karton', cardboard), ('gora', cardboard_top), ('folia', plain((200, 206, 210), 6))]
+    parts = [([0, 0, 0], [16, 1.5, 3], 'deski'), ([0, 0, 6.5], [16, 1.5, 9.5], 'deski'), ([0, 0, 13], [16, 1.5, 16], 'deski'),
+             ([0, 1.5, 0], [16, 3, 16], 'deski'),
+             ([1, 3, 1], [15, 12, 15], 'karton', {'up': 'gora'}),
+             ([1.2, 3.2, 1.2], [14.8, 12.2, 14.8], 'folia', {'up': 'folia'})]
+    model('paleta_towaru', parts, P, 205)
+
+
+def regal_magazynowy():
+    """Pomarańczowy regał magazynowy na paletach (dwie kratki wysokości), połowa półek pusta."""
+    P = [('slup', shelf_post), ('deska', wood((150, 118, 76))), ('karton', cardboard), ('gora', cardboard_top)]
+    parts = [([x, 0, z], [x + 1.2, 32, z + 1.2], 'slup') for x in (0, 14.8) for z in (0.5, 14.3)]
+    for y in (3, 12, 21, 30):
+        parts.append(([0, y, 0.5], [16, y + 1, 15.5], 'deska'))
+    parts += [([1.5, 4, 2], [8.5, 11, 14], 'karton', {'up': 'gora'}), ([9, 13, 2], [14.5, 19, 13], 'karton', {'up': 'gora'}),
+              ([2, 22, 3], [12, 28, 13], 'karton', {'up': 'gora'})]
+    model('regal_magazynowy', parts, P, 206)
+
+
+def butla_gazowa():
+    """Czerwona butla gazowa z reduktorem, dwie obok siebie."""
+    P = [('butla', gas_bottle), ('metal', plain((190, 150, 40), 5, 1))]
+    parts = []
+    for x in (1, 9):
+        parts += [([x, 0, 4], [x + 6, 14, 10], 'butla'), ([x + 1.5, 14, 5.5], [x + 4.5, 15.5, 8.5], 'metal'),
+                  ([x + 2.2, 15.5, 6.2], [x + 3.8, 17, 7.8], 'metal')]
+    model('butla_gazowa', parts, P, 207)
+
+
+def tokarka():
+    """Przemysłowa tokarka na żeliwnej szafce, uchwyt i konik, wióry na blacie."""
+    P = [('korpus', lathe_body), ('stal', steel_bright), ('podstawa', plain((70, 74, 78), 4, 2)), ('wiory', plain((160, 140, 90), 12))]
+    parts = [([1, 0, 3], [15, 7, 13], 'podstawa'), ([0, 7, 2], [16, 9, 14], 'korpus'),
+             ([1, 9, 5], [5, 15, 11], 'korpus'), ([11, 9, 6], [14, 13, 10], 'korpus'),
+             ([5, 10, 7], [11, 11.5, 9], 'stal'), ([6, 9, 3], [9, 9.6, 5], 'wiory')]
+    model('tokarka', parts, P, 208)
+
+
+def stol_odpraw():
+    """Stół odpraw z rozłożoną mapą sztabową."""
+    P = [('mapa', map_top), ('nogi', wood((90, 64, 40))), ('blat', wood((120, 90, 58)))]
+    parts = legs(1, 1, 15, 15, 14, 2, 'nogi')
+    parts += [([0, 14, 0], [16, 15, 16], 'blat'), ([1, 15, 1], [15, 15.3, 15], 'mapa', {'up': 'mapa'})]
+    model('stol_odpraw', parts, P, 209)
+
+
+def krzeslo_biurowe():
+    """Obrotowe krzesło biurowe z pękniętym obiciem na pięcioramiennej podstawie."""
+    P = [('obicie', fabric((50, 54, 62))), ('metal', plain((90, 92, 96), 4, 2))]
+    parts = [([7.2, 0, 7.2], [8.8, 8, 8.8], 'metal'), ([2, 0.5, 7.5], [14, 1.5, 8.5], 'metal'), ([7.5, 0.5, 2], [8.5, 1.5, 14], 'metal'),
+             ([3, 8, 3], [13, 10, 13], 'obicie'), ([3.5, 10, 2.5], [12.5, 20, 4.5], 'obicie')]
+    model('krzeslo_biurowe', parts, P, 210)
+
+
+def lodowka_domowa():
+    """Domowa lodówka „Mińsk” (dwie kratki wysokości), przód na południe, uchylone drzwi zamrażalnika."""
+    P = [('front', fridge_door), ('bok', enamel(2)), ('czarny', plain((30, 30, 34), 3))]
+    parts = [([1, 0, 1], [15, 31, 15], 'bok', {'south': 'front'}),
+             ([1.2, 12, 15], [14.8, 12.8, 15.6], 'czarny')]
+    model('lodowka_domowa', parts, P, 211)
+
+
+def lampa_podlogowa():
+    """Lampa podłogowa z kloszem (dwie kratki wysokości)."""
+    P = [('klosz', lamp_shade), ('stojak', plain((60, 48, 36), 4, 1))]
+    parts = [([5, 0, 5], [11, 1.2, 11], 'stojak'), ([7.4, 1.2, 7.4], [8.6, 24, 8.6], 'stojak'),
+             ([4, 22, 4], [12, 30, 12], 'klosz')]
+    model('lampa_podlogowa', parts, P, 212)
+
+
+def lozko_pietrowe():
+    """Prycza piętrowa z kocami (dwie kratki wysokości), wezgłowie przy z = 0."""
+    P = [('rama', plain((70, 74, 78), 4, 2)), ('koc', fabric((84, 92, 62))), ('materac', sheet((190, 186, 170)))]
+    parts = [([x, 0, z], [x + 1.2, 30, z + 1.2], 'rama') for x in (0.5, 14.3) for z in (0.5, 14.3)]
+    for y in (3, 16):
+        parts += [([0.5, y, 0.5], [15.5, y + 1, 15.5], 'rama'), ([1, y + 1, 1], [15, y + 3, 15], 'materac'),
+                  ([1, y + 3, 5], [15, y + 3.8, 15], 'koc')]
+    model('lozko_pietrowe', parts, P, 213)
+
+
+def skrzynia_amunicji():
+    """Stos oliwkowych skrzyń amunicyjnych z żółtym stemplem."""
+    P = [('skrzynia', stencil), ('wieko', olive)]
+    parts = [([1, 0, 1], [15, 6, 9], 'skrzynia', {'up': 'wieko'}), ([2, 6, 2], [14, 12, 8.5], 'skrzynia', {'up': 'wieko'}),
+             ([2, 0, 9.5], [10, 5, 15], 'skrzynia', {'up': 'wieko'})]
+    model('skrzynia_amunicji', parts, P, 214)
+
+
+def beben_kabla():
+    """Drewniany bęben z nawiniętym kablem energetycznym."""
+    P = [('deski', wood((140, 100, 62))), ('kabel', plain((30, 30, 34), 4)), ('miedz', plain((190, 110, 60), 6))]
+    parts = [([1, 0, 1], [15, 1.5, 15], 'deski'), ([2, 1.5, 2], [14, 11.5, 14], 'kabel', {'up': 'miedz'}),
+             ([1, 11.5, 1], [15, 13, 15], 'deski')]
+    model('beben_kabla', parts, P, 215)
+
+
+def komoda():
+    """Komoda z szufladami, wyciągniętą jedną i leżącym w niej bielizną."""
+    P = [('front', wood((124, 88, 56))), ('bok', wood((100, 72, 46))), ('galka', plain((200, 170, 90), 4))]
+    parts = [([0, 0, 2], [16, 14, 15], 'bok', {'south': 'front'}),
+             ([0, 14, 1], [16, 15, 16], 'bok'),
+             ([4, 3, 15], [6, 4, 16], 'galka'), ([10, 3, 15], [12, 4, 16], 'galka'),
+             ([4, 9, 15], [6, 10, 16], 'galka'), ([10, 9, 15], [12, 10, 16], 'galka')]
+    model('komoda', parts, P, 216)
+
+
+def fotel():
+    """Fotel z lat 70. z podłokietnikami i wytartym obiciem, oparcie przy z = 0."""
+    P = [('obicie', fabric((120, 70, 40))), ('nogi', wood((70, 48, 30)))]
+    parts = [([1, 2, 1], [15, 7, 15], 'obicie'), ([1, 7, 0.5], [15, 17, 4.5], 'obicie'),
+             ([0, 7, 3], [2.4, 11, 15], 'obicie'), ([13.6, 7, 3], [16, 11, 15], 'obicie')]
+    parts += [([x, 0, z], [x + 1.6, 2, z + 1.6], 'nogi') for x in (2, 12.4) for z in (2, 12.4)]
+    model('fotel', parts, P, 217)
+
+
 MEBLE_STRUKTURY = ['krzeslo', 'stol', 'szafa', 'lawka', 'kartony', 'worki', 'skrzynka_warzywa', 'zabawki',
-                   'automat_gier', 'sterta_opon', 'kaloryfer', 'pralka', 'kanapa', 'garnek', 'maszyna', 'gruz']
+                   'automat_gier', 'sterta_opon', 'kaloryfer', 'pralka', 'kanapa', 'garnek', 'maszyna', 'gruz',
+                   'stol_operacyjny', 'lozko_szpitalne', 'wozek_inwalidzki', 'spind', 'paleta_towaru',
+                   'regal_magazynowy', 'butla_gazowa', 'tokarka', 'stol_odpraw', 'krzeslo_biurowe',
+                   'lodowka_domowa', 'lampa_podlogowa', 'lozko_pietrowe', 'skrzynia_amunicji', 'beben_kabla',
+                   'komoda', 'fotel']
 
 if __name__ == '__main__':
-    for fn in (krzeslo, stol, szafa, lawka, kartony, worki, skrzynka_warzywa, zabawki, automat_gier, sterta_opon,
-               kaloryfer, pralka, kanapa, garnek, maszyna, gruz):
-        fn()
-    print('ok', MEBLE_STRUKTURY)
+    for n in MEBLE_STRUKTURY:
+        globals()[n]()
+    print('ok', len(MEBLE_STRUKTURY))

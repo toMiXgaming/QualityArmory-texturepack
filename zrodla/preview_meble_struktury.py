@@ -10,7 +10,7 @@ from gen_meble_struktury import MEBLE_STRUKTURY as SKLEP
 B = os.path.join(HERE, 'build')
 W, H = 300, 380
 yaw = float(sys.argv[2]); out = sys.argv[1]
-sheet = Image.new("RGB", (W * 4, H * 4), (38, 42, 50))
+sheet = Image.new("RGB", (W * 6, H * 6), (38, 42, 50))
 for i, n in enumerate(SKLEP):
     m, q = load_model(os.path.join(B, n + '.json'), lambda r: os.path.join(B, r.split('/')[-1] + '.png'))
     cv = Canvas(W, H, grad=((70, 76, 90), (34, 38, 46)))
@@ -19,5 +19,5 @@ for i, n in enumerate(SKLEP):
     xf, pr, s = fit_ortho(box, R, W, H, margin=0.06)
     draw(cv, q, xf, pr, light_preview)
     im = cv.image(); ImageDraw.Draw(im).text((10, 8), n, fill=(235, 235, 235))
-    sheet.paste(im, ((i % 4) * W, (i // 4) * H))
+    sheet.paste(im, ((i % 6) * W, (i // 6) * H))
 sheet.save(out)
