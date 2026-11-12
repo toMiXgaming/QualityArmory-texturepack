@@ -186,6 +186,31 @@ Dopisanie do gotowego zipa bez pełnej przebudowy: `zrodla/dodaj_sklep.py`, podg
 
 ![Meble do nowych struktur](podglady/sklep.png)
 
+Trzecia partia mebli z `zrodla/gen_meble_struktury.py` (przód na południe, w AXON-Structure stoją na szkliwionej terakocie zamiast bloków udających przedmioty):
+
+| Model | Co to | Blok w strukturze (`meble.bloki`) |
+|---|---|---|
+| `axon:krzeslo` | drewniane krzesło z tapicerką | `orange_glazed_terracotta` |
+| `axon:stol` | stół | `yellow_glazed_terracotta` |
+| `axon:szafa` | dwudrzwiowa szafa (2 kratki) | `cyan_glazed_terracotta` |
+| `axon:lawka` | ławka parkowa | `blue_glazed_terracotta` |
+| `axon:kartony` | sterta kartonów | `brown_glazed_terracotta` |
+| `axon:worki` | worki jutowe | `white_glazed_terracotta` |
+| `axon:skrzynka_warzywa` | skrzynka z warzywami | `lime_glazed_terracotta` |
+| `axon:zabawki` | regał z zabawkami | `pink_glazed_terracotta` |
+| `axon:automat_gier` | automat do gier (2 kratki) | `purple_glazed_terracotta` |
+| `axon:sterta_opon` | sterta opon | `black_glazed_terracotta` |
+| `axon:kaloryfer` | żeliwny kaloryfer | `gray_glazed_terracotta` |
+| `axon:pralka` | pralka | `light_gray_glazed_terracotta` |
+| `axon:kanapa` | segment kanapy | `red_glazed_terracotta` |
+| `axon:garnek` | garnek na stojaku | `light_blue_glazed_terracotta` |
+| `axon:maszyna` | silnik z pompą | `magenta_glazed_terracotta` |
+| `axon:gruz` | kupka gruzu | `green_glazed_terracotta` |
+
+Dopisanie do gotowego zipa: `zrodla/dodaj_meble_struktury.py` (pełna przebudowa `build_pack.py` też je dodaje), podgląd `zrodla/preview_meble_struktury.py`. Opony nazywają się `sterta_opon`, bo `axon:opony` ma ten sam numer w `barrier.json` co `zlomiarz_naramienniki`.
+
+![Meble do struktur, trzecia partia](podglady/meble-struktury.png)
+
 ### Auta i telewizor do blokowiska
 
 `zrodla/gen_auta.py` robi porzucone auta stawiane z sekcji `modele:` pliku struktury oraz telewizor jako mebel:
