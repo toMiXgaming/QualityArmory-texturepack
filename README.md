@@ -265,6 +265,17 @@ Stanowiska (warsztaty T1–T3 z trzema etapami zużycia, piec hutniczy, recykler
 
 Beczki przy drogach działają jak w Rust: gracz je niszczy, wtedy plugin podmienia model na `<beczka>_rozbita` (wgnieciony dół, wieko na ziemi, łup w środku), prawy klik otwiera łup, a po czasie beczka odnawia się w tym samym miejscu.
 
+### Znacznik X przy ścinaniu drzew
+
+AxonMapGenerator pokazuje na pniu rąbanego drzewa znacznik X: trafienie w niego zadaje podwójne obrażenia, a X przeskakuje w inne miejsce. Wcześniej był rysowany z cząsteczek; teraz to model z paczki, jak X namalowany sprayem do znakowania drzew do wycinki: pomarańczowo-czerwona farba z ciemniejszym obrysem (widoczny też na jasnej brzozie), mgiełka na brzegach, zacieki i kropki farby.
+
+| Przedmiot | Kiedy |
+|---|---|
+| `axon:znacznik_x` | zwykły X; tekstura 32×32 lekko pulsuje (8 klatek, `.png.mcmeta`) |
+| `axon:znacznik_x_trafiony` | błysk na chwilę po trafieniu: X rozgrzany do żółto-białego |
+
+Model to płytka 16×16 o grubości 0,5 px z teksturą z przodu i z tyłu (bez boków), środek płytki w środku modelu, więc plugin stawia ItemDisplay z transformacją `NONE` dokładnie w punkcie X i obraca go do ściany pnia. Generator: `zrodla/axoncore/znacznik_x.py` (wołany z `gen_axoncore.py`, więc pełna przebudowa go zawiera), łatka gotowych zipów: `zrodla/dodaj_znacznik_x.py`, podgląd na korze świerka, brzozy, dębu i palmy: `podglady/znacznik-x.png` (`cd zrodla && python3 -m axoncore.znacznik_x`).
+
 ### HP beczek
 
 Beczka ma pulę HP zamiast stałej liczby uderzeń. Paczka daje trzy stany wyglądu każdej beczki (`beczka`, `beczka_paliwa`, `beczka_rdza`), a liczenie HP należy do pluginu (AXON-Structure; w tym repo nie ma jego kodu):
