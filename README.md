@@ -276,6 +276,12 @@ AxonMapGenerator pokazuje na pniu rąbanego drzewa znacznik X: trafienie w niego
 
 Model to płytka 16×16 o grubości 0,5 px z teksturą z przodu i z tyłu (bez boków), środek płytki w środku modelu, więc plugin stawia ItemDisplay z transformacją `NONE` dokładnie w punkcie X i obraca go do ściany pnia. Generator: `zrodla/axoncore/znacznik_x.py` (wołany z `gen_axoncore.py`, więc pełna przebudowa go zawiera), łatka gotowych zipów: `zrodla/dodaj_znacznik_x.py`, podgląd na korze świerka, brzozy, dębu i palmy: `podglady/znacznik-x.png` (`cd zrodla && python3 -m axoncore.znacznik_x`).
 
+### Dźwięk trzeszczenia drzewa
+
+`axon:drzewo.trzeszczenie` gra AxonMapGenerator, gdy rąbanemu drzewu zostaje mało życia (ostrzeżenie przed upadkiem). Dźwięk jest zrobiony od zera syntezą, bez nagrań: tarcie włókien (szybki ciąg drobnych uderzeń o pływającym tempie, od niskiego skrzypienia do jęku) przepuszczone przez rezonanse pnia, pod spodem niski pomruk, a w drugiej połowie 2–4 trzaski pękających włókien. Trzy warianty (gra losuje jeden), mono 44,1 kHz, ok. 2,4 s, słychać do 32 bloków.
+
+Generator: `zrodla/gen_dzwieki.py` (numpy + ffmpeg z libvorbis) zapisuje `zrodla/dzwieki/trzeszczenie1..3.ogg`; `zrodla/axoncore/dzwieki.py` dokłada je do paczki z `assets/axon/sounds.json` (wołany z `gen_axoncore.py`), łatka gotowych zipów: `zrodla/dodaj_dzwieki.py`.
+
 ### HP beczek
 
 Beczka ma pulę HP zamiast stałej liczby uderzeń. Paczka daje trzy stany wyglądu każdej beczki (`beczka`, `beczka_paliwa`, `beczka_rdza`), a liczenie HP należy do pluginu (AXON-Structure; w tym repo nie ma jego kodu):
