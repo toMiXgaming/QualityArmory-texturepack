@@ -278,7 +278,7 @@ Model to płytka 16×16 o grubości 0,5 px z teksturą z przodu i z tyłu (bez b
 
 ### Dźwięk trzeszczenia drzewa
 
-`axon:drzewo.trzeszczenie` gra AxonMapGenerator, gdy rąbanemu drzewu zostaje mało życia (ostrzeżenie przed upadkiem). Dźwięk jest zrobiony od zera syntezą, bez nagrań, i naśladuje pękające drewno, a nie skrzypienie: najpierw pojedyncze suche trzaski pękających włókien, coraz gęstsze i głośniejsze, potem główny trzask z ogonem drzazg i głuchym uderzeniem w pniu. Każdy trzask to bardzo krótki impuls szumu przez rezonanse drewna (ok. 0,75–4,2 kHz) z niskim stuknięciem pnia. Trzy warianty (gra losuje jeden), mono 44,1 kHz, ok. 2,2 s, słychać do 32 bloków.
+`axon:drzewo.trzeszczenie` gra AxonMapGenerator, gdy rąbanemu drzewu zostaje mało życia (ostrzeżenie przed upadkiem). Dźwięk jest zrobiony od zera syntezą, bez nagrań, i ma brzmieć jak gruby pień, a nie łamany patyk: krótkie, ziarniste rozdarcia włókien (gęste serie mikrotrzasków), coraz dłuższe i głośniejsze, a na końcu długie „trzaaask” z głuchym tąpnięciem pnia. Wszystko idzie przez niskie rezonanse grubego drewna (pień ok. 60–170 Hz, włókna 260–2400 Hz) i pogłos lasu. Trzy warianty (gra losuje jeden), mono 44,1 kHz, ok. 2,8 s, słychać do 32 bloków.
 
 Generator: `zrodla/gen_dzwieki.py` (numpy + ffmpeg z libvorbis) zapisuje `zrodla/dzwieki/trzeszczenie1..3.ogg`; `zrodla/axoncore/dzwieki.py` dokłada je do paczki z `assets/axon/sounds.json` (wołany z `gen_axoncore.py`), łatka gotowych zipów: `zrodla/dodaj_dzwieki.py`.
 

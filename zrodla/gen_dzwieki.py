@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Dźwięki AXON robione od zera (synteza, bez nagrań): trzeszczenie drzewa przed upadkiem.
 
-Pękające drzewo: pojedyncze, ostre trzaski pękających włókien (krótki szum przez wysokie rezonanse
-twardego drewna, z cichym stuknięciem pnia), coraz gęstsze i mocniejsze, a na końcu jeden głośny
-TRZASK z drzazgowym ogonem i niskim tąpnięciem. Bez ciągłego skrzypienia (pierwsza wersja z tarciem
-stick-slip brzmiała jak buczenie z horroru).
+Pękający pień dużego drzewa: krótkie, ziarniste rozdarcia włókien (gęste serie mikrotrzasków), coraz
+dłuższe i głośniejsze, a na końcu długie TRZAAASK z głuchym tąpnięciem pnia. Niskie rezonanse grubego
+drewna (ok. 60–170 Hz pień, 260–2400 Hz włókna) i pogłos lasu. v1 (skrzypienie) brzmiało jak horror,
+v2 (pojedyncze wysokie kliki) jak łamany patyk.
 
 Wynik: trzy warianty (gra losuje jeden), mono 44,1 kHz, Ogg Vorbis (ffmpeg + libvorbis), zapisane do
 zrodla/dzwieki/; axoncore/dzwieki.py dokłada je do paczki z wpisem w assets/axon/sounds.json.
@@ -40,77 +40,77 @@ def resonator(x, freq, q):
     return y
 
 
-def smooth_noise(rng, n, points):
-    """Gładko zmienna krzywa 0..1 (interpolacja kosinusowa między losowymi punktami)."""
-    knots = rng.random(points + 1)
-    t = np.linspace(0, points, n)
-    i = np.minimum(t.astype(int), points - 1)
-    f = t - i
-    f = (1 - np.cos(f * math.pi)) / 2
-    return knots[i] * (1 - f) + knots[i + 1] * f
+def lowpass(x, freq):
+    """Jednobiegunowy filtr dolnoprzepustowy (zabiera ostrość „patyka”)."""
+    a = math.exp(-2 * math.pi * freq / SR)
+    y = np.zeros_like(x)
+    acc = 0.0
+    for i, v in enumerate(x):
+        acc = (1 - a) * v + a * acc
+        y[i] = acc
+    return y
 
 
-def snap(rng, size):
-    """Jedno pęknięcie włókna: krótki, ostry trzask drewna (szum 0,5–3 ms przez rezonanse drewna) z cichym stuknięciem."""
-    m = int(0.09 * SR)
-    burst_len = int((0.0005 + 0.0025 * rng.random()) * SR)
-    x = np.zeros(m)
-    x[:burst_len] = rng.standard_normal(burst_len) * np.exp(-np.arange(burst_len) / (burst_len / 3 + 1))
-    out = np.zeros(m)
-    # twarde drewno: kilka wysokich rezonansów, każde pęknięcie trochę inne
-    for f, q, g in ((750, 7, 0.7), (1500, 9, 1.0), (2600, 10, 0.8), (4200, 8, 0.45)):
-        out += g * resonator(x, f * (0.8 + 0.4 * rng.random()), q)
-    out += 0.35 * x   # sam „klik” na początku
-    knock = resonator(x, 160 + 120 * rng.random(), 5) * (0.5 + size)   # większe pęknięcie = więcej dołu
-    out += knock
-    return out * size
+def rip(rng, fibre, trunk, start, length, size, density):
+    """Rozdarcie włókien: gęsta seria mikrotrzasków (to daje „krrrrk” dużego pnia, a nie jeden klik patyka).
+
+    Dopisuje impulsy do pobudzenia włókien (fibre) i pnia (trunk)."""
+    t = 0.0
+    while t < length:
+        env = math.sin(math.pi * min(1.0, t / length)) ** 0.6   # narasta i gaśnie
+        amp = size * env * (0.3 + 0.7 * rng.random())
+        a = int((start + t) * SR)
+        k = int((0.0008 + 0.004 * rng.random()) * SR)
+        if a + k >= len(fibre):
+            break
+        burst = rng.standard_normal(k) * np.exp(-np.arange(k) / (k / 3 + 1))
+        fibre[a:a + k] += amp * burst
+        trunk[a:a + k] += amp * size * burst * 0.8
+        t += rng.exponential(1.0 / density)
 
 
-def creak(seed, length=2.2):
-    """Pękające drzewo: najpierw pojedyncze trzaski włókien, coraz gęstsze, na końcu jeden głośny TRZASK.
+def creak(seed, length=2.8):
+    """Pękający pień: kilka krótkich rozdarć włókien, coraz dłuższych i głośniejszych, na końcu długie
+    TRZAAASK z głuchym tąpnięciem pnia. Wszystko przez niskie rezonanse grubego drewna i pogłos lasu.
 
-    Bez ciągłego skrzypienia (brzmiało jak buczenie z horroru): prawdziwe drzewo przed upadkiem
-    głównie trzeszczy pękającymi włóknami, coraz szybciej, aż puszcza."""
+    Wcześniejsze wersje: v1 (ciągłe skrzypienie) brzmiało jak horror, v2 (pojedyncze wysokie kliki)
+    jak łamany patyk. Duże drzewo brzmi nisko, ziarniście i długo."""
     rng = np.random.default_rng(seed)
     n = int(SR * length)
-    out = np.zeros(n + SR)
-    t = 0.04
-    main_at = length - 0.75 - 0.15 * rng.random()   # główny trzask
-    while t < main_at:
-        progress = t / main_at
-        rate = 3 + 45 * progress ** 2.2              # trzasków na sekundę: z rzadkich do gęstych
-        size = min(1.0, 0.18 + 0.55 * progress ** 1.5 + 0.35 * rng.lognormal(-1.2, 0.6))
-        sn = snap(rng, size)
-        a = int(t * SR)
-        out[a:a + len(sn)] += sn
-        if rng.random() < 0.25:                      # czasem dwa-trzy trzaski tuż po sobie
-            for _ in range(int(rng.integers(1, 3))):
-                t2 = t + 0.008 + 0.02 * rng.random()
-                sn = snap(rng, size * (0.5 + 0.4 * rng.random()))
-                a = int(t2 * SR)
-                out[a:a + len(sn)] += sn
-        t += rng.exponential(1.0 / rate)
-    # Główny TRZASK: mocne pęknięcie z drzazgowym ogonem i niskim tąpnięciem pnia.
-    a = int(main_at * SR)
+    fibre = np.zeros(n)
+    trunk = np.zeros(n)
+    main_at = length - 1.45 - 0.15 * rng.random()
+    t = 0.05
+    while t < main_at - 0.15:
+        p = t / main_at
+        dur = 0.04 + 0.16 * p * rng.random() + 0.05 * rng.random()
+        rip(rng, fibre, trunk, t, dur, 0.5 + 0.4 * p ** 1.3, 180 + 300 * rng.random())
+        t += dur + min(0.3, rng.exponential(0.2 * (1 - 0.6 * p))) + 0.04
+    # Główne pęknięcie: długie, gęste rozdarcie i mocne uderzenia na starcie.
+    rip(rng, fibre, trunk, main_at, 0.55 + 0.15 * rng.random(), 1.0, 650)
     for k in range(3):
-        sn = snap(rng, 1.6 - 0.4 * k)
-        b = a + int(k * 0.012 * SR)
-        out[b:b + len(sn)] += sn
-    tail = int(0.25 * SR)
-    for j in range(60):                              # drzazgi: gęsty, gasnący chrzęst
-        dt = rng.exponential(0.06)
-        if dt > 0.25:
-            continue
-        sn = snap(rng, 0.5 * math.exp(-dt / 0.08) * (0.4 + 0.6 * rng.random()))
-        b = a + int((0.02 + dt) * SR)
-        out[b:b + len(sn)] += sn
-    thump = np.zeros(tail)
-    thump[:int(0.004 * SR)] = rng.standard_normal(int(0.004 * SR))
-    thump = resonator(thump, 85, 4) * 3.0
-    out[a:a + tail] += thump
-    mix = out[:n]
-    fade = int(0.02 * SR)
-    mix[-fade:] *= np.linspace(1, 0, fade)
+        a = int((main_at + 0.01 * k) * SR)
+        m = int(0.006 * SR)
+        trunk[a:a + m] += (1.5 - 0.4 * k) * rng.standard_normal(m)
+        fibre[a:a + m] += (1.2 - 0.3 * k) * rng.standard_normal(m)
+    shift = 0.85 + 0.3 * rng.random()   # każdy wariant to trochę inny pień
+    wood = np.zeros(n)
+    for f, q, g in ((260, 6, 1.0), (470, 8, 0.9), (820, 9, 0.6), (1450, 8, 0.35), (2400, 6, 0.15)):
+        wood += g * resonator(fibre, f * shift, q)
+    body = np.zeros(n)
+    for f, q, g in ((62, 9, 1.4), (105, 12, 1.0), (170, 10, 0.6)):
+        body += g * resonator(trunk, f * shift, q)
+    dry = lowpass(wood + 1.3 * body, 3200)
+    # Pogłos lasu: gasnący, przyciemniony szum jako odpowiedź impulsowa.
+    ir_len = int(1.3 * SR)
+    ir = rng.standard_normal(ir_len) * np.exp(-np.arange(ir_len) / (0.28 * SR))
+    ir = lowpass(ir, 1800)
+    ir /= np.sqrt(np.sum(ir ** 2)) + 1e-9
+    size = 1 << int(math.ceil(math.log2(n + ir_len)))
+    wet = np.fft.irfft(np.fft.rfft(dry, size) * np.fft.rfft(ir, size), size)[:n]
+    mix = dry + 0.45 * wet * (np.max(np.abs(dry)) / (np.max(np.abs(wet)) + 1e-9))
+    fade = int(0.25 * SR)
+    mix[-fade:] *= np.linspace(1, 0, fade) ** 2
     mix /= np.max(np.abs(mix)) + 1e-9
     return mix * 10 ** (-1 / 20)
 
