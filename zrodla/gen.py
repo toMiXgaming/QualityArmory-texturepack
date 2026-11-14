@@ -1944,7 +1944,10 @@ def build_p30():
 def build_mp5():
     L = 32.6
     k = 15.75 / L
-    g = Gun('mp5', dict(s=1, k=k, kw=k * 1.25, Xm=-0.25, Yb=8.75, Zc=4.25))
+    # QA's MP5 model has the muzzle at +X (like the Remington/SPAS), and QA's display
+    # transforms for it (rotation y=+81..+88) assume that, so the stock goes toward -X.
+    # With s=1 the gun showed stock-first in hand, on the ground and in the GUI.
+    g = Gun('mp5', dict(s=-1, k=k, kw=k * 1.25, Xm=15.5, Yb=8.75, Zc=4.25))
     B, C = g.b, g.cyl
     sl = 2.6            # sight line through the front ring and the rear drum aperture
     # --- barrel with the three-lug muzzle, cocking tube above it
