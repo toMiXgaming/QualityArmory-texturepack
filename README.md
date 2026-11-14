@@ -118,7 +118,7 @@ Motywy: Złoto (złoto z grawerem, heban), Neon (czarny mat i karbon, świecące
 
 `<motyw>` to `zloto`, `neon`, `lawa`, `galaktyka`, `polar`, `damast` albo `holo` (np. `deagle_holo`, numer 187).
 
-Model w paczce to `qualityarmory:gun/<name>`. Na serwerze skin to „attachment” QualityArmory z `baseGun` ustawionym na bazową broń, więc przejmuje jej statystyki. Pliki z `serwer/attachments/` trzeba skopiować do `plugins/QualityArmory/attachments/` i zrestartować serwer. Skiny nie są do craftingu ani w sklepie QA. `baseGun` musi być dokładną nazwą broni w QualityArmory (`remington`, `mp5k`, `spas12`, a nie nazwy modeli `remmington`, `mp5`, `spas`), inaczej QA pisze przy starcie „Failed to load … because the base … does not exist” i skin nie działa. Skiny SW1911 i SG 553 działają tylko, gdy te bronie są w configu QA.
+Model w paczce to `qualityarmory:gun/<name>`. Na serwerze skin to „attachment” QualityArmory z `baseGun` ustawionym na bazową broń, więc przejmuje jej statystyki. Pliki z `serwer/attachments/` trzeba skopiować do `plugins/QualityArmory/attachments/` i zrestartować serwer. Skiny nie są do craftingu ani w sklepie QA. `baseGun` musi być dokładną nazwą broni w QualityArmory (`remington`, `mp5k`, `spas12`, a nie nazwy modeli `remmington`, `mp5`, `spas`), inaczej QA pisze przy starcie „Failed to load … because the base … does not exist” i skin nie działa. Skiny SW1911 i SG 553 działają tylko, gdy te bronie są w configu QA. Ich definicje leżą w `serwer/newGuns/` (`axon_sw1911.yml`: pistolet na 9mm, `id: 11`; `axon_sg553.yml`: karabinek na 556, `id: 27`; `id` to numer `custom_model_data` modelu z tabeli wyżej). Trzeba je skopiować do `plugins/QualityArmory/newGuns/` i zrestartować serwer.
 
 ## Mapa AxonMap (shader)
 
