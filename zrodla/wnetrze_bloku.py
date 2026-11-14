@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Zamyka wnętrze modeli zwykłych bloków (piec, beczka, stół rzemieślniczy), żeby przez szpary nie było widać nieba.
+"""Zamyka wnętrze modeli zwykłych bloków (piec, beczka), żeby przez szpary nie było widać nieba.
 
 Modele piec/beczka/stół nie wypełniają całej kostki (korpus ma 1 piksel luzu, beczka 0,9). Gra uznaje
 te bloki za pełne i nie rysuje ścian sąsiadów, które do nich przylegają, więc patrząc w szparę widać
@@ -19,7 +19,9 @@ from PIL import Image
 HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.dirname(HERE)
 DEFAULT = ['QualityArmory-21-axon.zip', 'QualityArmory-21-axon-1.21.11.zip', 'QualityArmory-21-axon-1.21.11-shadery.zip']
-MODELS = ['barrel', 'barrel_open', 'crafting_table', 'furnace', 'furnace_on']
+MODELS = ['barrel', 'barrel_open', 'furnace', 'furnace_on']
+# stół rzemieślniczy ma nogi i półkę, więc ma być przez niego widać na wylot: płaszczyzn nie dodajemy, a stare zdejmujemy
+OTWARTE = ['crafting_table']
 NAME = 'axon_wnetrze'
 # (ściana zwrócona do środka, from, to): płaszczyzna na granicy kostki
 PLANES = [
@@ -47,6 +49,16 @@ def patch(path):
         files = {n: z.read(n) for n in z.namelist()}
         infos = {i.filename: i for i in z.infolist()}
     changed = 0
+    for m in OTWARTE:
+        n = 'assets/minecraft/models/block/%s.json' % m
+        if n not in files:
+            continue
+        d = json.loads(files[n])
+        d['elements'] = [e for e in d['elements'] if e.get('name') != NAME]
+        new = json.dumps(d, indent=2).encode()
+        if new != files[n]:
+            files[n] = new
+            changed += 1
     for m in MODELS:
         n = 'assets/minecraft/models/block/%s.json' % m
         if n not in files:
