@@ -390,8 +390,14 @@ def _axes(f):
 
 
 class SolidModel(Model):
-    """Model, w którym każda widoczna ściana ma własny prostokąt w jednej teksturze modelu."""
+    """Model, w którym każda widoczna ściana ma własny prostokąt w jednej teksturze modelu.
+
+    `unit` przelicza jednostki modelu na „jednostki materiału” (1/16 m), gdy model jest zmniejszony
+    (wraki: unit = 1.6 / f), żeby rysy, odpryski i nity miały tę samą wielkość co na stanowiskach.
+    `density` to piksele tekstury na jednostkę modelu (przy braku miejsca w 512×512 maleje)."""
     name = None
+    unit = 1.0
+    density = DENSITY
 
     def __init__(self, display=None, gui_light='side'):
         super().__init__(display=display, rotation=None, gui_light=gui_light)
@@ -474,7 +480,7 @@ class SolidModel(Model):
         if self._built:
             return self._built
         boxes, visible = self._geometry()
-        for density in (DENSITY, 3, 2):
+        for density in (self.density, self.density * 0.75, self.density * 0.5, self.density * 0.35):
             rects = []
             for i, f in visible:
                 b = boxes[i]
@@ -541,7 +547,12 @@ class SolidModel(Model):
         U, V = np.meshgrid(uu, vv)
         E = np.minimum(np.minimum(U * lu, (1 - U) * lu), np.minimum(V * lv, (1 - V) * lv))
         seed = (i * 31 + FACES.index(f) * 7) % 997
-        ctx = Ctx(b, f, X, Y, Z, E, seed)
+        u = self.unit
+        if u != 1.0:
+            sb = Box([v * u for v in b.frm], [v * u for v in b.to], b.faces, b.rot)
+            ctx = Ctx(sb, f, X * u, Y * u, Z * u, E * u, seed)
+        else:
+            ctx = Ctx(b, f, X, Y, Z, E, seed)
         col = MATS[b.faces[f]](ctx)
         # zacienienie przy stykach z innymi bryłami
         others = [o for j, o in enumerate(boxes) if j != i]
