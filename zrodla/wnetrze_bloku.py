@@ -1,12 +1,9 @@
 #!/usr/bin/env python3
-"""Zamyka wnętrze modeli zwykłych bloków (piec, beczka, stół rzemieślniczy), żeby przez szpary nie było widać nieba.
+"""Usuwa z modeli piec/beczka/stół płaszczyzny `axon_wnetrze` dodane wcześniej (PR 55).
 
-Modele piec/beczka/stół nie wypełniają całej kostki (korpus ma 1 piksel luzu, beczka 0,9). Gra uznaje
-te bloki za pełne i nie rysuje ścian sąsiadów, które do nich przylegają, więc patrząc w szparę widać
-pustkę, czyli jasnoniebieski kolor nieba (180, 207, 255): jasne obwódki wokół pieca i kamiennego bloku.
-Skrypt dodaje do każdego z tych modeli sześć płaszczyzn na granicach kostki 0–16, zwróconych DO WEWNĄTRZ
-(widać je tylko od środka, z zewnątrz są tylnymi ścianami i się nie rysują), z najciemniejszym pikselem
-tekstury modelu. Zwykły podgląd bloku z zewnątrz się nie zmienia, szpary robią się ciemne zamiast niebieskich.
+Płaszczyzny leżały na granicach kostki 0–16 i miały zasłaniać niebo w szparach, ale klient rysuje je też
+od zewnątrz (brak odrzucania tylnych ścian), więc wokół beczki i warsztatu powstawała czarna kostka.
+Skrypt tylko czyści te elementy z modeli (idempotentnie), niczego nie dodaje.
 Użycie: python3 wnetrze_bloku.py [zip ...]  (build_pack.py i buduj_1_21_11.py wołają to same)."""
 import io
 import json
@@ -53,12 +50,6 @@ def patch(path):
             continue
         d = json.loads(files[n])
         d['elements'] = [e for e in d['elements'] if e.get('name') != NAME]
-        tex = next(v for k, v in d['textures'].items() if k != 'particle')
-        ns, p = tex.split(':', 1)
-        uv = dark_uv(files['assets/%s/textures/%s.png' % (ns, p)], tex)
-        key = next(k for k, v in d['textures'].items() if v == tex and k != 'particle')
-        d['elements'] += [{'name': NAME, 'from': f, 'to': t, 'faces': {face: {'uv': uv, 'texture': '#' + key}}}
-                          for face, f, t in PLANES]
         new = json.dumps(d, indent=2).encode()
         if new != files[n]:
             files[n] = new
