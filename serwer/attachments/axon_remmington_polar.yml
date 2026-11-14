@@ -5,7 +5,7 @@ lore:
 - '&7Skin premium AXON'
 id: 126
 material: CROSSBOW
-baseGun: remmington
+baseGun: remington
 craftingRequirements: []
 allowCrafting: false
 allowInShop: false

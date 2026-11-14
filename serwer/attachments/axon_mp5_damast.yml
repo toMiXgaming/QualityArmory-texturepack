@@ -5,7 +5,7 @@ lore:
 - '&7Skin premium AXON'
 id: 215
 material: CROSSBOW
-baseGun: mp5
+baseGun: mp5k
 craftingRequirements: []
 allowCrafting: false
 allowInShop: false
