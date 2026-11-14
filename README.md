@@ -297,6 +297,8 @@ Pojemniki z beczkami, apteczką, skrzynką narzędziową i kartonem są węższe
 
 Wraki leżą w modelu w zmniejszonej skali, a plugin rysuje je z transformacją `NONE` i skalą z tabeli. Wtedy mają prawdziwe wymiary (1 kratka = 1 m). Środek modelu (8 8 8) leży w środku obrysu, tyle kratek nad gruntem, ile podaje tabela. Kolizję dają bariery w strukturze, tak jak przy autach.
 
+Każdy wrak ma własną teksturę `axon:item/<wrak>` (ok. 48 pikseli na metr, `surface.SolidModel`): lakier z odpryskami i zaciekami rdzy, przerdzewiałe płaty blachy, szyby z odbiciem i pęknięciami, chrom, lampy i opony. Wcześniej każda ściana brała jeden kafelek 8×8 z atlasu rozciągnięty na całą długość auta.
+
 | Wrak | Skala | Środek nad gruntem | Obrys (kratki) |
 |---|---|---|---|
 | `wrak_fiat_126p` | 1.078 | 0,54 | 1,4 × 3,1 |
